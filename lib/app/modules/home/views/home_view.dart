@@ -5,6 +5,7 @@ import '../../../core/values/app_colors.dart';
 import '../controllers/home_controller.dart';
 import '../../status/views/status_view.dart';
 import '../../profile/views/profile_view.dart';
+import '../../saved_jobs/views/saved_jobs_view.dart';
 
 class HomeView extends GetView<HomeController> {
   @override
@@ -16,6 +17,7 @@ class HomeView extends GetView<HomeController> {
             children: [
               _buildMainHome(),
               StatusView(),
+              SavedJobsView(),
               ProfileView(),
             ],
           )),
@@ -33,10 +35,14 @@ class HomeView extends GetView<HomeController> {
             _buildGreeting(),
             _buildSearchBar(),
             const SizedBox(height: 32),
-            _buildSectionTitle("Rekomendasi Spesial"),
+            
+            _buildSectionTitle("Rekomendasi Spesial"), 
+            
             _buildHorizontalList(),
             const SizedBox(height: 32),
+            
             _buildSectionTitleWithToggle("Lowongan Terbaru"),
+            
             _buildVerticalList(),
             const SizedBox(height: 20),
           ],
@@ -92,8 +98,8 @@ class HomeView extends GetView<HomeController> {
         children: [
           Expanded(
             child: TextField(
-              readOnly: true, // Membuatnya tidak bisa diketik di halaman home
-              onTap: () => controller.goToSearch(), // Pindah ke halaman search saat diklik
+              readOnly: true,
+              onTap: () => controller.goToSearch(),
               decoration: InputDecoration(
                 hintText: "Cari posisi, perusahaan, atau skill...",
                 hintStyle: const TextStyle(color: Colors.grey, fontSize: 13),
@@ -108,16 +114,6 @@ class HomeView extends GetView<HomeController> {
               ),
             ),
           ),
-          const SizedBox(width: 12),
-          // Tombol Filter (Bisa juga diarahkan ke Search)
-          GestureDetector(
-            onTap: () => controller.goToSearch(),
-            child: Container(
-              height: 56, width: 56,
-              decoration: BoxDecoration(color: AppColors.primary, borderRadius: BorderRadius.circular(16)),
-              child: const Icon(Icons.tune, color: Colors.white),
-            ),
-          )
         ],
       ),
     );
@@ -253,12 +249,13 @@ class HomeView extends GetView<HomeController> {
   Widget _buildSectionTitle(String title) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-          const Text("Lihat Semua", style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold, fontSize: 12)),
-        ],
+      child: Text(
+        title, 
+        style: const TextStyle(
+          fontSize: 18, 
+          fontWeight: FontWeight.bold,
+          color: Color(0xFF0B1C30),
+        )
       ),
     );
   }
@@ -287,15 +284,32 @@ class HomeView extends GetView<HomeController> {
     return Obx(() => BottomNavigationBar(
       currentIndex: controller.tabIndex.value,
       onTap: controller.changeTabIndex,
+      type: BottomNavigationBarType.fixed,
       selectedItemColor: AppColors.primary,
       unselectedItemColor: Colors.grey,
       showUnselectedLabels: true,
       selectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 10),
       unselectedLabelStyle: const TextStyle(fontSize: 10),
       items: const [
-        BottomNavigationBarItem(icon: Icon(Icons.home_outlined), activeIcon: Icon(Icons.home), label: "HOME"),
-        BottomNavigationBarItem(icon: Icon(Icons.history), label: "STATUS"),
-        BottomNavigationBarItem(icon: Icon(Icons.person_outline), activeIcon: Icon(Icons.person), label: "PROFIL"),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.home_outlined), 
+          activeIcon: Icon(Icons.home), 
+          label: "HOME"
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.history), 
+          label: "STATUS"
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.bookmark_outline), 
+          activeIcon: Icon(Icons.bookmark), 
+          label: "BOOKMARK"
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.person_outline), 
+          activeIcon: Icon(Icons.person), 
+          label: "PROFIL"
+        ),
       ],
     ));
   }

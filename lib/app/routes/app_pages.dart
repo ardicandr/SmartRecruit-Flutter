@@ -23,13 +23,15 @@ import '../modules/profile/bindings/profile_binding.dart';
 import '../modules/profile/views/profile_view.dart';
 import '../modules/register/bindings/register_binding.dart';
 import '../modules/register/views/register_view.dart';
+import '../modules/saved_jobs/bindings/saved_jobs_binding.dart';
+import '../modules/saved_jobs/views/saved_jobs_view.dart';
 import '../modules/search/bindings/search_binding.dart';
 import '../modules/search/views/search_view.dart';
+import '../modules/status/bindings/status_binding.dart';
 import '../modules/status/views/status_view.dart';
 import '../modules/upload_cv/bindings/upload_cv_binding.dart';
 import '../modules/upload_cv/views/upload_cv_view.dart';
 import 'app_routes.dart';
-import '../modules/status/bindings/status_binding.dart';
 
 // --- IMPORT SEMUA VIEW ---
 
@@ -110,6 +112,11 @@ class AppPages {
       name: Routes.INTERVIEW,
       page: () => const InterviewListView(),
       binding: InterviewBinding(),
+    ),
+    GetPage(
+      name: Routes.SAVED_JOBS,
+      page: () => const SavedJobsView(),
+      binding: SavedJobsBinding(),
     ),
   ];
 }

@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import '../../../routes/app_routes.dart';
+import 'package:smart_recruit/app/core/values/app_colors.dart';
 
 class AssessmentController extends GetxController {
   var currentQuestion = 0.obs;
@@ -25,20 +26,10 @@ class AssessmentController extends GetxController {
   }
 
   void submitAssessment() {
-    // Menggunakan bahasa yang lebih user-friendly dan profesional
-    Get.snackbar(
-      "Data Tersimpan", 
-      "Profil preferensi Anda berhasil diperbarui. Silakan lengkapi berkas lamaran Anda.",
-      snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: const Color(0xFF2170E4),
-      colorText: Colors.white,
-      margin: const EdgeInsets.all(20),
-      borderRadius: 12,
-      duration: const Duration(seconds: 3),
-      icon: const Icon(Icons.check_circle_outline, color: Colors.white),
+    AppHelpers.showSnackbar(
+      title: "Data Tersimpan",
+      message: "Profil preferensi Anda berhasil diperbarui.",
     );
-    
-    // Pindah ke halaman Upload CV
     Get.toNamed(Routes.UPLOAD_CV, arguments: {'isFromApplication': true});
   }
 }
