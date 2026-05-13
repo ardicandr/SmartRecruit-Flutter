@@ -11,4 +11,7 @@ abstract class Routes {
   static const SEARCH = '/search';
   static const EDIT_PROFILE = '/edit-profile';
   static const ASSESSMENT = '/assessment';
+  static const NOTIFICATION = '/notification';
+  static const INTERVIEW = '/interview';
+  static const INTERVIEW_DETAIL = '/interview-detail';
 }
