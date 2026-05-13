@@ -14,7 +14,9 @@ class StatusView extends GetView<StatusController> {
         backgroundColor: Colors.white,
         elevation: 0,
         actions: [
-          IconButton(onPressed: () {}, icon: const Icon(Icons.notifications_none, color: Colors.black)),
+          IconButton(
+          onPressed: () => controller.goToNotifications(), 
+          icon: const Icon(Icons.notifications_none, color: Colors.black),),
           const Padding(
             padding: EdgeInsets.only(right: 16),
             child: CircleAvatar(radius: 16, backgroundImage: NetworkImage("https://i.pravatar.cc/150?u=4")),
@@ -86,19 +88,58 @@ class StatusView extends GetView<StatusController> {
   }
 
   Widget _buildUpdateAlert() {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(color: const Color(0xFFE3F2FD), borderRadius: BorderRadius.circular(20), border: Border.all(color: Colors.blue[100]!)),
-      child: Row(
-        children: [
-          Container(padding: const EdgeInsets.all(8), decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(10)), child: const Icon(Icons.calendar_today, color: Colors.blue, size: 20)),
-          const SizedBox(width: 12),
-          const Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text("Update Terkini", style: TextStyle(fontSize: 10, color: Colors.grey, fontWeight: FontWeight.bold)),
-            Text("1 Jadwal Wawancara Mendatang", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
-          ])),
-          const CircleAvatar(radius: 10, backgroundColor: Colors.blue, child: Text("1", style: TextStyle(color: Colors.white, fontSize: 10))),
-        ],
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () => controller.goToInterview(),
+        borderRadius: BorderRadius.circular(20),
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: const Color(0xFFE3F2FD), 
+            borderRadius: BorderRadius.circular(20), 
+            border: Border.all(color: Colors.blue[100]!),
+          ),
+          child: Row(
+            children: [
+              // Ikon Kalender
+              Container(
+                padding: const EdgeInsets.all(8), 
+                decoration: BoxDecoration(
+                  color: Colors.white, 
+                  borderRadius: BorderRadius.circular(10),
+                ), 
+                child: const Icon(Icons.calendar_today, color: Colors.blue, size: 20),
+              ),
+              const SizedBox(width: 12),
+              // Teks Informasi
+              const Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start, 
+                  children: [
+                    Text(
+                      "Update Terkini", 
+                      style: TextStyle(fontSize: 10, color: Colors.grey, fontWeight: FontWeight.bold),
+                    ),
+                    Text(
+                      "1 Jadwal Wawancara Mendatang", 
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                    ),
+                  ],
+                ),
+              ),
+              // Badge Angka Notifikasi
+              const CircleAvatar(
+                radius: 10, 
+                backgroundColor: Colors.blue, 
+                child: Text(
+                  "1", 
+                  style: TextStyle(color: Colors.white, fontSize: 10),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

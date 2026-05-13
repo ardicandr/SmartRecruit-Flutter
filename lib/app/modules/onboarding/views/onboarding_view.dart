@@ -12,7 +12,7 @@ class OnboardingView extends GetView<OnboardingController> {
       body: SafeArea(
         child: Column(
           children: [
-            // 1. Header (Fixed)
+            // 1. Header
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
               child: Row(
@@ -24,52 +24,55 @@ class OnboardingView extends GetView<OnboardingController> {
               ),
             ),
 
-            // 2. Sliding Area (Gambar & Teks)
+            // Sliding Area (Gambar & Teks)
             Expanded(
               child: PageView.builder(
                 controller: controller.pageController,
-                onPageChanged: (index) => controller.currentPage.value = index,
-                itemCount: controller.onboardingData.length,
+                onPageChanged: (index) {
+                  // Gunakan modulo agar currentPage selalu 0, 1, atau 2
+                  controller.currentPage.value = index % controller.onboardingData.length;
+                },
                 itemBuilder: (context, index) {
+                  // Ambil data menggunakan modulo
+                  int realIndex = index % controller.onboardingData.length;
+                  var data = controller.onboardingData[realIndex];
+
                   return Column(
                     children: [
-                      // Illustration Box
                       Expanded(
                         child: Container(
-                          margin: EdgeInsets.all(24),
+                          margin: const EdgeInsets.all(24),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(40),
                             image: DecorationImage(
-                              image: NetworkImage(controller.onboardingData[index]['image']!),
+                              image: NetworkImage(data['image']!),
                               fit: BoxFit.cover
                             ),
                             boxShadow: [
-                              BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 20, offset: Offset(0, 10))
+                              BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 20, offset: const Offset(0, 10))
                             ]
                           ),
                         ),
                       ),
-                      
-                      // Content Area (White Box)
                       Container(
-                        padding: EdgeInsets.fromLTRB(32, 40, 32, 20),
+                        padding: const EdgeInsets.fromLTRB(32, 40, 32, 20),
                         width: double.infinity,
-                        decoration: BoxDecoration(
+                        decoration: const BoxDecoration(
                           color: Colors.white, 
                           borderRadius: BorderRadius.vertical(top: Radius.circular(32))
                         ),
                         child: Column(
                           children: [
                             Text(
-                              controller.onboardingData[index]['title']!,
+                              data['title']!,
                               textAlign: TextAlign.center,
                               style: GoogleFonts.plusJakartaSans(fontSize: 26, fontWeight: FontWeight.w800),
                             ),
-                            SizedBox(height: 16),
+                            const SizedBox(height: 16),
                             Text(
-                              controller.onboardingData[index]['desc']!,
+                              data['desc']!,
                               textAlign: TextAlign.center,
-                              style: TextStyle(color: AppColors.textMuted, fontSize: 15, height: 1.5),
+                              style: const TextStyle(color: AppColors.textMuted, fontSize: 15, height: 1.5),
                             ),
                           ],
                         ),
@@ -80,20 +83,19 @@ class OnboardingView extends GetView<OnboardingController> {
               ),
             ),
 
-            // 3. Footer Area (Indikator & Tombol)
+            // Footer Area (Indikator & Tombol)
             Container(
               color: Colors.white,
-              padding: EdgeInsets.fromLTRB(32, 0, 32, 40),
+              padding: const EdgeInsets.fromLTRB(32, 0, 32, 40),
               child: Column(
                 children: [
-                  // Dots Indicator
                   Obx(() => Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: List.generate(
                       controller.onboardingData.length,
                       (index) => AnimatedContainer(
-                        duration: Duration(milliseconds: 300),
-                        margin: EdgeInsets.only(right: 8),
+                        duration: const Duration(milliseconds: 300),
+                        margin: const EdgeInsets.only(right: 8),
                         height: 8,
                         width: controller.currentPage.value == index ? 24 : 8,
                         decoration: BoxDecoration(
@@ -103,19 +105,17 @@ class OnboardingView extends GetView<OnboardingController> {
                       ),
                     ),
                   )),
-                  SizedBox(height: 32),
-                  
-                  // Main Button
+                  const SizedBox(height: 32),
                   ElevatedButton(
                     onPressed: () => controller.goToLogin(),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primary,
-                      minimumSize: Size(double.infinity, 60),
+                      minimumSize: const Size(double.infinity, 60),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                       elevation: 8,
                       shadowColor: AppColors.primary.withOpacity(0.3)
                     ),
-                    child: Text("Mulai Sekarang", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18)),
+                    child: const Text("Mulai Sekarang", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18)),
                   ),
                 ],
               ),
