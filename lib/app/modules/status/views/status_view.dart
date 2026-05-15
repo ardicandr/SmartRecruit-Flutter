@@ -122,7 +122,7 @@ class StatusView extends GetView<StatusController> {
                       style: TextStyle(fontSize: 10, color: Colors.grey, fontWeight: FontWeight.bold),
                     ),
                     Text(
-                      "1 Jadwal Wawancara Mendatang", 
+                      "2 Jadwal Wawancara Mendatang", 
                       style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
                     ),
                   ],

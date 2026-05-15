@@ -14,4 +14,5 @@ abstract class Routes {
   static const NOTIFICATION = '/notification';
   static const INTERVIEW = '/interview';
   static const INTERVIEW_DETAIL = '/interview-detail';
+  static const SAVED_JOBS = '/saved-jobs';
 }

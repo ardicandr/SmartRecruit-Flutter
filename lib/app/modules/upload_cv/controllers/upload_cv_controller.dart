@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../routes/app_routes.dart';
+import 'package:smart_recruit/app/core/values/app_colors.dart';
 
 class UploadCvController extends GetxController {
   var isFromApplication = false.obs;
@@ -15,24 +16,16 @@ class UploadCvController extends GetxController {
 
   void handleFinalAction() {
     if (isFromApplication.value) {
-      // 1. JIKA DARI ALUR LAMARAN
-      Get.snackbar(
-        "Lamaran Terkirim", 
-        "Lamaran Anda berhasil dikirim ke database HRD!",
-        backgroundColor: const Color(0xFF2563EB),
-        colorText: Colors.white,
-        snackPosition: SnackPosition.TOP,
-      );
       Get.offAllNamed(Routes.HOME);
+      AppHelpers.showSnackbar(
+        title: "Lamaran Terkirim",
+        message: "Lamaran Anda telah diterima oleh HRD.",
+      );
     } else {
-      // 2. JIKA HANYA UPDATE PROFIL
       Get.back();
-      Get.snackbar(
-        "Profil Diperbarui", 
-        "Data CV di profil Anda berhasil disimpan.",
-        backgroundColor: Colors.green,
-        colorText: Colors.white,
-        snackPosition: SnackPosition.TOP,
+      AppHelpers.showSnackbar(
+        title: "Profil Diperbarui",
+        message: "CV Anda telah berhasil diupdate.",
       );
     }
   }

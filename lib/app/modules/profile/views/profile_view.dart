@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/values/app_colors.dart';
-import '../../../routes/app_routes.dart'; // Import Routes
+import '../../../routes/app_routes.dart';
 import '../controllers/profile_controller.dart';
 
 class ProfileView extends GetView<ProfileController> {
@@ -91,7 +91,7 @@ class ProfileView extends GetView<ProfileController> {
             _buildLanguageSection(),
             const SizedBox(height: 32),
             
-            // SECTION: SERTIFIKAT (Diarahkan ke Halaman EditProfile)
+            // SECTION: SERTIFIKAT
             _buildSectionHeader(
               "Sertifikat & Kompetensi", 
               icon: Icons.verified_user_outlined,
@@ -100,7 +100,7 @@ class ProfileView extends GetView<ProfileController> {
                 icon: const Icon(Icons.add_circle_outline, color: Color(0xFF2170E4))
               )
             ),
-            _buildExistingCertificateTile(), // Menampilkan sertifikat yang sudah ada
+            _buildExistingCertificateTile(),
             
             const SizedBox(height: 100), 
           ],
@@ -134,11 +134,9 @@ class ProfileView extends GetView<ProfileController> {
               },
               icon: const Icon(Icons.add),
               label: const Text("Perbarui CV"),
-              style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF2170E4), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)))
+              style: ElevatedButton.styleFrom(backgroundColor: const Color.fromARGB(255, 255, 255, 255), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)))
             )
           ),
-          const SizedBox(width: 12),
-          Expanded(child: OutlinedButton.icon(onPressed: () {}, icon: const Icon(Icons.share_outlined, size: 18), label: const Text("Bagikan"), style: OutlinedButton.styleFrom(side: const BorderSide(color: Colors.grey), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))))),
         ]),
       ],
     );

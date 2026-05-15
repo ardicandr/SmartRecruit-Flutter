@@ -51,12 +51,6 @@ class SearchView extends GetView<AppSearchController> {
               ),
             ),
           ),
-          SizedBox(width: 12),
-          Container(
-            padding: EdgeInsets.all(12),
-            decoration: BoxDecoration(color: AppColors.primary, borderRadius: BorderRadius.circular(12)),
-            child: Icon(Icons.tune, color: Colors.white),
-          )
         ],
       ),
     );
