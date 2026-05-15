@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../routes/app_routes.dart';
-import 'package:smart_recruit/app/core/values/app_colors.dart';
+import 'package:SmartRecruit/app/core/values/app_colors.dart';
 
 class UploadCvController extends GetxController {
   var isFromApplication = false.obs;

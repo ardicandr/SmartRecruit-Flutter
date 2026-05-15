@@ -1,7 +1,7 @@
 import 'package:get/get.dart';
 import '../../../routes/app_routes.dart';
 import 'package:flutter/material.dart';
-import 'package:smart_recruit/app/core/values/app_colors.dart';
+import 'package:SmartRecruit/app/core/values/app_colors.dart';
 
 class DetailController extends GetxController {
   // State untuk status bookmark

@@ -10,9 +10,9 @@ class SavedJobsView extends GetView<SavedJobsController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background, // Warna background abu-abu muda/biru sangat muda
+      backgroundColor: AppColors.background,
       appBar: AppBar(
-        automaticallyImplyLeading: false, // Menghapus tombol kembali otomatis
+        automaticallyImplyLeading: false,
         title: Text(
           "Lowongan Tersimpan",
           style: GoogleFonts.plusJakartaSans(
@@ -25,14 +25,15 @@ class SavedJobsView extends GetView<SavedJobsController> {
         elevation: 0,
         actions: [
           IconButton(
-            onPressed: () {}, 
+            // UBAH BAGIAN INI:
+            onPressed: () => controller.goToNotifications(), 
             icon: const Icon(Icons.notifications_none, color: Colors.black)
           ),
           const Padding(
             padding: EdgeInsets.only(right: 16),
             child: CircleAvatar(
               radius: 16, 
-              backgroundImage: NetworkImage("https://i.pravatar.cc/150?u=4")
+              backgroundImage: NetworkImage("https://i.pravatar.cc/150?u=a")
             ),
           )
         ],

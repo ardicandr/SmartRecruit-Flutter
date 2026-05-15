@@ -7,6 +7,8 @@ import '../controllers/login_controller.dart';
 class LoginView extends StatelessWidget {
   final LoginController controller = Get.put(LoginController());
 
+  LoginView({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -48,13 +50,15 @@ class LoginView extends StatelessWidget {
                 children: [
                   _buildLabel("Kata Sandi"),
                   GestureDetector(
-                    onTap: () => Get.snackbar(
-                        "Fitur", "Reset password akan segera tersedia"),
-                    child: Text("Lupa kata sandi?",
-                        style: TextStyle(
-                            color: AppColors.primary,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 13)),
+                    onTap: () => controller.goToForgotPassword(), 
+                    child: Text(
+                      "Lupa kata sandi?",
+                      style: TextStyle(
+                        color: AppColors.primary, 
+                        fontWeight: FontWeight.bold, 
+                        fontSize: 13,
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -73,22 +77,21 @@ class LoginView extends StatelessWidget {
               const SizedBox(height: 24),
 
               // MAIN BUTTON
-              GestureDetector(
-                onTap: () => controller.login(),
-                child: _buildMainButton("Masuk Sekarang", Icons.arrow_forward),
-              ),
+              _buildMainButton("Masuk Sekarang", Icons.arrow_forward, () {
+                controller.login();
+              }),
 
               const SizedBox(height: 20),
               _buildDivider(),
               const SizedBox(height: 20),
 
-              GestureDetector(
-                onTap: () => Get.snackbar(
-                    "Google", "Google Sign-In akan segera aktif"),
-                child: _buildSocialButton(
-                  "Lanjutkan dengan Google",
-                  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTlh1Kyfo9hJplmkiOKcHD9XcpUvlJaZrh5ZA&static/img/google_signin_buttons/web/2x/btn_google_signin_dark_normal_web.png",
-                ),
+              // GOOGLE BUTTON
+              _buildSocialButton(
+                "Lanjutkan dengan Google",
+                "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTlh1Kyfo9hJplmkiOKcHD9XcpUvlJaZrh5ZA&static/img/google_signin_buttons/web/2x/btn_google_signin_dark_normal_web.png",
+                () {
+                  Get.snackbar("Google", "Google Sign-In akan segera aktif");
+                },
               ),
 
               const SizedBox(height: 20),
@@ -98,7 +101,7 @@ class LoginView extends StatelessWidget {
                   onTap: () => controller.goToRegister(),
                   child: RichText(
                     text: TextSpan(
-                      style: TextStyle(color: AppColors.textGray, fontSize: 14),
+                      style: const TextStyle(color: AppColors.textGray, fontSize: 14),
                       children: [
                         const TextSpan(text: "Belum punya akun? "),
                         TextSpan(
@@ -119,28 +122,38 @@ class LoginView extends StatelessWidget {
     );
   }
 
-  Widget _buildSocialButton(String text, String logoUrl) {
-    return Container(
-      width: double.infinity,
-      height: 56,
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppColors.outline.withOpacity(0.5))),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Image.network(
-            logoUrl,
-            width: 24,
-            height: 24,
-            errorBuilder: (context, error, stackTrace) => 
-                const Icon(Icons.g_mobiledata, size: 30),
+  // Widget Social Button
+  Widget _buildSocialButton(String text, String logoUrl, VoidCallback onTap) {
+    return Material(
+      color: Colors.transparent,
+      borderRadius: BorderRadius.circular(16),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(16),
+        child: Container(
+          width: double.infinity,
+          height: 56,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: AppColors.outline.withOpacity(0.5)),
           ),
-          const SizedBox(width: 12),
-          Text(text,
-              style: TextStyle(
-                  fontWeight: FontWeight.bold, color: AppColors.textDark)),
-        ],
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Image.network(
+                logoUrl,
+                width: 24,
+                height: 24,
+                errorBuilder: (context, error, stackTrace) =>
+                    const Icon(Icons.g_mobiledata, size: 30),
+              ),
+              const SizedBox(width: 12),
+              Text(text,
+                  style: const TextStyle(
+                      fontWeight: FontWeight.bold, color: AppColors.textDark)),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -170,7 +183,7 @@ class LoginView extends StatelessWidget {
             borderSide: BorderSide(color: AppColors.outline.withOpacity(0.5))),
         focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(16),
-            borderSide: BorderSide(color: AppColors.primary, width: 2)),
+            borderSide: const BorderSide(color: AppColors.primary, width: 2)),
       ),
     );
   }
@@ -178,15 +191,15 @@ class LoginView extends StatelessWidget {
   Widget _buildLabel(String label) => Padding(
       padding: const EdgeInsets.only(bottom: 8),
       child: Text(label,
-          style:
-              TextStyle(fontWeight: FontWeight.bold, color: AppColors.textDark)));
+          style: const TextStyle(
+              fontWeight: FontWeight.bold, color: AppColors.textDark)));
 
   Widget _buildDivider() {
     return Row(
       children: [
         Expanded(child: Divider(color: AppColors.outline.withOpacity(0.5))),
-        Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+        const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16),
             child: Text("ATAU",
                 style: TextStyle(
                     color: AppColors.textGray,
@@ -198,13 +211,11 @@ class LoginView extends StatelessWidget {
     );
   }
 
-  Widget _buildMainButton(String text, IconData icon) {
+  // Widget Main Button
+  Widget _buildMainButton(String text, IconData icon, VoidCallback onTap) {
     return Container(
-      width: double.infinity,
-      height: 60,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
-        color: const Color(0xFF3B82F6),
         boxShadow: [
           BoxShadow(
               color: const Color(0xFF3B82F6).withOpacity(0.3),
@@ -212,18 +223,29 @@ class LoginView extends StatelessWidget {
               offset: const Offset(0, 6))
         ],
       ),
-      child: Center(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(text,
-                style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16)),
-            const SizedBox(width: 8),
-            Icon(icon, color: Colors.white, size: 20),
-          ],
+      child: Material(
+        color: const Color(0xFF3B82F6),
+        borderRadius: BorderRadius.circular(16),
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(16),
+          child: Container(
+            width: double.infinity,
+            height: 60,
+            alignment: Alignment.center,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(text,
+                    style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16)),
+                const SizedBox(width: 8),
+                Icon(icon, color: Colors.white, size: 20),
+              ],
+            ),
+          ),
         ),
       ),
     );

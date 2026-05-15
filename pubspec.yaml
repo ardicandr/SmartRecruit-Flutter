@@ -1,4 +1,4 @@
-name: smart_recruit
+name: SmartRecruit
 description: "A new Flutter project."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
@@ -28,6 +28,7 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
+  fl_chart: ^0.66.0
   flutter:
     sdk: flutter
   get: ^4.6.6  

@@ -26,14 +26,15 @@ class ProfileView extends GetView<ProfileController> {
         elevation: 0,
         actions: [
           IconButton(
-            onPressed: () {},
+            // UBAH BAGIAN INI:
+            onPressed: () => controller.goToNotifications(), 
             icon: const Icon(Icons.notifications_none, color: Colors.black),
           ),
           const Padding(
             padding: EdgeInsets.only(right: 16),
             child: CircleAvatar(
               radius: 16,
-              backgroundImage: NetworkImage("https://i.pravatar.cc/150?u=4"),
+              backgroundImage: NetworkImage("https://i.pravatar.cc/150?u=a"),
             ),
           )
         ],
@@ -45,6 +46,7 @@ class ProfileView extends GetView<ProfileController> {
             _buildHeroProfile(),
             const SizedBox(height: 32),
             _buildStrengthBar(),
+            _buildAiAnalysisCard(),
             const SizedBox(height: 40),
             _buildSectionHeader("DETAIL INFORMASI", 
                 action: _buildSmallButton("Simpan Perubahan")),
@@ -115,7 +117,7 @@ class ProfileView extends GetView<ProfileController> {
     return Column(
       children: [
         Stack(alignment: Alignment.bottomRight, children: [
-          const CircleAvatar(radius: 60, backgroundImage: NetworkImage("https://i.pravatar.cc/150?u=4")),
+          const CircleAvatar(radius: 60, backgroundImage: NetworkImage("https://i.pravatar.cc/150?u=a")),
           Container(
             padding: const EdgeInsets.all(4),
             decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle, boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 4)]),
@@ -180,6 +182,69 @@ class ProfileView extends GetView<ProfileController> {
             ),
           ),
           TextButton(onPressed: () {}, child: const Text("Lihat"))
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAiAnalysisCard() {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(28),
+        border: Border.all(color: const Color(0xFFE5E7EB)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.03),
+            blurRadius: 15,
+            offset: const Offset(0, 8),
+          )
+        ],
+      ),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF0F7FF),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(Icons.auto_awesome, color: Color(0xFF2170E4), size: 20),
+              ),
+              const SizedBox(width: 12),
+              Text(
+                "Analisis Cerdas AI",
+                style: GoogleFonts.plusJakartaSans(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          const Text(
+            "AI kami telah membedah CV dan Sertifikat Anda. Lihat bagaimana profil Anda bersaing di industri saat ini.",
+            style: TextStyle(color: Colors.grey, fontSize: 13, height: 1.5),
+          ),
+          const SizedBox(height: 20),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: () => Get.toNamed(Routes.AI_INSIGHT, arguments: 'profile'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF2170E4),
+                foregroundColor: Colors.white,
+                elevation: 0,
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+              ),
+              child: const Text("Lihat Hasil Analisis Profil", style: TextStyle(fontWeight: FontWeight.bold)),
+            ),
+          )
         ],
       ),
     );

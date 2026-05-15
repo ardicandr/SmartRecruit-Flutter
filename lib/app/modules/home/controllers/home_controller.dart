@@ -53,6 +53,8 @@ class HomeController extends GetxController {
     }
   ];
 
+  void goToNotifications() => Get.toNamed(Routes.NOTIFICATION);
+
   void changeTabIndex(int index) => tabIndex.value = index;
   void goToSearch() {
     Get.toNamed(Routes.SEARCH);

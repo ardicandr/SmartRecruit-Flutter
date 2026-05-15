@@ -19,7 +19,7 @@ class StatusView extends GetView<StatusController> {
           icon: const Icon(Icons.notifications_none, color: Colors.black),),
           const Padding(
             padding: EdgeInsets.only(right: 16),
-            child: CircleAvatar(radius: 16, backgroundImage: NetworkImage("https://i.pravatar.cc/150?u=4")),
+            child: CircleAvatar(radius: 16, backgroundImage: NetworkImage("https://i.pravatar.cc/150?u=a")),
           )
         ],
       ),
