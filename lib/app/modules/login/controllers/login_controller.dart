@@ -10,7 +10,10 @@ class LoginController extends GetxController {
 
   void goToRegister() => Get.toNamed(Routes.REGISTER);
 
+  void goToForgotPassword() => Get.toNamed(Routes.FORGOT_PASSWORD);
+
   void login() {
+    // Simulasi login sukses
     Get.offAllNamed(Routes.HOME);
   }
 }

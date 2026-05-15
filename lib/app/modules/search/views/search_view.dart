@@ -125,23 +125,37 @@ class SearchView extends GetView<AppSearchController> {
 
   Widget _buildAiBanner() {
     return Container(
-      margin: EdgeInsets.only(bottom: 16),
-      padding: EdgeInsets.all(20),
-      decoration: BoxDecoration(color: Color(0xFFEFF6FF), borderRadius: BorderRadius.circular(20)),
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: const Color(0xFFEFF6FF), 
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.blue[100]!),
+      ),
       child: Column(
         children: [
           Row(children: [
-            Icon(Icons.bolt, color: AppColors.primary),
-            SizedBox(width: 8),
-            Text("Rekomendasi AI Untukmu", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue[900])),
+            const Icon(Icons.auto_awesome, color: Color(0xFF2170E4), size: 20),
+            const SizedBox(width: 8),
+            Text("Rekomendasi AI Untukmu", 
+              style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue[900])),
           ]),
-          SizedBox(height: 8),
-          Text("Berdasarkan CV kamu, ada 5 lowongan baru yang cocok 90%!", style: TextStyle(fontSize: 12, color: Colors.blue[700])),
-          SizedBox(height: 16),
+          const SizedBox(height: 8),
+          const Text(
+            "Berdasarkan CV kamu, ada 5 lowongan baru yang memiliki kecocokan di atas 90%.", 
+            style: TextStyle(fontSize: 12, color: Color(0xFF2170E4), height: 1.4)
+          ),
+          const SizedBox(height: 16),
           ElevatedButton(
-            onPressed: () {},
-            child: Text("Lihat Semua", style: TextStyle(color: Colors.white)),
-            style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary, minimumSize: Size(double.infinity, 45), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
+            onPressed: () => controller.goToAiInsight(), 
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF2170E4), 
+              minimumSize: const Size(double.infinity, 48), 
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+              elevation: 0,
+            ),
+            child: const Text("Lihat Analisis Detail", 
+              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
           )
         ],
       ),

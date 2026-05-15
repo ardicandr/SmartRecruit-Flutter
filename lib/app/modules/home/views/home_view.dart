@@ -52,7 +52,6 @@ class HomeView extends GetView<HomeController> {
   }
 
   // --- WIDGET COMPONENTS ---
-
   Widget _buildCustomAppBar() {
     return Padding(
       padding: const EdgeInsets.all(24),
@@ -66,12 +65,17 @@ class HomeView extends GetView<HomeController> {
           const SizedBox(width: 12),
           Text("SmartRecruit", style: GoogleFonts.plusJakartaSans(fontSize: 18, fontWeight: FontWeight.w800, color: AppColors.primary)),
           const Spacer(),
+          
           IconButton(
-            onPressed: () => controller.goToSearch(), // Panggil fungsi navigasi
-            icon: const Icon(Icons.search, color: Colors.grey),
+            onPressed: () => controller.goToNotifications(), 
+            icon: const Icon(Icons.notifications_none, color: Colors.black),
           ),
+          
           const SizedBox(width: 16),
-          const CircleAvatar(radius: 18, backgroundImage: NetworkImage("https://i.pravatar.cc/150?u=a")),
+          const CircleAvatar(
+            radius: 18, 
+            backgroundImage: NetworkImage("https://i.pravatar.cc/150?u=a")
+          ),
         ],
       ),
     );

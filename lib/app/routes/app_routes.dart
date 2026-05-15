@@ -15,4 +15,8 @@ abstract class Routes {
   static const INTERVIEW = '/interview';
   static const INTERVIEW_DETAIL = '/interview-detail';
   static const SAVED_JOBS = '/saved-jobs';
+  static const FORGOT_PASSWORD = '/forgot-password';
+  static const VERIFY_OTP = '/verify-otp';
+  static const RESET_PASSWORD = '/reset-password';
+  static const AI_INSIGHT = '/ai-insight';
 }

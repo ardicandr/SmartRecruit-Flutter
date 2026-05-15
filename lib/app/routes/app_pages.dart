@@ -1,5 +1,7 @@
 import 'package:get/get.dart';
 
+import '../modules/ai_insight/bindings/ai_insight_binding.dart';
+import '../modules/ai_insight/views/ai_insight_view.dart';
 import '../modules/assessment/bindings/assessment_binding.dart';
 import '../modules/assessment/views/assessment_view.dart';
 import '../modules/certificates/bindings/certificates_binding.dart';
@@ -8,6 +10,10 @@ import '../modules/detail/bindings/detail_binding.dart';
 import '../modules/detail/views/detail_view.dart';
 import '../modules/edit_profile/bindings/edit_profile_binding.dart';
 import '../modules/edit_profile/views/edit_profile_view.dart';
+import '../modules/forgot_password/bindings/forgot_password_binding.dart';
+import '../modules/forgot_password/views/forgot_password_view.dart';
+import '../modules/forgot_password/views/reset_password_view.dart';
+import '../modules/forgot_password/views/verify_otp_view.dart';
 import '../modules/home/bindings/home_binding.dart';
 import '../modules/home/views/home_view.dart';
 import '../modules/interview/bindings/interview_binding.dart';
@@ -117,6 +123,26 @@ class AppPages {
       name: Routes.SAVED_JOBS,
       page: () => const SavedJobsView(),
       binding: SavedJobsBinding(),
+    ),
+    GetPage(
+      name: Routes.FORGOT_PASSWORD,
+      page: () => const ForgotPasswordView(),
+      binding: ForgotPasswordBinding(),
+    ),
+    GetPage(
+      name: Routes.VERIFY_OTP,
+      page: () => const VerifyOtpView(),
+      binding: ForgotPasswordBinding(),
+    ),
+    GetPage(
+      name: Routes.RESET_PASSWORD,
+      page: () => const ResetPasswordView(),
+      binding: ForgotPasswordBinding(),
+    ),
+    GetPage(
+      name: Routes.AI_INSIGHT,
+      page: () => const AiInsightView(),
+      binding: AiInsightBinding(),
     ),
   ];
 }

@@ -1,9 +1,9 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
-import 'package:smart_recruit/app/core/values/app_colors.dart';
+import 'package:SmartRecruit/app/core/values/app_colors.dart';
+import '../../../routes/app_routes.dart';
 
 class SavedJobsController extends GetxController {
-
   var savedJobs = [
     {
       "title": "Mobile UI/UX Designer",
@@ -21,11 +21,15 @@ class SavedJobsController extends GetxController {
     }
   ].obs;
 
+  void goToNotifications() {
+    Get.toNamed(Routes.NOTIFICATION);
+  }
+
   void removeBookmark(int index) {
-      savedJobs.removeAt(index);
-      AppHelpers.showSnackbar(
-        title: "Dihapus",
-        message: "Lowongan berhasil dihapus dari simpanan",
-      );
+    savedJobs.removeAt(index);
+    AppHelpers.showSnackbar(
+      title: "Dihapus",
+      message: "Lowongan berhasil dihapus dari simpanan",
+    );
   }
 }

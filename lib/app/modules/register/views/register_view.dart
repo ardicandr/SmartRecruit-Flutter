@@ -18,7 +18,6 @@ class RegisterView extends GetView<RegisterController> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 20),
-              // Logo Header
               Text(
                 "SmartRecruit",
                 style: GoogleFonts.plusJakartaSans(
@@ -29,7 +28,6 @@ class RegisterView extends GetView<RegisterController> {
               ),
               const SizedBox(height: 40),
               
-              // Title Section
               Center(
                 child: Column(
                   children: [
@@ -56,7 +54,6 @@ class RegisterView extends GetView<RegisterController> {
               ),
               const SizedBox(height: 32),
 
-              // --- FORM FIELDS ---
               _buildLabel("Nama Lengkap"),
               _buildTextField(hint: "John Doe", icon: Icons.person_outline),
               const SizedBox(height: 24),
@@ -65,7 +62,6 @@ class RegisterView extends GetView<RegisterController> {
               _buildTextField(hint: "nama@email.com", icon: Icons.email_outlined),
               const SizedBox(height: 12),
               
-              // Tombol Kirim OTP
               ElevatedButton(
                 onPressed: () => Get.snackbar("OTP", "Kode telah dikirim ke email Anda"),
                 style: ElevatedButton.styleFrom(
@@ -84,7 +80,6 @@ class RegisterView extends GetView<RegisterController> {
               ),
               const SizedBox(height: 24),
 
-              // KOLOM ISI KODE OTP
               _buildLabel("Masukkan Kode OTP"),
               _buildTextField(
                 hint: "Contoh: 123456", 
@@ -93,54 +88,28 @@ class RegisterView extends GetView<RegisterController> {
               ),
               const SizedBox(height: 24),
 
+              // --- FIELD KATA SANDI (DENGAN OBX) ---
               _buildLabel("Kata Sandi"),
-              _buildTextField(
+              Obx(() => _buildTextField(
                 hint: "••••••••",
                 icon: Icons.lock_outline,
-                isPassword: true,
-                suffixIcon: Icons.visibility_outlined,
-              ),
+                isPassword: controller.isPasswordHidden.value,
+                suffixIcon: controller.isPasswordHidden.value 
+                    ? Icons.visibility_outlined 
+                    : Icons.visibility_off_outlined,
+                onSuffixIconPressed: () => controller.togglePasswordVisibility(),
+              )),
               const SizedBox(height: 24),
 
+              // --- FIELD KONFIRMASI KATA SANDI (DENGAN OBX) ---
               _buildLabel("Konfirmasi Kata Sandi"),
-              _buildTextField(
+              Obx(() => _buildTextField(
                 hint: "••••••••",
                 icon: Icons.history, 
-                isPassword: true,
-              ),
+                isPassword: controller.isPasswordHidden.value,
+                // Kita samakan visibility-nya dengan field atas
+              )),
               const SizedBox(height: 24),
-
-              // Checkbox & Terms
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(
-                    width: 24,
-                    height: 24,
-                    child: Checkbox(
-                      value: false,
-                      onChanged: (v) {},
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: RichText(
-                      text: TextSpan(
-                        style: GoogleFonts.plusJakartaSans(color: AppColors.textGray, fontSize: 13, height: 1.4),
-                        children: [
-                          const TextSpan(text: "Saya menyetujui "),
-                          TextSpan(text: "Syarat dan Ketentuan", style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold)),
-                          const TextSpan(text: " serta "),
-                          TextSpan(text: "Kebijakan Privasi", style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold)),
-                          const TextSpan(text: " SmartRecruit."),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 32),
 
               _buildMainButton("Buat Akun", Icons.arrow_forward),
 
@@ -148,14 +117,12 @@ class RegisterView extends GetView<RegisterController> {
               _buildDivider(),
               const SizedBox(height: 24),
 
-              // GOOGLE BUTTON
               _buildSocialButton(
                 "Daftar dengan Google", 
                 "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTlh1Kyfo9hJplmkiOKcHD9XcpUvlJaZrh5ZA&static/img/google_signin_buttons/web/2x/btn_google_signin_dark_normal_web.png"
               ),
 
               const SizedBox(height: 48),
-              // Footer Link ke Login
               Center(
                 child: GestureDetector(
                   onTap: () => controller.goToLogin(), 
@@ -195,6 +162,7 @@ class RegisterView extends GetView<RegisterController> {
     required IconData icon,
     bool isPassword = false,
     IconData? suffixIcon,
+    VoidCallback? onSuffixIconPressed,
     TextInputType keyboardType = TextInputType.text,
   }) {
     return TextField(
@@ -205,7 +173,10 @@ class RegisterView extends GetView<RegisterController> {
         hintText: hint,
         hintStyle: const TextStyle(color: Color(0xFF9CA3AF)),
         prefixIcon: Icon(icon, color: AppColors.textGray, size: 20),
-        suffixIcon: suffixIcon != null ? Icon(suffixIcon, color: AppColors.textGray, size: 20) : null,
+        suffixIcon: suffixIcon != null ? IconButton(
+          icon: Icon(suffixIcon, color: AppColors.textGray, size: 20),
+          onPressed: onSuffixIconPressed,
+        ) : null,
         filled: true,
         fillColor: const Color(0xFFF8F9FF),
         contentPadding: const EdgeInsets.symmetric(vertical: 18),
@@ -223,7 +194,7 @@ class RegisterView extends GetView<RegisterController> {
 
   Widget _buildSocialButton(String text, String logoUrl) {
     return InkWell(
-      onTap: () => Get.snackbar("Google", "Fitur Google Register akan segera aktif"),
+      onTap: () => Get.snackbar("Google", "Fitur ini akan segera aktif"),
       borderRadius: BorderRadius.circular(16),
       child: Container(
         width: double.infinity,

@@ -1,6 +1,11 @@
 import 'package:get/get.dart';
+import '../../../routes/app_routes.dart';
 
 class ProfileController extends GetxController {
-  // State untuk persentase kekuatan profil
-  var profileStrength = 0.85.obs; // 85%
+
+  var profileStrength = 0.85.obs;
+
+  void goToNotifications() {
+    Get.toNamed(Routes.NOTIFICATION);
+  }
 }

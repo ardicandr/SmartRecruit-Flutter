@@ -5,6 +5,8 @@ import '../../../core/values/app_colors.dart';
 import '../controllers/onboarding_controller.dart';
 
 class OnboardingView extends GetView<OnboardingController> {
+  const OnboardingView({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -12,15 +14,18 @@ class OnboardingView extends GetView<OnboardingController> {
       body: SafeArea(
         child: Column(
           children: [
-            // 1. Header
+            // Header
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text("SmartRecruit", style: GoogleFonts.plusJakartaSans(color: AppColors.primary, fontWeight: FontWeight.bold, fontSize: 20)),
-                  TextButton(onPressed: () => controller.goToLogin(), child: Text("Lewati", style: TextStyle(color: AppColors.primary))),
-                ],
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+              child: Center(
+                child: Text(
+                  "SmartRecruit",
+                  style: GoogleFonts.plusJakartaSans(
+                    color: AppColors.primary,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 22,
+                  ),
+                ),
               ),
             ),
 
@@ -29,16 +34,15 @@ class OnboardingView extends GetView<OnboardingController> {
               child: PageView.builder(
                 controller: controller.pageController,
                 onPageChanged: (index) {
-                  // Gunakan modulo agar currentPage selalu 0, 1, atau 2
                   controller.currentPage.value = index % controller.onboardingData.length;
                 },
                 itemBuilder: (context, index) {
-                  // Ambil data menggunakan modulo
                   int realIndex = index % controller.onboardingData.length;
                   var data = controller.onboardingData[realIndex];
 
                   return Column(
                     children: [
+                      // Illustration Box
                       Expanded(
                         child: Container(
                           margin: const EdgeInsets.all(24),
@@ -46,33 +50,46 @@ class OnboardingView extends GetView<OnboardingController> {
                             borderRadius: BorderRadius.circular(40),
                             image: DecorationImage(
                               image: NetworkImage(data['image']!),
-                              fit: BoxFit.cover
+                              fit: BoxFit.cover,
                             ),
                             boxShadow: [
-                              BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 20, offset: const Offset(0, 10))
-                            ]
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.05),
+                                blurRadius: 20,
+                                offset: const Offset(0, 10),
+                              )
+                            ],
                           ),
                         ),
                       ),
+                      
+                      // Content Area (Teks Deskripsi)
                       Container(
                         padding: const EdgeInsets.fromLTRB(32, 40, 32, 20),
                         width: double.infinity,
                         decoration: const BoxDecoration(
-                          color: Colors.white, 
-                          borderRadius: BorderRadius.vertical(top: Radius.circular(32))
+                          color: Colors.white,
+                          borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
                         ),
                         child: Column(
                           children: [
                             Text(
                               data['title']!,
                               textAlign: TextAlign.center,
-                              style: GoogleFonts.plusJakartaSans(fontSize: 26, fontWeight: FontWeight.w800),
+                              style: GoogleFonts.plusJakartaSans(
+                                fontSize: 26,
+                                fontWeight: FontWeight.w800,
+                              ),
                             ),
                             const SizedBox(height: 16),
                             Text(
                               data['desc']!,
                               textAlign: TextAlign.center,
-                              style: const TextStyle(color: AppColors.textMuted, fontSize: 15, height: 1.5),
+                              style: const TextStyle(
+                                color: AppColors.textMuted,
+                                fontSize: 15,
+                                height: 1.5,
+                              ),
                             ),
                           ],
                         ),
@@ -83,39 +100,53 @@ class OnboardingView extends GetView<OnboardingController> {
               ),
             ),
 
-            // Footer Area (Indikator & Tombol)
+            // Footer Area (Indikator & Satu Tombol Utama)
             Container(
               color: Colors.white,
               padding: const EdgeInsets.fromLTRB(32, 0, 32, 40),
               child: Column(
                 children: [
+                  // Dots Indicator
                   Obx(() => Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: List.generate(
-                      controller.onboardingData.length,
-                      (index) => AnimatedContainer(
-                        duration: const Duration(milliseconds: 300),
-                        margin: const EdgeInsets.only(right: 8),
-                        height: 8,
-                        width: controller.currentPage.value == index ? 24 : 8,
-                        decoration: BoxDecoration(
-                          color: controller.currentPage.value == index ? AppColors.primary : Colors.blue[100],
-                          borderRadius: BorderRadius.circular(4),
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: List.generate(
+                          controller.onboardingData.length,
+                          (index) => AnimatedContainer(
+                            duration: const Duration(milliseconds: 300),
+                            margin: const EdgeInsets.only(right: 8),
+                            height: 8,
+                            width: controller.currentPage.value == index ? 24 : 8,
+                            decoration: BoxDecoration(
+                              color: controller.currentPage.value == index
+                                  ? AppColors.primary
+                                  : Colors.blue[100],
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-                  )),
-                  const SizedBox(height: 32),
+                      )),
+                  const SizedBox(height: 40),
+                  
+                  // Tombol Tunggal "Mulai Sekarang"
                   ElevatedButton(
                     onPressed: () => controller.goToLogin(),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primary,
-                      minimumSize: const Size(double.infinity, 60),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                      minimumSize: const Size(double.infinity, 64),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
                       elevation: 8,
-                      shadowColor: AppColors.primary.withOpacity(0.3)
+                      shadowColor: AppColors.primary.withOpacity(0.3),
                     ),
-                    child: const Text("Mulai Sekarang", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18)),
+                    child: const Text(
+                      "Mulai Sekarang",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
+                    ),
                   ),
                 ],
               ),
