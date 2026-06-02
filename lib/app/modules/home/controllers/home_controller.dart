@@ -1,65 +1,63 @@
 import 'package:get/get.dart';
 import '../../../routes/app_routes.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import '../../../data/providers/api_provider.dart';
+import '../../../data/models/job_model.dart';
 
 class HomeController extends GetxController {
+  final ApiProvider apiProvider = Get.find<ApiProvider>();
+  final storage = const FlutterSecureStorage();
+  
   var tabIndex = 0.obs;
+  var userName = "User".obs;
+  
+  // State untuk Data Job
+  var isLoading = true.obs;
+  var latestJobs = <JobModel>[].obs;
+  var specialJobs = <JobModel>[].obs;
 
-  // Data Dummy Rekomendasi (Horizontal)
-  final List<Map<String, dynamic>> specialJobs = [
-    {
-      "title": "Senior Product Designer",
-      "company": "Gojek Indonesia",
-      "location": "Jakarta",
-      "salary": "15jt - 25jt",
-      "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/97/Gojek_logo_2019.svg/1200px-Gojek_logo_2019.svg.png"
-    },
-    {
-      "title": "Lead Front End",
-      "company": "Traveloka",
-      "location": "Tangerang",
-      "salary": "20jt - 35jt",
-      "logo": "https://upload.wikimedia.org/wikipedia/id/thumb/e/e7/Traveloka_logo.png/800px-Traveloka_logo.png"
-    }
-  ];
+  @override
+  void onInit() {
+    super.onInit();
+    loadUserData();
+    fetchJobs();
+  }
 
-  // Data Dummy Lowongan Terbaru (Vertical)
-  final List<Map<String, dynamic>> latestJobs = [
-    {
-      "title": "Mobile UI/UX",
-      "company": "Blibli.com",
-      "location": "Jakarta Barat",
-      "salary": "Rp 14 - 18 Juta",
-      "match": "98%",
-      "tags": ["Figma", "Design System", "Remote"],
-      "posted": "2 jam yang lalu"
-    },
-    {
-      "title": "React Native",
-      "company": "DANA Indonesia",
-      "location": "Jakarta Pusat",
-      "salary": "Rp 18 - 25 Juta",
-      "match": "92%",
-      "tags": ["TypeScript", "Redux", "API"],
-      "posted": "5 jam yang lalu"
-    },
-    {
-      "title": "Backend Architect",
-      "company": "Bukalapak",
-      "location": "Jakarta Selatan",
-      "salary": "Rp 25 - 40 Juta",
-      "match": "85%",
-      "tags": ["Go", "Kubernetes", "Redis"],
-      "posted": "1 hari yang lalu"
+  void fetchJobs() async {
+    try {
+      isLoading(true);
+      Response response = await apiProvider.getJobs();
+      
+      if (response.statusCode == 200 && response.body != null) {
+        List data = response.body;
+        List<JobModel> loadedJobs = data.map((e) => JobModel.fromJson(e)).toList();
+        
+        latestJobs.assignAll(loadedJobs);
+        specialJobs.assignAll(loadedJobs.take(3).toList());
+      } else {
+        latestJobs.clear();
+        specialJobs.clear();
+        print("Data kosong atau status code bukan 200");
+      }
+    } catch (e) {
+      print("Error fetchJobs: $e");
+    } finally {
+      isLoading(false);
     }
-  ];
+  }
+
+  void loadUserData() async {
+    String? storedName = await storage.read(key: 'user_name');
+    if (storedName != null) {
+      userName.value = storedName;
+    }
+  }
 
   void goToNotifications() => Get.toNamed(Routes.NOTIFICATION);
-
   void changeTabIndex(int index) => tabIndex.value = index;
-  void goToSearch() {
-    Get.toNamed(Routes.SEARCH);
-  }
-  void goToDetail(Map<String, dynamic> jobData) {
-    Get.toNamed(Routes.DETAIL, arguments: jobData);
+  void goToSearch() => Get.toNamed(Routes.SEARCH);
+  
+  void goToDetail(JobModel job) {
+    Get.toNamed(Routes.DETAIL, arguments: job);
   }
 }

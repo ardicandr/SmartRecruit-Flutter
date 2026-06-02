@@ -18,81 +18,35 @@ class RegisterView extends GetView<RegisterController> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 20),
-              Text(
-                "SmartRecruit",
-                style: GoogleFonts.plusJakartaSans(
-                  color: AppColors.primary,
-                  fontWeight: FontWeight.w800,
-                  fontSize: 20,
-                ),
-              ),
+              _buildBrandHeader(),
               const SizedBox(height: 40),
-              
-              Center(
-                child: Column(
-                  children: [
-                    Text(
-                      "Buat Akun Baru",
-                      style: GoogleFonts.plusJakartaSans(
-                        fontSize: 32,
-                        fontWeight: FontWeight.w800,
-                        color: AppColors.textDark,
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    Text(
-                      "Daftar sekarang untuk memulai perjalanan karir profesional Anda bersama AI.",
-                      textAlign: TextAlign.center,
-                      style: GoogleFonts.plusJakartaSans(
-                        color: AppColors.textGray,
-                        fontSize: 14,
-                        height: 1.5,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              _buildWelcomeText(),
               const SizedBox(height: 32),
 
               _buildLabel("Nama Lengkap"),
-              _buildTextField(hint: "John Doe", icon: Icons.person_outline),
+              _buildTextField(
+                hint: "John Doe", 
+                icon: Icons.person_outline,
+                controller: controller.nameC,
+              ),
               const SizedBox(height: 24),
 
               _buildLabel("Alamat Email"),
-              _buildTextField(hint: "nama@email.com", icon: Icons.email_outlined),
+              _buildTextField(
+                hint: "nama@email.com", 
+                icon: Icons.email_outlined,
+                controller: controller.emailC,
+              ),
               const SizedBox(height: 12),
               
-              ElevatedButton(
-                onPressed: () => Get.snackbar("OTP", "Kode telah dikirim ke email Anda"),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFDCE9FF),
-                  elevation: 0,
-                  minimumSize: const Size(double.infinity, 48),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                ),
-                child: Text(
-                  "Kirim Kode OTP",
-                  style: GoogleFonts.plusJakartaSans(
-                    color: AppColors.primary,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
+              _buildOTPSection(), 
               const SizedBox(height: 24),
 
-              _buildLabel("Masukkan Kode OTP"),
-              _buildTextField(
-                hint: "Contoh: 123456", 
-                icon: Icons.vpn_key_outlined,
-                keyboardType: TextInputType.number,
-              ),
-              const SizedBox(height: 24),
-
-              // --- FIELD KATA SANDI (DENGAN OBX) ---
               _buildLabel("Kata Sandi"),
               Obx(() => _buildTextField(
                 hint: "••••••••",
                 icon: Icons.lock_outline,
+                controller: controller.passC,
                 isPassword: controller.isPasswordHidden.value,
                 suffixIcon: controller.isPasswordHidden.value 
                     ? Icons.visibility_outlined 
@@ -101,17 +55,22 @@ class RegisterView extends GetView<RegisterController> {
               )),
               const SizedBox(height: 24),
 
-              // --- FIELD KONFIRMASI KATA SANDI (DENGAN OBX) ---
               _buildLabel("Konfirmasi Kata Sandi"),
               Obx(() => _buildTextField(
                 hint: "••••••••",
                 icon: Icons.history, 
+                controller: controller.confirmPassC,
                 isPassword: controller.isPasswordHidden.value,
-                // Kita samakan visibility-nya dengan field atas
               )),
               const SizedBox(height: 24),
 
-              _buildMainButton("Buat Akun", Icons.arrow_forward),
+              // TOMBOL DAFTAR
+              Obx(() => controller.isLoading.value 
+                ? const Center(child: CircularProgressIndicator())
+                : _buildMainButton("Buat Akun", Icons.arrow_forward, () {
+                    controller.register();
+                  })
+              ),
 
               const SizedBox(height: 24),
               _buildDivider(),
@@ -123,20 +82,7 @@ class RegisterView extends GetView<RegisterController> {
               ),
 
               const SizedBox(height: 48),
-              Center(
-                child: GestureDetector(
-                  onTap: () => controller.goToLogin(), 
-                  child: RichText(
-                    text: TextSpan(
-                      style: GoogleFonts.plusJakartaSans(color: AppColors.textGray, fontSize: 14),
-                      children: [
-                        const TextSpan(text: "Sudah memiliki akun? "),
-                        TextSpan(text: "Masuk di sini", style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold)),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
+              _buildLoginRedirect(),
               const SizedBox(height: 40),
             ],
           ),
@@ -145,7 +91,45 @@ class RegisterView extends GetView<RegisterController> {
     );
   }
 
-  // --- Helper Widgets ---
+  // --- Widget Helper ---
+
+  Widget _buildBrandHeader() {
+    return Text(
+      "SmartRecruit",
+      style: GoogleFonts.plusJakartaSans(
+        color: AppColors.primary,
+        fontWeight: FontWeight.w800,
+        fontSize: 20,
+      ),
+    );
+  }
+
+  Widget _buildWelcomeText() {
+    return Center(
+      child: Column(
+        children: [
+          Text(
+            "Buat Akun Baru",
+            style: GoogleFonts.plusJakartaSans(
+              fontSize: 32,
+              fontWeight: FontWeight.w800,
+              color: AppColors.textDark,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            "Daftar sekarang untuk memulai perjalanan karir profesional Anda bersama AI.",
+            textAlign: TextAlign.center,
+            style: GoogleFonts.plusJakartaSans(
+              color: AppColors.textGray,
+              fontSize: 14,
+              height: 1.5,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
   Widget _buildLabel(String label) {
     return Padding(
@@ -160,14 +144,14 @@ class RegisterView extends GetView<RegisterController> {
   Widget _buildTextField({
     required String hint,
     required IconData icon,
+    TextEditingController? controller,
     bool isPassword = false,
     IconData? suffixIcon,
     VoidCallback? onSuffixIconPressed,
-    TextInputType keyboardType = TextInputType.text,
   }) {
     return TextField(
+      controller: controller,
       obscureText: isPassword,
-      keyboardType: keyboardType,
       style: const TextStyle(fontSize: 14),
       decoration: InputDecoration(
         hintText: hint,
@@ -189,6 +173,69 @@ class RegisterView extends GetView<RegisterController> {
           borderSide: const BorderSide(color: AppColors.primary, width: 2),
         ),
       ),
+    );
+  }
+
+  Widget _buildOTPSection() {
+    return ElevatedButton(
+      onPressed: () => Get.snackbar("OTP", "Fitur OTP dilewati sementara"),
+      style: ElevatedButton.styleFrom(
+        backgroundColor: const Color(0xFFDCE9FF),
+        elevation: 0,
+        minimumSize: const Size(double.infinity, 48),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      ),
+      child: Text(
+        "Kirim Kode OTP",
+        style: GoogleFonts.plusJakartaSans(
+          color: AppColors.primary,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMainButton(String text, IconData icon, VoidCallback onTap) {
+    return Container(
+      width: double.infinity,
+      height: 60,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        color: const Color(0xFF0058BE),
+        boxShadow: [
+          BoxShadow(color: const Color(0xFF0058BE).withOpacity(0.3), blurRadius: 15, offset: const Offset(0, 8))
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(16),
+          onTap: onTap,
+          child: Center(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(text, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+                const SizedBox(width: 8),
+                Icon(icon, color: Colors.white, size: 20),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDivider() {
+    return Row(
+      children: [
+        Expanded(child: Divider(color: AppColors.outline.withOpacity(0.5))),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Text("ATAU", style: GoogleFonts.plusJakartaSans(color: AppColors.textGray, fontSize: 12, fontWeight: FontWeight.bold, letterSpacing: 1.5)),
+        ),
+        Expanded(child: Divider(color: AppColors.outline.withOpacity(0.5))),
+      ],
     );
   }
 
@@ -219,44 +266,17 @@ class RegisterView extends GetView<RegisterController> {
     );
   }
 
-  Widget _buildDivider() {
-    return Row(
-      children: [
-        Expanded(child: Divider(color: AppColors.outline.withOpacity(0.5))),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Text("ATAU", style: GoogleFonts.plusJakartaSans(color: AppColors.textGray, fontSize: 12, fontWeight: FontWeight.bold, letterSpacing: 1.5)),
-        ),
-        Expanded(child: Divider(color: AppColors.outline.withOpacity(0.5))),
-      ],
-    );
-  }
-
-  Widget _buildMainButton(String text, IconData icon) {
-    return Container(
-      width: double.infinity,
-      height: 60,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        color: const Color(0xFF0058BE),
-        boxShadow: [
-          BoxShadow(color: const Color(0xFF0058BE).withOpacity(0.3), blurRadius: 15, offset: const Offset(0, 8))
-        ],
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(16),
-          onTap: () => controller.goToHome(),
-          child: Center(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(text, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
-                const SizedBox(width: 8),
-                Icon(icon, color: Colors.white, size: 20),
-              ],
-            ),
+  Widget _buildLoginRedirect() {
+    return Center(
+      child: GestureDetector(
+        onTap: () => controller.goToLogin(), 
+        child: RichText(
+          text: TextSpan(
+            style: GoogleFonts.plusJakartaSans(color: AppColors.textGray, fontSize: 14),
+            children: [
+              const TextSpan(text: "Sudah memiliki akun? "),
+              TextSpan(text: "Masuk di sini", style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold)),
+            ],
           ),
         ),
       ),

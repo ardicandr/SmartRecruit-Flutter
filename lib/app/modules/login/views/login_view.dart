@@ -4,10 +4,8 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../core/values/app_colors.dart';
 import '../controllers/login_controller.dart';
 
-class LoginView extends StatelessWidget {
-  final LoginController controller = Get.put(LoginController());
-
-  LoginView({super.key});
+class LoginView extends GetView<LoginController> { // Gunakan GetView
+  const LoginView({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -34,15 +32,17 @@ class LoginView extends StatelessWidget {
                       color: AppColors.textDark,
                       height: 1.2)),
               const SizedBox(height: 12),
-              Text(
-                  "Masuk untuk mengelola lamaran dan temukan peluang karir impian Anda.",
-                  style: TextStyle(
-                      color: AppColors.textGray, fontSize: 14, height: 1.5)),
+              Text("Masuk untuk mengelola lamaran dan temukan peluang karir...",
+                  style: TextStyle(color: AppColors.textGray, fontSize: 14)),
               const SizedBox(height: 24),
 
               // EMAIL FORM
               _buildLabel("Alamat Email"),
-              _buildTextField(hint: "nama@email.com", icon: Icons.email_outlined),
+              _buildTextField(
+                hint: "nama@email.com", 
+                icon: Icons.email_outlined,
+                controller: controller.emailC,
+              ),
 
               const SizedBox(height: 16),
               Row(
@@ -50,15 +50,9 @@ class LoginView extends StatelessWidget {
                 children: [
                   _buildLabel("Kata Sandi"),
                   GestureDetector(
-                    onTap: () => controller.goToForgotPassword(), 
-                    child: Text(
-                      "Lupa kata sandi?",
-                      style: TextStyle(
-                        color: AppColors.primary, 
-                        fontWeight: FontWeight.bold, 
-                        fontSize: 13,
-                      ),
-                    ),
+                    onTap: () => controller.goToForgotPassword(),
+                    child: const Text("Lupa kata sandi?",
+                        style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold, fontSize: 13)),
                   ),
                 ],
               ),
@@ -66,20 +60,23 @@ class LoginView extends StatelessWidget {
               Obx(() => _buildTextField(
                     hint: "........",
                     icon: Icons.lock_outline,
+                    controller: controller.passC,
                     isPassword: controller.isPasswordHidden.value,
                     suffixIcon: controller.isPasswordHidden.value
                         ? Icons.visibility_outlined
                         : Icons.visibility_off_outlined,
-                    onSuffixIconPressed: () =>
-                        controller.togglePasswordVisibility(),
+                    onSuffixIconPressed: () => controller.togglePasswordVisibility(),
                   )),
 
               const SizedBox(height: 24),
 
               // MAIN BUTTON
-              _buildMainButton("Masuk Sekarang", Icons.arrow_forward, () {
-                controller.login();
-              }),
+              Obx(() => controller.isLoading.value 
+                ? const Center(child: CircularProgressIndicator()) 
+                : _buildMainButton("Masuk Sekarang", Icons.arrow_forward, () {
+                    controller.login();
+                  })
+              ),
 
               const SizedBox(height: 20),
               _buildDivider(),
@@ -162,11 +159,13 @@ class LoginView extends StatelessWidget {
   Widget _buildTextField({
     required String hint,
     required IconData icon,
+    TextEditingController? controller,
     bool isPassword = false,
     IconData? suffixIcon,
     VoidCallback? onSuffixIconPressed,
   }) {
     return TextField(
+      controller: controller,
       obscureText: isPassword,
       decoration: InputDecoration(
         hintText: hint,

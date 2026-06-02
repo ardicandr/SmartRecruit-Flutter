@@ -1,5 +1,7 @@
 import 'package:get/get.dart';
 
+import '../modules/add_certificate/bindings/add_certificate_binding.dart';
+import '../modules/add_certificate/views/add_certificate_view.dart';
 import '../modules/ai_insight/bindings/ai_insight_binding.dart';
 import '../modules/ai_insight/views/ai_insight_view.dart';
 import '../modules/assessment/bindings/assessment_binding.dart';
@@ -8,8 +10,6 @@ import '../modules/certificates/bindings/certificates_binding.dart';
 import '../modules/certificates/views/certificates_view.dart';
 import '../modules/detail/bindings/detail_binding.dart';
 import '../modules/detail/views/detail_view.dart';
-import '../modules/edit_profile/bindings/edit_profile_binding.dart';
-import '../modules/edit_profile/views/edit_profile_view.dart';
 import '../modules/forgot_password/bindings/forgot_password_binding.dart';
 import '../modules/forgot_password/views/forgot_password_view.dart';
 import '../modules/forgot_password/views/reset_password_view.dart';
@@ -88,11 +88,7 @@ class AppPages {
       page: () => SearchView(),
       binding: SearchBinding(),
     ),
-    GetPage(
-      name: Routes.EDIT_PROFILE,
-      page: () => EditProfileView(),
-      binding: EditProfileBinding(),
-    ),
+ 
     GetPage(
       name: Routes.STATUS,
       page: () => StatusView(),
@@ -143,6 +139,11 @@ class AppPages {
       name: Routes.AI_INSIGHT,
       page: () => const AiInsightView(),
       binding: AiInsightBinding(),
+    ),
+    GetPage(
+      name: Routes.ADD_CERTIFICATE,
+      page: () => const AddCertificateView(),
+      binding: AddCertificateBinding(),
     ),
   ];
 }

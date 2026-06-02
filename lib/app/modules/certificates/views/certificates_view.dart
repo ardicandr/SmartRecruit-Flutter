@@ -19,7 +19,7 @@ class CertificatesView extends GetView<CertificatesController> {
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 16),
-            child: CircleAvatar(radius: 18, backgroundImage: NetworkImage("https://lh3.googleusercontent.com/...avatar...")),
+            child: CircleAvatar(radius: 18, backgroundColor: Colors.blue, child: Icon(Icons.person, color: Colors.white, size: 24)),
           )
         ],
       ),

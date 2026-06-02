@@ -19,4 +19,5 @@ abstract class Routes {
   static const VERIFY_OTP = '/verify-otp';
   static const RESET_PASSWORD = '/reset-password';
   static const AI_INSIGHT = '/ai-insight';
+  static const ADD_CERTIFICATE = '/add-certificate';
 }

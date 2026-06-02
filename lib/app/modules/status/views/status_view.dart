@@ -5,6 +5,7 @@ import '../../../core/values/app_colors.dart';
 import '../controllers/status_controller.dart';
 
 class StatusView extends GetView<StatusController> {
+  const StatusView({super.key});
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -19,44 +20,67 @@ class StatusView extends GetView<StatusController> {
           icon: const Icon(Icons.notifications_none, color: Colors.black),),
           const Padding(
             padding: EdgeInsets.only(right: 16),
-            child: CircleAvatar(radius: 16, backgroundImage: NetworkImage("https://i.pravatar.cc/150?u=a")),
+            child: CircleAvatar(radius: 16, backgroundColor: Colors.blue, child: Icon(Icons.person, color: Colors.white, size: 20)),
           )
         ],
       ),
       body: Column(
         children: [
           _buildFilterTabs(),
+          Obx(() {
+            var upcomingInterviews = controller.myApplications.where(
+              (app) => app['status'] == 'Interview' && app['interview_date'] != null
+            ).toList();
+
+            if (upcomingInterviews.isNotEmpty) {
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                child: _buildUpdateAlert(upcomingInterviews),
+              );
+            }
+            return const SizedBox.shrink();
+          }),
           Expanded(
-            child: ListView(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              children: [
-                _buildUpdateAlert(),
-                const SizedBox(height: 20),
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 4),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text("Daftar Lamaran (3)", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                      Text("URUTKAN: TERBARU v", style: TextStyle(color: Colors.grey, fontSize: 11, fontWeight: FontWeight.bold)),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 16),
-                _buildJobStatusCard(
-                  title: "Senior UI/UX Designer",
-                  company: "TechNova Solutions",
-                  location: "Jakarta Selatan (Remote)",
-                  match: 94,
-                  status: "Wawancara Terjadwal",
-                  activities: [
-                    {"title": "Lamaran Terkirim", "time": "12 Okt 2023", "isDone": true},
-                    {"title": "Lolos Screening AI", "time": "14 Okt 2023", "isDone": true, "note": "CV Anda cocok dengan 9 dari 10 kriteria utama."},
-                    {"title": "Wawancara User", "time": "20 Okt 2023", "isDone": false, "note": "Jadwal: Jumat, 20 Okt pukul 14:00 via Zoom."},
-                  ]
-                ),
-              ],
-            ),
+            child: Obx(() {
+              if (controller.isLoading.value) {
+                return const Center(child: CircularProgressIndicator());
+              }
+
+              if (controller.myApplications.isEmpty) {
+                return const Center(child: Text("Belum ada lamaran terkirim"));
+              }
+
+              return ListView.builder(
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                itemCount: controller.myApplications.length,
+                itemBuilder: (context, index) {
+                  var app = controller.myApplications[index];
+                  String currentStatus = app['status'];
+                  List<Map<String, dynamic>> activities = [
+                    {"title": "Lamaran Terkirim", "time": app['applied_at'], "isDone": true},
+                  ];
+
+                  if (currentStatus == 'Submitted') {
+                     activities.add({"title": "Review oleh HRD", "time": "-", "isDone": false});
+                  } else if (currentStatus == 'Interview') {
+                     activities.add({"title": "Review oleh HRD", "time": "-", "isDone": true});
+                     activities.add({"title": "Jadwal Interview", "time": "-", "isDone": false, "note": "HRD telah mengundang Anda untuk interview. Silakan periksa email Anda."});
+                  } else {
+                     activities.add({"title": "Review oleh HRD", "time": "-", "isDone": true});
+                  }
+
+                  return _buildJobStatusCard(
+                    title: app['job_title'],
+                    company: app['company'],
+                    location: app['location'],
+                    match: (app['match_score'] as double).toInt(),
+                    status: app['status'],
+                    activities: activities,
+                    jobData: app
+                  );
+                },
+              );
+            }),
           ),
         ],
       ),
@@ -87,7 +111,20 @@ class StatusView extends GetView<StatusController> {
     );
   }
 
-  Widget _buildUpdateAlert() {
+  Widget _buildUpdateAlert(List<dynamic> upcomingInterviews) {
+    if (upcomingInterviews.isEmpty) return const SizedBox.shrink();
+    var latestInterview = upcomingInterviews.first;
+    
+    // Format tanggal sederhana, asumsi 'interview_date' berupa ISO-8601 string
+    String dateRaw = latestInterview['interview_date'] ?? '';
+    String dateFormatted = dateRaw;
+    try {
+      DateTime dt = DateTime.parse(dateRaw);
+      dateFormatted = "${dt.day}/${dt.month}/${dt.year} ${dt.hour}:${dt.minute.toString().padLeft(2, '0')}";
+    } catch(e) {}
+
+    String type = latestInterview['interview_type'] ?? 'Offline';
+
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -109,34 +146,35 @@ class StatusView extends GetView<StatusController> {
                   color: Colors.white, 
                   borderRadius: BorderRadius.circular(10),
                 ), 
-                child: const Icon(Icons.calendar_today, color: Colors.blue, size: 20),
+                child: Icon(type == 'Online' ? Icons.video_call : Icons.calendar_today, color: Colors.blue, size: 20),
               ),
               const SizedBox(width: 12),
               // Teks Informasi
-              const Expanded(
+              Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start, 
                   children: [
                     Text(
-                      "Update Terkini", 
-                      style: TextStyle(fontSize: 10, color: Colors.grey, fontWeight: FontWeight.bold),
+                      "Panggilan Interview ($type)", 
+                      style: const TextStyle(fontSize: 10, color: Colors.blueGrey, fontWeight: FontWeight.bold),
                     ),
                     Text(
-                      "2 Jadwal Wawancara Mendatang", 
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                      "${latestInterview['job_title']} - $dateFormatted", 
+                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Colors.black87),
                     ),
                   ],
                 ),
               ),
-              // Badge Angka Notifikasi
-              const CircleAvatar(
-                radius: 10, 
-                backgroundColor: Colors.blue, 
-                child: Text(
-                  "1", 
-                  style: TextStyle(color: Colors.white, fontSize: 10),
+              // Badge Angka Notifikasi jika lebih dari 1
+              if (upcomingInterviews.length > 1)
+                CircleAvatar(
+                  radius: 10, 
+                  backgroundColor: Colors.blue, 
+                  child: Text(
+                    "${upcomingInterviews.length}", 
+                    style: const TextStyle(color: Colors.white, fontSize: 10),
+                  ),
                 ),
-              ),
             ],
           ),
         ),
@@ -144,7 +182,7 @@ class StatusView extends GetView<StatusController> {
     );
   }
 
-  Widget _buildJobStatusCard({required String title, required String company, required String location, required int match, required String status, required List<Map<String, dynamic>> activities}) {
+  Widget _buildJobStatusCard({required String title, required String company, required String location, required int match, required String status, required List<Map<String, dynamic>> activities, required Map<String, dynamic> jobData}) {
     return Container(
       margin: const EdgeInsets.only(bottom: 20),
       padding: const EdgeInsets.all(20),
@@ -185,7 +223,7 @@ class StatusView extends GetView<StatusController> {
           ...activities.asMap().entries.map((e) => _buildTimelineStep(e.value, isLast: e.key == activities.length - 1)).toList(),
           const SizedBox(height: 12),
           ElevatedButton(
-            onPressed: () {},
+            onPressed: () => controller.goToJobDetail(jobData),
             style: ElevatedButton.styleFrom(backgroundColor: Colors.grey[50], elevation: 0, minimumSize: const Size(double.infinity, 48), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
             child: const Row(mainAxisAlignment: MainAxisAlignment.center, children: [Text("Lihat Detail Lowongan", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 12)), Icon(Icons.chevron_right, color: Colors.black, size: 18)]),
           )

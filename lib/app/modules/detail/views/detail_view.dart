@@ -3,13 +3,35 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/values/app_colors.dart';
 import '../controllers/detail_controller.dart';
+import '../../../data/models/job_model.dart';
 
 class DetailView extends GetView<DetailController> {
   const DetailView({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final Map<String, dynamic> jobData = Get.arguments;
+    final args = Get.arguments;
+    Map<String, dynamic> jobData = {};
+    if (args is JobModel) {
+      jobData = {
+        'id': args.id,
+        'title': args.title,
+        'company': args.company,
+        'location': args.location,
+        'salary': args.salary,
+        'postedAt': args.postedAt,
+        'category': args.category,
+        'department': args.department,
+        'employmentType': args.employmentType,
+        'description': args.description,
+        'requirements': args.requirements,
+        'maxApplicants': args.maxApplicants,
+        'isApplied': args.isApplied,
+        'match': "95%"
+      };
+    } else if (args is Map) {
+      jobData = Map<String, dynamic>.from(args);
+    }
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -56,38 +78,37 @@ class DetailView extends GetView<DetailController> {
             _buildSectionTitle(Icons.business_center_outlined, "Tentang Pekerjaan"),
             const SizedBox(height: 12),
             Text(
-              "Kami mencari ${jobData['title']} yang visioner untuk bergabung dengan tim desain kami yang berkembang pesat. Anda akan bertanggung jawab untuk memimpin inisiatif desain end-to-end.",
+              jobData['description'] ?? "Belum ada deskripsi pekerjaan.",
               style: TextStyle(color: AppColors.textGray, height: 1.6, fontSize: 14),
             ),
             const SizedBox(height: 40),
             _buildSectionTitle(Icons.check_circle_outline, "Persyaratan"),
             const SizedBox(height: 16),
-            _buildRequirementList([
-              "Minimal 5 tahun pengalaman dalam bidang terkait.",
-              "Mahir menggunakan tools industri yang relevan.",
-              "Memiliki portofolio yang kuat.",
-              "Keahlian komunikasi yang baik.",
-              "Pemahaman mendalam tentang standar industri terbaru.",
-            ]),
+            _buildRequirementList((jobData['requirements'] ?? "Belum ada persyaratan detail")
+                .toString()
+                .split(RegExp(r'\n|- '))
+                .where((e) => e.trim().isNotEmpty)
+                .toList()),
             const SizedBox(height: 32),
             const Text(
-              "KEAHLIAN UTAMA",
+              "KATEGORI & DEPARTEMEN",
               style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.grey, letterSpacing: 1),
             ),
             const SizedBox(height: 12),
             Wrap(
               spacing: 8,
               runSpacing: 8,
-              children: (jobData['tags'] as List? ?? ["Figma", "UI Design"]).map((tag) => _buildSkillChip(tag.toString())).toList(),
+              children: [jobData['category'], jobData['department']]
+                  .where((e) => e != null)
+                  .map((tag) => _buildSkillChip(tag.toString()))
+                  .toList(),
             ),
             const SizedBox(height: 40),
             _buildSectionTitle(Icons.verified_outlined, "Benefit & Fasilitas"),
             const SizedBox(height: 16),
-            _buildBenefitItem("Asuransi Kesehatan Swasta"),
-            _buildBenefitItem("Tunjangan Transportasi & Makan"),
-            _buildBenefitItem("Anggaran Pengembangan Profesional"),
-            _buildBenefitItem("Jam Kerja Fleksibel"),
-            _buildBenefitItem("MacBook Pro sebagai alat kerja"),
+            _buildBenefitItem("Gaji Kompetitif (Lihat info gaji)"),
+            _buildBenefitItem("Lingkungan Kerja Profesional"),
+            _buildBenefitItem("Kesempatan Pengembangan Karir"),
             const SizedBox(height: 40),
             _buildDottedDivider(),
             const SizedBox(height: 20),
@@ -98,17 +119,17 @@ class DetailView extends GetView<DetailController> {
                   children: [
                     Icon(Icons.calendar_today_outlined, size: 18, color: AppColors.textGray),
                     const SizedBox(width: 8),
-                    Text("Batas Lamaran:", style: TextStyle(color: AppColors.textGray, fontSize: 13)),
+                    Text("Diposting pada:", style: TextStyle(color: AppColors.textGray, fontSize: 13)),
                   ],
                 ),
-                Text("15 Oktober 2024", style: TextStyle(color: Colors.red[600], fontWeight: FontWeight.bold, fontSize: 13)),
+                Text(jobData['postedAt'] != null ? jobData['postedAt'].toString().split('T')[0] : "Baru saja", style: TextStyle(color: Colors.blue[600], fontWeight: FontWeight.bold, fontSize: 13)),
               ],
             ),
             const SizedBox(height: 100),
           ],
         ),
       ),
-      bottomNavigationBar: _buildBottomApplyBar(),
+      bottomNavigationBar: _buildBottomApplyBar(jobData),
     );
   }
 
@@ -151,7 +172,7 @@ class DetailView extends GetView<DetailController> {
       children: [
         _buildInfoChip(Icons.attach_money, data['salary'] ?? "Negosiasi"),
         const SizedBox(width: 10),
-        _buildInfoChip(Icons.access_time, "Full-time"),
+        _buildInfoChip(Icons.access_time, data['employmentType'] ?? "Full-time"),
       ],
     );
   }
@@ -215,7 +236,8 @@ class DetailView extends GetView<DetailController> {
     return Row(children: List.generate(40, (index) => Expanded(child: Container(margin: const EdgeInsets.symmetric(horizontal: 2), height: 1, color: index.isEven ? Colors.grey[300] : Colors.transparent))));
   }
 
-  Widget _buildBottomApplyBar() {
+  Widget _buildBottomApplyBar(Map<String, dynamic> jobData) {
+    bool isApplied = jobData['isApplied'] ?? false;
     return Container(
       padding: const EdgeInsets.fromLTRB(24, 12, 24, 32),
       decoration: BoxDecoration(color: Colors.white, boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 10, offset: const Offset(0, -5))]),
@@ -223,9 +245,9 @@ class DetailView extends GetView<DetailController> {
           const Row(mainAxisAlignment: MainAxisAlignment.center, children: [Icon(Icons.info_outline, size: 14, color: Colors.grey), SizedBox(width: 6), Text("Data Anda akan diproses otomatis oleh AI kami.", style: TextStyle(color: Colors.grey, fontSize: 10))]),
           const SizedBox(height: 16),
           ElevatedButton(
-            onPressed: () => controller.applyNow(),
-            style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF2170E4), minimumSize: const Size(double.infinity, 60), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)), elevation: 8, shadowColor: Colors.blue.withOpacity(0.4)),
-            child: const Text("Lamar Sekarang", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+            onPressed: isApplied ? null : () => controller.applyNow(),
+            style: ElevatedButton.styleFrom(backgroundColor: isApplied ? Colors.grey : const Color(0xFF2170E4), minimumSize: const Size(double.infinity, 60), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)), elevation: 8, shadowColor: Colors.blue.withOpacity(0.4)),
+            child: Text(isApplied ? "Sudah Dilamar" : "Lamar Sekarang", style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
           ),
       ]),
     );

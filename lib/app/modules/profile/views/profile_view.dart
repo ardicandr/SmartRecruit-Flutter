@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../core/values/app_colors.dart';
 import '../../../routes/app_routes.dart';
 import '../controllers/profile_controller.dart';
+import '../../../data/providers/api_provider.dart';
 
 class ProfileView extends GetView<ProfileController> {
   const ProfileView({Key? key}) : super(key: key);
@@ -26,17 +27,14 @@ class ProfileView extends GetView<ProfileController> {
         elevation: 0,
         actions: [
           IconButton(
-            // UBAH BAGIAN INI:
             onPressed: () => controller.goToNotifications(), 
             icon: const Icon(Icons.notifications_none, color: Colors.black),
           ),
-          const Padding(
-            padding: EdgeInsets.only(right: 16),
-            child: CircleAvatar(
-              radius: 16,
-              backgroundImage: NetworkImage("https://i.pravatar.cc/150?u=a"),
-            ),
-          )
+
+          IconButton(
+            onPressed: () => controller.logout(), 
+            icon: const Icon(Icons.logout, color: Colors.redAccent),
+          ),
         ],
       ),
       body: SingleChildScrollView(
@@ -47,63 +45,107 @@ class ProfileView extends GetView<ProfileController> {
             const SizedBox(height: 32),
             _buildStrengthBar(),
             _buildAiAnalysisCard(),
-            const SizedBox(height: 40),
+            const SizedBox(height: 24),
+            
+            // SECTION: CV / RESUME
+            _buildSectionHeader(
+              "CV & Resume", 
+              icon: Icons.contact_page_outlined,
+              action: Obx(() => IconButton(
+                onPressed: () => controller.goToUploadCv(), 
+                icon: Icon(
+                  controller.cvUrl.value.isNotEmpty ? Icons.edit : Icons.add_circle_outline, 
+                  color: const Color(0xFF2170E4)
+                )
+              ))
+            ),
+            Obx(() {
+              if (controller.cvUrl.value.isNotEmpty) {
+                return Container(
+                  padding: const EdgeInsets.all(16),
+                  margin: const EdgeInsets.only(bottom: 32),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF0F7FF),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: Colors.blue[100]!),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.check_circle, color: Colors.green, size: 24),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text("CV Terverifikasi AI", style: TextStyle(fontWeight: FontWeight.bold)),
+                            Text("Data berhasil diekstrak otomatis", style: TextStyle(color: Colors.grey[700], fontSize: 11)),
+                          ],
+                        ),
+                      ),
+                      TextButton(
+                        onPressed: () => controller.goToUploadCv(),
+                        child: const Text("Lihat/Ubah"),
+                      )
+                    ],
+                  ),
+                );
+              } else {
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 32),
+                  child: CustomDashedButton(text: "Unggah & Scan CV Baru", onTap: () => controller.goToUploadCv()),
+                );
+              }
+            }),
+
             _buildSectionHeader("DETAIL INFORMASI", 
                 action: _buildSmallButton("Simpan Perubahan")),
-            _buildInfoTile(Icons.mail_outlined, "EMAIL", "budi.santoso@email.com"),
+            
+            // EMAIL DINAMIS
+            Obx(() => _buildInfoTile(
+              Icons.mail_outlined, 
+              "EMAIL", 
+              controller.email.value
+            )),
+            
             _buildInfoTile(Icons.phone_outlined, "TELEPON", "+62 812 3456 7890"),
             const SizedBox(height: 32),
             
-            // SECTION: PENGALAMAN
+            // ... (Bagian Pengalaman & Pendidikan tetap sama) ...
             _buildSectionHeader("Pengalaman Kerja", icon: Icons.work_outlined),
-            _buildProfileTimelineItem(
-              "Senior Frontend Engineer", 
-              "TechGiant Solutions", 
-              "2021 - SEKARANG", 
-              "Memimpin tim pengembang untuk membangun platform e-commerce skala besar."
-            ),
-            _buildDashedButton("+ Tambah Pengalaman", () => _showFormBottomSheet("Pengalaman")),
-            
+            _buildProfileTimelineItem("Senior Frontend Engineer", "TechGiant Solutions", "2021 - SEKARANG", "Memimpin tim..."),
             const SizedBox(height: 32),
-            
-            // SECTION: PENDIDIKAN
-            _buildSectionHeader("Pendidikan", icon: Icons.school_outlined),
-            _buildProfileTimelineItem(
-              "Sarjana Ilmu Komputer", 
-              "Universitas Indonesia", 
-              "2014 - 2018", 
-              "IPK: 3.85 / 4.00. Fokus pada Rekayasa Perangkat Lunak."
-            ),
-            _buildDashedButton("+ Tambah Pendidikan", () => _showFormBottomSheet("Pendidikan")),
-            
-            const SizedBox(height: 32),
-            
-            // SECTION: KEAHLIAN
-            _buildSectionHeader("Keahlian", icon: Icons.lightbulb_outlined),
-            Wrap(spacing: 8, runSpacing: 8, children: [
-              _buildSkillChip("React.js", true), 
-              _buildSkillChip("TypeScript", true), 
-              _buildSkillChip("Tailwind CSS", true),
-              _buildSkillChip("Node.js", false), 
-              _buildSkillChip("UI/UX Design", false), 
-              _buildSkillChip("+ Tambah", false, isDashed: true),
-            ]),
-            
-            const SizedBox(height: 32),
-            _buildLanguageSection(),
-            const SizedBox(height: 32),
-            
-            // SECTION: SERTIFIKAT
+
+            // SECTION: SERTIFIKAT DINAMIS
             _buildSectionHeader(
               "Sertifikat & Kompetensi", 
               icon: Icons.verified_user_outlined,
               action: IconButton(
-                onPressed: () => Get.toNamed(Routes.EDIT_PROFILE), 
+                onPressed: () => controller.goToAddCertificate(), 
                 icon: const Icon(Icons.add_circle_outline, color: Color(0xFF2170E4))
               )
             ),
-            _buildExistingCertificateTile(),
-            
+
+            // LIST SERTIFIKAT DARI BACKEND
+            Obx(() {
+              if (controller.isLoadingCert.value) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              if (controller.certificates.isEmpty) {
+                return _buildEmptyState("Belum ada sertifikat ditambahkan");
+              }
+              return Column(
+                children: controller.certificates.map((cert) {
+                  return _buildExistingCertificateTile(
+                    cert['id'] ?? 0,
+                    cert['title'] ?? "Tanpa Judul", 
+                    cert['issued_by'] ?? "Tanpa Institusi", 
+                    cert['date'] ?? "-",
+                    cert['image_url'] ?? ""
+                  );
+                }).toList(),
+              );
+            }),
+
             const SizedBox(height: 100), 
           ],
         ),
@@ -117,7 +159,7 @@ class ProfileView extends GetView<ProfileController> {
     return Column(
       children: [
         Stack(alignment: Alignment.bottomRight, children: [
-          const CircleAvatar(radius: 60, backgroundImage: NetworkImage("https://i.pravatar.cc/150?u=a")),
+          const CircleAvatar(radius: 60, backgroundColor: Colors.blue, child: Icon(Icons.person, color: Colors.white, size: 60)),
           Container(
             padding: const EdgeInsets.all(4),
             decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle, boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 4)]),
@@ -125,22 +167,27 @@ class ProfileView extends GetView<ProfileController> {
           ),
         ]),
         const SizedBox(height: 16),
-        Text("Budi Santoso", style: GoogleFonts.plusJakartaSans(fontSize: 24, fontWeight: FontWeight.w800)),
-        const Text("Senior Frontend Developer", style: TextStyle(color: Colors.grey, fontSize: 16)),
+        // NAMA DINAMIS
+        Obx(() => Text(
+          controller.name.value, 
+          style: GoogleFonts.plusJakartaSans(fontSize: 24, fontWeight: FontWeight.w800)
+        )),
+        const Text("Pencari Kerja Aktif", style: TextStyle(color: Colors.grey, fontSize: 16)),
         const SizedBox(height: 24),
-        Row(children: [
-          Expanded(
-            child: ElevatedButton.icon(
-              onPressed: () {
-                Get.toNamed('/upload-cv', arguments: {'isFromApplication': false});
-              },
-              icon: const Icon(Icons.add),
-              label: const Text("Perbarui CV"),
-              style: ElevatedButton.styleFrom(backgroundColor: const Color.fromARGB(255, 255, 255, 255), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)))
-            )
-          ),
-        ]),
       ],
+    );
+  }
+
+  Widget _buildEmptyState(String msg) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.grey[50],
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.grey[200]!, style: BorderStyle.solid),
+      ),
+      child: Text(msg, textAlign: TextAlign.center, style: const TextStyle(color: Colors.grey, fontSize: 12)),
     );
   }
 
@@ -161,8 +208,9 @@ class ProfileView extends GetView<ProfileController> {
     );
   }
 
-  Widget _buildExistingCertificateTile() {
+  Widget _buildExistingCertificateTile(int id, String title, String issuer, String date, String imageUrl) {
     return Container(
+      margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         border: Border.all(color: Colors.grey[100]!),
@@ -170,18 +218,79 @@ class ProfileView extends GetView<ProfileController> {
       ),
       child: Row(
         children: [
-          const Icon(Icons.description, color: Color(0xFF2170E4)),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: imageUrl.isNotEmpty 
+                ? Image.network(
+                    "${ApiProvider.hostUrl}$imageUrl", 
+                    width: 40, 
+                    height: 40, 
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return const Icon(Icons.broken_image, color: Colors.red);
+                    },
+                  )
+                : const Icon(Icons.description, color: Color(0xFF2170E4)),
+          ),
           const SizedBox(width: 12),
-          const Expanded(
+          
+          Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text("AWS Certified Solutions Architect", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
-                Text("Diterbitkan: Jun 2023", style: TextStyle(color: Colors.grey, fontSize: 11)),
+                Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                Text("Oleh: $issuer • $date", style: const TextStyle(color: Colors.grey, fontSize: 11)),
               ],
             ),
           ),
-          TextButton(onPressed: () {}, child: const Text("Lihat"))
+          
+          TextButton(
+            onPressed: () {
+              if (imageUrl.isNotEmpty) {
+                Get.dialog(
+                  Dialog(
+                    backgroundColor: Colors.transparent,
+                    insetPadding: const EdgeInsets.all(16),
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(16),
+                          child: Image.network(
+                            "${ApiProvider.hostUrl}$imageUrl",
+                            fit: BoxFit.contain,
+                          ),
+                        ),
+                        Positioned(
+                          top: 10,
+                          right: 10,
+                          child: GestureDetector(
+                            onTap: () => Get.back(),
+                            child: const CircleAvatar(
+                              backgroundColor: Colors.black54,
+                              child: Icon(Icons.close, color: Colors.white),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              } else {
+                Get.snackbar(
+                  "Informasi", 
+                  "Gambar sertifikat tidak tersedia",
+                  snackPosition: SnackPosition.BOTTOM,
+                );
+              }
+            }, 
+            child: const Text("Lihat"),
+          ),
+
+          IconButton(
+            onPressed: () => controller.confirmDelete(id), 
+            icon: const Icon(Icons.delete_outline, color: Colors.redAccent, size: 20),
+          ),
         ],
       ),
     );
