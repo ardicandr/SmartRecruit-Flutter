@@ -1,35 +1,52 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
-import 'package:SmartRecruit/app/core/values/app_colors.dart';
 import '../../../routes/app_routes.dart';
+import '../../../data/providers/api_provider.dart';
 
 class SavedJobsController extends GetxController {
-  var savedJobs = [
-    {
-      "title": "Mobile UI/UX Designer",
-      "company": "Blibli.com",
-      "location": "Jakarta Barat",
-      "salary": "Rp 14 - 18 Juta",
-      "match": "98%",
-    },
-    {
-      "title": "React Native Developer",
-      "company": "DANA Indonesia",
-      "location": "Jakarta Pusat",
-      "salary": "Rp 18 - 25 Juta",
-      "match": "92%",
+  final ApiProvider apiProvider = Get.find<ApiProvider>();
+  
+  var savedJobs = <dynamic>[].obs;
+  var isLoading = false.obs;
+
+  @override
+  void onInit() {
+    super.onInit();
+    fetchBookmarks();
+  }
+
+  Future<void> fetchBookmarks() async {
+    try {
+      isLoading.value = true;
+      final response = await apiProvider.getBookmarks();
+      if (response.statusCode == 200) {
+        savedJobs.assignAll(response.body);
+      }
+    } catch (e) {
+      Get.snackbar("Error", "Gagal memuat lowongan tersimpan");
+    } finally {
+      isLoading.value = false;
     }
-  ].obs;
+  }
 
   void goToNotifications() {
     Get.toNamed(Routes.NOTIFICATION);
   }
 
-  void removeBookmark(int index) {
-    savedJobs.removeAt(index);
-    AppHelpers.showSnackbar(
-      title: "Dihapus",
-      message: "Lowongan berhasil dihapus dari simpanan",
-    );
+  void removeBookmark(int index) async {
+    final jobId = savedJobs[index]['job_id'];
+    try {
+      final response = await apiProvider.toggleBookmark(jobId, false);
+      if (response.statusCode == 200) {
+        savedJobs.removeAt(index);
+        Get.snackbar(
+          "Dihapus",
+          "Lowongan berhasil dihapus dari simpanan",
+          snackPosition: SnackPosition.BOTTOM,
+        );
+      }
+    } catch (e) {
+      Get.snackbar("Error", "Gagal menghapus bookmark");
+    }
   }
 }

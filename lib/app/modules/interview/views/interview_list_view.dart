@@ -21,14 +21,22 @@ class InterviewListView extends GetView<InterviewController> {
         backgroundColor: Colors.white,
         elevation: 0,
       ),
-      body: ListView.builder(
-        padding: const EdgeInsets.all(24),
-        itemCount: controller.interviewList.length,
-        itemBuilder: (context, index) {
-          final item = controller.interviewList[index];
-          return _buildInterviewCard(item);
-        },
-      ),
+      body: Obx(() {
+        if (controller.isLoading.value) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        if (controller.interviewList.isEmpty) {
+          return const Center(child: Text("Belum ada jadwal wawancara"));
+        }
+        return ListView.builder(
+          padding: const EdgeInsets.all(24),
+          itemCount: controller.interviewList.length,
+          itemBuilder: (context, index) {
+            final item = controller.interviewList[index];
+            return _buildInterviewCard(item);
+          },
+        );
+      }),
     );
   }
 
@@ -75,7 +83,12 @@ class InterviewListView extends GetView<InterviewController> {
                   children: [
                     const Icon(Icons.calendar_month, size: 14, color: Colors.grey),
                     const SizedBox(width: 6),
-                    Text(data['date'], style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                    Text(
+                      data['dateRaw'] != null 
+                          ? "${DateTime.parse(data['dateRaw']).day}/${DateTime.parse(data['dateRaw']).month}/${DateTime.parse(data['dateRaw']).year} ${DateTime.parse(data['dateRaw']).hour}:${DateTime.parse(data['dateRaw']).minute.toString().padLeft(2, '0')}" 
+                          : "-", 
+                      style: const TextStyle(fontSize: 12, color: Colors.grey)
+                    ),
                   ],
                 ),
                 Text("Lihat Detail >", style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold, fontSize: 12)),

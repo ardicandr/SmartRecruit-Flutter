@@ -1,32 +1,46 @@
 import 'package:get/get.dart';
 import '../../../routes/app_routes.dart';
+import '../../../data/providers/api_provider.dart';
 
 class InterviewController extends GetxController {
-  // Data dummy daftar panggilan wawancara
-  final List<Map<String, dynamic>> interviewList = [
-    {
-      "id": 1,
-      "company": "TechNova Solutions",
-      "role": "Senior UI/UX Designer",
-      "isOnline": true,
-      "date": "Jumat, 20 Oktober 2023",
-      "time": "14:00 - 15:00 WIB",
-      "meetingId": "821 3456 7890",
-      "passcode": "TECH2023",
-      "link": "https://zoom.us/j/82134567890",
-    },
-    {
-      "id": 2,
-      "company": "GoCreative Agency",
-      "role": "Frontend Developer",
-      "isOnline": false,
-      "date": "Senin, 23 Oktober 2023",
-      "time": "10:00 - 12:00 WIB",
-      "location": "GoCreative Tower, Lantai 5",
-      "address": "Jl. Sudirman No. 10, Jakarta Pusat",
-      "pic": "Bpk. Andi (HRD) - 081233445566",
+  final ApiProvider apiProvider = Get.find<ApiProvider>();
+  var isLoading = true.obs;
+  var interviewList = <Map<String, dynamic>>[].obs;
+
+  @override
+  void onInit() {
+    fetchInterviews();
+    super.onInit();
+  }
+
+  void fetchInterviews() async {
+    try {
+      isLoading(true);
+      Response response = await apiProvider.getMyApplications();
+      if (response.statusCode == 200) {
+        List data = response.body;
+        // Filter only those that are scheduled for interview
+        var filtered = data.where((app) => app['status'] == 'Interview' && app['interview_date'] != null).toList();
+        
+        List<Map<String, dynamic>> formattedList = [];
+        for (var f in filtered) {
+          formattedList.add({
+            "id": f['id'],
+            "company": f['company_name'] ?? f['company'],
+            "role": f['job_title'] ?? f['title'],
+            "isOnline": f['interview_type'] == 'Online',
+            "dateRaw": f['interview_date'],
+            "type": f['interview_type'],
+            "location": f['interview_location'] ?? '-',
+            "rawData": f,
+          });
+        }
+        interviewList.assignAll(formattedList);
+      }
+    } finally {
+      isLoading(false);
     }
-  ];
+  }
 
   void goToDetail(Map<String, dynamic> data) {
     Get.toNamed(Routes.INTERVIEW_DETAIL, arguments: data);

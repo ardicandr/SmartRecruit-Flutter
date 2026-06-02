@@ -29,24 +29,93 @@ class AiInsightView extends GetView<AiInsightController> {
         elevation: 0,
         centerTitle: false,
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildSummaryHeader(),
-            const SizedBox(height: 32),
-            _buildRadarChartSection(),
-            const SizedBox(height: 40),
-            _buildDocumentAnalysisList(),
-            const SizedBox(height: 32),
-            _buildCareerPathSection(),
-            const SizedBox(height: 40),
-            _buildFooterButton(),
-            const SizedBox(height: 20),
-          ],
-        ),
-      ),
+      body: Obx(() {
+        if (controller.isLoading.value) {
+          return const Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                CircularProgressIndicator(),
+                SizedBox(height: 16),
+                Text("Menganalisis profil Anda...", style: TextStyle(color: Colors.grey)),
+                SizedBox(height: 4),
+                Text("Proses ini mungkin membutuhkan beberapa detik", style: TextStyle(color: Colors.grey, fontSize: 11)),
+              ],
+            ),
+          );
+        }
+        
+        // Tampilkan error jika ada
+        if (controller.errorMessage.value.isNotEmpty) {
+          return Center(
+            child: Padding(
+              padding: const EdgeInsets.all(32),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.error_outline, size: 64, color: Colors.orange),
+                  const SizedBox(height: 16),
+                  const Text("Gagal Memuat Analisis", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                  const SizedBox(height: 8),
+                  Text(controller.errorMessage.value, textAlign: TextAlign.center, style: const TextStyle(color: Colors.grey)),
+                  const SizedBox(height: 24),
+                  ElevatedButton.icon(
+                    onPressed: () => controller.fetchAiAnalysis(),
+                    icon: const Icon(Icons.refresh),
+                    label: const Text("Coba Lagi"),
+                    style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF2170E4), foregroundColor: Colors.white),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
+        
+        // Tampilkan data kosong jika overall score 0 dan tidak ada items
+        if (controller.overallScore.value == 0 && controller.analysisItems.isEmpty) {
+          return Center(
+            child: Padding(
+              padding: const EdgeInsets.all(32),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.analytics_outlined, size: 64, color: Colors.grey),
+                  const SizedBox(height: 16),
+                  const Text("Belum Ada Data Analisis", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                  const SizedBox(height: 8),
+                  const Text("Upload CV dan tambahkan sertifikat terlebih dahulu untuk mendapatkan analisis profil AI.", textAlign: TextAlign.center, style: TextStyle(color: Colors.grey)),
+                  const SizedBox(height: 24),
+                  ElevatedButton.icon(
+                    onPressed: () => controller.fetchAiAnalysis(),
+                    icon: const Icon(Icons.auto_awesome),
+                    label: const Text("Analisis Sekarang"),
+                    style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF2170E4), foregroundColor: Colors.white),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
+        
+        return SingleChildScrollView(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildSummaryHeader(),
+              const SizedBox(height: 32),
+              _buildRadarChartSection(),
+              const SizedBox(height: 40),
+              _buildDocumentAnalysisList(),
+              const SizedBox(height: 32),
+              _buildCareerPathSection(),
+              const SizedBox(height: 40),
+              _buildFooterButton(),
+              const SizedBox(height: 20),
+            ],
+          ),
+        );
+      }),
     );
   }
 
@@ -73,13 +142,16 @@ class AiInsightView extends GetView<AiInsightController> {
             child: const Icon(Icons.auto_awesome, color: Colors.white, size: 28),
           ),
           const SizedBox(width: 16),
-          const Expanded(
+          Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text("Resume Score Anda:", style: TextStyle(color: Colors.white70, fontSize: 12)),
-                SizedBox(height: 4),
-                Text("92/100 (Sangat Kuat)", style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
+                const Text("Resume Score Anda:", style: TextStyle(color: Colors.white70, fontSize: 12)),
+                const SizedBox(height: 4),
+                Obx(() => Text(
+                  "${controller.overallScore.value}/100", 
+                  style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)
+                )),
               ],
             ),
           )
@@ -138,16 +210,18 @@ class AiInsightView extends GetView<AiInsightController> {
 
   // 3. Analisis Berdasarkan Ekstraksi Dokumen
   Widget _buildDocumentAnalysisList() {
-    return Column(
+    return Obx(() => Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text("Hasil Ekstraksi AI", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
         const SizedBox(height: 16),
-        _buildAnalysisItem(Icons.verified, "Sertifikat Terverifikasi", "Ditemukan 3 sertifikat internasional yang relevan dengan industri."),
-        _buildAnalysisItem(Icons.description, "Struktur CV Optimal", "Format dokumen Anda sangat mudah dibaca oleh sistem ATS perusahaan."),
-        _buildAnalysisItem(Icons.trending_up, "Peningkatan Skill", "Ada tren peningkatan keahlian teknis dalam 2 tahun terakhir."),
+        ...controller.analysisItems.map((item) => _buildAnalysisItem(
+          Icons.verified, 
+          item['title'] ?? "", 
+          item['description'] ?? ""
+        )).toList(),
       ],
-    );
+    ));
   }
 
   Widget _buildAnalysisItem(IconData icon, String title, String desc) {
@@ -190,19 +264,19 @@ class AiInsightView extends GetView<AiInsightController> {
         children: [
           const Text("Rekomendasi Jalur Karier", style: TextStyle(fontWeight: FontWeight.bold)),
           const SizedBox(height: 16),
-          Wrap(
+          Obx(() => Wrap(
             spacing: 8,
             runSpacing: 8,
-            children: ["Senior Web Developer", "Tech Lead", "System Architect"].map((role) => Container(
+            children: controller.careerRecommendations.map((role) => Container(
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
               decoration: BoxDecoration(
                 color: Colors.white, 
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(color: Colors.blue.withOpacity(0.1))
               ),
-              child: Text(role, style: const TextStyle(fontSize: 12, color: Color(0xFF2170E4), fontWeight: FontWeight.bold)),
+              child: Text(role.toString(), style: const TextStyle(fontSize: 12, color: Color(0xFF2170E4), fontWeight: FontWeight.bold)),
             )).toList(),
-          )
+          ))
         ],
       ),
     );

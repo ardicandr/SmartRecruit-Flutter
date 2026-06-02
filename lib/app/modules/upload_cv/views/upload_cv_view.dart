@@ -33,7 +33,8 @@ class UploadCvView extends GetView<UploadCvController> {
             padding: EdgeInsets.only(right: 16),
             child: CircleAvatar(
               radius: 16,
-              backgroundImage: NetworkImage("https://i.pravatar.cc/150?u=4"),
+              backgroundColor: Colors.blue,
+              child: Icon(Icons.person, color: Colors.white, size: 20),
             ),
           )
         ],
@@ -88,8 +89,8 @@ class UploadCvView extends GetView<UploadCvController> {
                   Align(
                     alignment: Alignment.centerRight,
                     child: TextButton(
-                      onPressed: () {}, 
-                      child: const Text("Gunakan CV Lain?", style: TextStyle(fontSize: 12, color: Colors.blue))
+                      onPressed: () => controller.pickAndScanCv(), 
+                      child: const Text("Gunakan CV Lain / Scan CV", style: TextStyle(fontSize: 12, color: Colors.blue))
                     ),
                   ),
 
@@ -112,31 +113,36 @@ class UploadCvView extends GetView<UploadCvController> {
                   ),
                   const SizedBox(height: 24),
 
-                  _buildReviewField("Nama Lengkap", "Budi Santoso", Icons.person_outline),
-                  _buildReviewField("Email", "budi.santoso@email.com", Icons.mail_outline),
-                  _buildReviewField("Nomor Telepon", "+62 812 3456 7890", Icons.phone_outlined),
-                  _buildReviewField("Pengalaman Terakhir", "Senior Frontend Developer di Tech Corp", Icons.work_outline),
+                  Obx(() => controller.isLoading.value 
+                    ? const Center(child: CircularProgressIndicator()) 
+                    : Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildReviewField("Nama Lengkap", controller.fullNameC, Icons.person_outline),
+                        _buildReviewField("Email", controller.emailC, Icons.mail_outline),
+                        _buildReviewField("Nomor Telepon", controller.phoneC, Icons.phone_outlined),
+                        _buildReviewField("Pengalaman Terakhir", controller.experienceC, Icons.work_outline),
 
-                  const SizedBox(height: 24),
-                  const Text("Keahlian Terdeteksi", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-                  const SizedBox(height: 12),
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: [
-                      _buildSkillTag("React.js"),
-                      _buildSkillTag("TypeScript"),
-                      _buildSkillTag("Tailwind CSS"),
-                      _buildSkillTag("UI/UX Design"),
-                      _buildSkillTag("+ Tambah"),
-                    ],
-                  ),
+                        const SizedBox(height: 24),
+                        const Text("Keahlian Terdeteksi", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                        const SizedBox(height: 12),
+                        Obx(() => Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          children: [
+                            ...controller.skills.map((skill) => _buildSkillTag(skill)),
+                            _buildSkillTag("+ Tambah"),
+                          ],
+                        )),
+                      ],
+                    )),
+                  
                   const SizedBox(height: 40),
                 ],
               ),
             ),
           ),
-          _buildBottomAction(),
+          Obx(() => controller.isLoading.value ? const SizedBox() : _buildBottomAction()),
         ],
       ),
     );
@@ -145,36 +151,44 @@ class UploadCvView extends GetView<UploadCvController> {
   // --- WIDGET HELPERS ---
 
   Widget _buildFileCard() {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: const Color(0xFFF0F7FF),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.blue[200]!, width: 1.5),
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(color: Colors.blue[100], borderRadius: BorderRadius.circular(12)),
-            child: const Icon(Icons.description, color: Color(0xFF2563EB)),
-          ),
-          const SizedBox(width: 16),
-          const Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text("CV_Budi_Santoso_2024.pdf", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-                Text("PDF • 2.4 MB", style: TextStyle(color: Colors.grey, fontSize: 11)),
-              ],
+    return Obx(() {
+      String fileName = "Belum ada CV yang dipilih";
+      if (controller.selectedImage.value != null) {
+        fileName = controller.selectedImage.value!.name;
+      } else if (controller.fullNameC.text.isNotEmpty) {
+        fileName = "CV Profil (Tersimpan)";
+      }
+      return Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: const Color(0xFFF0F7FF),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Colors.blue[200]!, width: 1.5),
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(color: Colors.blue[100], borderRadius: BorderRadius.circular(12)),
+              child: const Icon(Icons.description, color: Color(0xFF2563EB)),
             ),
-          ),
-        ],
-      ),
-    );
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(fileName, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                  const Text("JPG/PNG", style: TextStyle(color: Colors.grey, fontSize: 11)),
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
+    });
   }
 
-  Widget _buildReviewField(String label, String value, IconData icon) {
+  Widget _buildReviewField(String label, TextEditingController textController, IconData icon) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 20),
       child: Column(
@@ -189,7 +203,7 @@ class UploadCvView extends GetView<UploadCvController> {
           ),
           const SizedBox(height: 8),
           TextField(
-            controller: TextEditingController(text: value),
+            controller: textController,
             style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
             decoration: InputDecoration(
               filled: true,

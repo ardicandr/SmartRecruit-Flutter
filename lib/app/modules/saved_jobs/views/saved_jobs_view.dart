@@ -33,7 +33,8 @@ class SavedJobsView extends GetView<SavedJobsController> {
             padding: EdgeInsets.only(right: 16),
             child: CircleAvatar(
               radius: 16, 
-              backgroundImage: NetworkImage("https://i.pravatar.cc/150?u=a")
+              backgroundColor: Colors.blue,
+              child: Icon(Icons.person, color: Colors.white, size: 20),
             ),
           )
         ],

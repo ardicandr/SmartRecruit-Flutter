@@ -16,9 +16,9 @@ class HomeView extends GetView<HomeController> {
             index: controller.tabIndex.value,
             children: [
               _buildMainHome(),
-              StatusView(),
-              SavedJobsView(),
-              ProfileView(),
+              const StatusView(),
+              const SavedJobsView(),
+              const ProfileView(),
             ],
           )),
       bottomNavigationBar: _buildBottomNav(),
@@ -27,25 +27,36 @@ class HomeView extends GetView<HomeController> {
 
   Widget _buildMainHome() {
     return SafeArea(
-      child: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildCustomAppBar(),
-            _buildGreeting(),
-            _buildSearchBar(),
-            const SizedBox(height: 32),
-            
-            _buildSectionTitle("Rekomendasi Spesial"), 
-            
-            _buildHorizontalList(),
-            const SizedBox(height: 32),
-            
-            _buildSectionTitleWithToggle("Lowongan Terbaru"),
-            
-            _buildVerticalList(),
-            const SizedBox(height: 20),
-          ],
+      child: RefreshIndicator( // Tambahkan ini agar bisa tarik layar untuk refresh
+        onRefresh: () async => controller.fetchJobs(),
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildCustomAppBar(),
+              _buildGreeting(),
+              _buildSearchBar(),
+              const SizedBox(height: 32),
+              
+              _buildSectionTitle("Rekomendasi Spesial"), 
+              Obx(() => controller.isLoading.value 
+                ? const Center(child: CircularProgressIndicator()) 
+                : _buildHorizontalList()),
+              
+              const SizedBox(height: 32),
+              
+              _buildSectionTitleWithToggle("Lowongan Terbaru"),
+              Obx(() => controller.isLoading.value 
+                ? const Center(child: Padding(
+                    padding: EdgeInsets.all(20.0),
+                    child: CircularProgressIndicator(),
+                  )) 
+                : _buildVerticalList()),
+              
+              const SizedBox(height: 20),
+            ],
+          ),
         ),
       ),
     );
@@ -74,7 +85,8 @@ class HomeView extends GetView<HomeController> {
           const SizedBox(width: 16),
           const CircleAvatar(
             radius: 18, 
-            backgroundImage: NetworkImage("https://i.pravatar.cc/150?u=a")
+            backgroundColor: AppColors.primary,
+            child: Icon(Icons.person, color: Colors.white, size: 20),
           ),
         ],
       ),
@@ -87,9 +99,17 @@ class HomeView extends GetView<HomeController> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("Halo, Budi! 👋", style: GoogleFonts.plusJakartaSans(fontSize: 28, fontWeight: FontWeight.w800, color: AppColors.textDark)),
+          Obx(() => Text(
+            "Halo, ${controller.userName.value}! 👋", 
+            style: GoogleFonts.plusJakartaSans(
+              fontSize: 28, 
+              fontWeight: FontWeight.w800, 
+              color: AppColors.textDark
+            )
+          )),
           const SizedBox(height: 4),
-          const Text("Temukan pekerjaan impianmu hari ini.", style: TextStyle(color: AppColors.textGray, fontSize: 14)),
+          const Text("Temukan pekerjaan impianmu hari ini.", 
+            style: TextStyle(color: AppColors.textGray, fontSize: 14)),
         ],
       ),
     );
@@ -124,6 +144,8 @@ class HomeView extends GetView<HomeController> {
   }
 
   Widget _buildHorizontalList() {
+    if (controller.specialJobs.isEmpty) return const Center(child: Text("Tidak ada lowongan"));
+    
     return SizedBox(
       height: 200,
       child: ListView.builder(
@@ -131,46 +153,43 @@ class HomeView extends GetView<HomeController> {
         padding: const EdgeInsets.only(left: 24, top: 12),
         itemCount: controller.specialJobs.length,
         itemBuilder: (context, index) {
-          var job = controller.specialJobs[index];
-          return Container(
-            width: 260,
-            margin: const EdgeInsets.only(right: 16),
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: const Color(0xFFEFF6FF),
-              borderRadius: BorderRadius.circular(24),
-              border: Border.all(color: Colors.blue[100]!),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const CircleAvatar(backgroundColor: Colors.white, radius: 20, child: Icon(Icons.business, color: Colors.amber)),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(8)),
-                      child: const Text("HOT JOB", style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold, fontSize: 9)),
-                    )
-                  ],
-                ),
-                const Spacer(),
-                Text(job['title'], style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                Text(job['company'], style: const TextStyle(color: Colors.grey, fontSize: 12)),
-                const SizedBox(height: 12),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(8)),
-                      child: Row(children: [const Icon(Icons.location_on, size: 10, color: Colors.blue), Text(job['location'], style: const TextStyle(fontSize: 10, color: Colors.blue))]),
-                    ),
-                    Text(job['salary'], style: const TextStyle(color: Colors.blue, fontWeight: FontWeight.bold, fontSize: 12)),
-                  ],
-                )
-              ],
+          final job = controller.specialJobs[index];
+          return GestureDetector(
+            onTap: () => controller.goToDetail(job),
+            child: Container(
+              width: 260,
+              margin: const EdgeInsets.only(right: 16),
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: const Color(0xFFEFF6FF),
+                borderRadius: BorderRadius.circular(24),
+                border: Border.all(color: Colors.blue[100]!),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      CircleAvatar(backgroundColor: Colors.white, radius: 20, child: Icon(Icons.business, color: Colors.blue)),
+                      // Status atau badge lainnya
+                    ],
+                  ),
+                  const Spacer(),
+                  Text(job.title ?? "", style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16), maxLines: 1, overflow: TextOverflow.ellipsis),
+                  Text(job.company ?? "", style: const TextStyle(color: Colors.grey, fontSize: 12)),
+                  const SizedBox(height: 12),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Flexible(
+                        child: Text(job.location ?? "", style: const TextStyle(fontSize: 10, color: Colors.blue)),
+                      ),
+                      Text(job.salary ?? "", style: const TextStyle(color: Colors.blue, fontWeight: FontWeight.bold, fontSize: 12)),
+                    ],
+                  )
+                ],
+              ),
             ),
           );
         },
@@ -179,72 +198,67 @@ class HomeView extends GetView<HomeController> {
   }
 
   Widget _buildVerticalList() {
+    if (controller.latestJobs.isEmpty) return const Center(child: Text("Belum ada lowongan terbaru"));
+
     return ListView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       padding: const EdgeInsets.symmetric(horizontal: 24),
       itemCount: controller.latestJobs.length,
       itemBuilder: (context, index) {
-        var job = controller.latestJobs[index];
-      return GestureDetector(
-        onTap: () => controller.goToDetail(job),
-        child: Container(
-          margin: const EdgeInsets.only(bottom: 16),
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(24),
-            border: Border.all(color: Colors.grey[100]!),
-          ),
-          child: Column(
-            children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(width: 48, height: 48, decoration: BoxDecoration(color: Colors.grey[900], borderRadius: BorderRadius.circular(12))),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(job['title'], style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
-                        Text(job['company'], style: const TextStyle(color: Colors.grey, fontSize: 12)),
-                      ],
+        final job = controller.latestJobs[index];
+        return GestureDetector(
+          onTap: () => controller.goToDetail(job),
+          child: Container(
+            margin: const EdgeInsets.only(bottom: 16),
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(color: Colors.grey[100]!),
+            ),
+            child: Column(
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      width: 48, height: 48, 
+                      decoration: BoxDecoration(color: Colors.blue[50], borderRadius: BorderRadius.circular(12)),
+                      child: const Icon(Icons.work_outline, color: Colors.blue),
                     ),
-                  ),
-                  Row(children: [
-                    const Icon(Icons.bolt, color: Colors.purple, size: 16),
-                    Text(job['match'], style: const TextStyle(color: Colors.purple, fontWeight: FontWeight.bold, fontSize: 12)),
-                  ])
-                ],
-              ),
-              const SizedBox(height: 16),
-              Row(children: [
-                Icon(Icons.location_on_outlined, size: 14, color: Colors.grey[400]),
-                Text(" ${job['location']}", style: TextStyle(color: Colors.grey[400], fontSize: 12)),
-                const SizedBox(width: 16),
-                Icon(Icons.monetization_on_outlined, size: 14, color: Colors.grey[400]),
-                Text(" ${job['salary']}", style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 12)),
-              ]),
-              const SizedBox(height: 12),
-              Row(children: (job['tags'] as List).map((tag) => Container(
-                margin: const EdgeInsets.only(right: 8),
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                decoration: BoxDecoration(color: Colors.grey[50], borderRadius: BorderRadius.circular(8)),
-                child: Text(tag, style: const TextStyle(fontSize: 11, color: Colors.grey)),
-              )).toList()),
-              const Divider(height: 32),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(job['posted'], style: const TextStyle(color: Colors.grey, fontSize: 11)),
-                  const Text("Lamar Sekarang >", style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold, fontSize: 13)),
-                ],
-              )
-            ],
-          ),
-        )
-      );
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(job.title ?? "", style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                          Text(job.company ?? "", style: const TextStyle(color: Colors.grey, fontSize: 12)),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                Row(children: [
+                  Icon(Icons.location_on_outlined, size: 14, color: Colors.grey[400]),
+                  Text(" ${job.location}", style: TextStyle(color: Colors.grey[400], fontSize: 12)),
+                  const SizedBox(width: 16),
+                  Icon(Icons.monetization_on_outlined, size: 14, color: Colors.grey[400]),
+                  Text(" ${job.salary}", style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 12)),
+                ]),
+                const Divider(height: 32),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(job.postedAt ?? "Baru saja", style: const TextStyle(color: Colors.grey, fontSize: 11)),
+                    const Text("Lamar Sekarang >", style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold, fontSize: 13)),
+                  ],
+                )
+              ],
+            ),
+          )
+        );
       },
     );
   }
