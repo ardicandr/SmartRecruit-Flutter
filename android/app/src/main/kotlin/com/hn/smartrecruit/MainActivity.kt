@@ -1,4 +1,4 @@
-package com.example.smart_recruit
+package com.hn.smartrecruit
 
 import io.flutter.embedding.android.FlutterActivity
 

@@ -190,26 +190,48 @@ class DetailView extends GetView<DetailController> {
   }
 
   Widget _buildAiMatchCard(Map<String, dynamic> data) {
-    String matchStr = data['match'] ?? "0%";
-    double matchValue = double.parse(matchStr.replaceAll('%', '')) / 100;
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(color: const Color(0xFFF0F7FF), borderRadius: BorderRadius.circular(24), border: Border.all(color: Colors.blue[100]!)),
-      child: Column(children: [
-          Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-              Row(children: [
-                  const Icon(Icons.bolt, color: Color(0xFF2170E4), size: 22),
-                  const SizedBox(width: 8),
-                  Text("AI Match Score", style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w800, color: const Color(0xFF001A42), fontSize: 16)),
-              ]),
-              Container(padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4), decoration: BoxDecoration(color: const Color(0xFF2170E4), borderRadius: BorderRadius.circular(20)), child: Text(matchStr, style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold))),
+    return Obx(() {
+      if (controller.isMatchLoading.value) {
+        return Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(color: const Color(0xFFF0F7FF), borderRadius: BorderRadius.circular(24), border: Border.all(color: Colors.blue[100]!)),
+          child: Column(children: [
+            Row(children: [
+              const SizedBox(
+                width: 20, height: 20,
+                child: CircularProgressIndicator(strokeWidth: 2, color: Color(0xFF2170E4))
+              ),
+              const SizedBox(width: 12),
+              Text("Menghitung kecocokan AI...", style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold, color: const Color(0xFF001A42), fontSize: 14)),
+            ]),
           ]),
-          const SizedBox(height: 12),
-          const Text("Profil Anda sangat cocok dengan kualifikasi pekerjaan ini.", style: TextStyle(color: Color(0xFF0058BE), fontSize: 13, height: 1.5)),
-          const SizedBox(height: 20),
-          ClipRRect(borderRadius: BorderRadius.circular(10), child: LinearProgressIndicator(value: matchValue, minHeight: 8, backgroundColor: const Color(0xFFD8E2FF), color: const Color(0xFF2170E4))),
-      ]),
-    );
+        );
+      }
+      
+      double score = controller.aiMatchScore.value;
+      String matchStr = "${score.round()}%";
+      double matchValue = score / 100.0;
+      String reason = controller.aiMatchReason.value;
+
+      return Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(color: const Color(0xFFF0F7FF), borderRadius: BorderRadius.circular(24), border: Border.all(color: Colors.blue[100]!)),
+        child: Column(children: [
+            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                Row(children: [
+                    const Icon(Icons.bolt, color: Color(0xFF2170E4), size: 22),
+                    const SizedBox(width: 8),
+                    Text("AI Match Score", style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w800, color: const Color(0xFF001A42), fontSize: 16)),
+                ]),
+                Container(padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4), decoration: BoxDecoration(color: const Color(0xFF2170E4), borderRadius: BorderRadius.circular(20)), child: Text(matchStr, style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold))),
+            ]),
+            const SizedBox(height: 12),
+            Text(reason, style: const TextStyle(color: Color(0xFF0058BE), fontSize: 13, height: 1.5)),
+            const SizedBox(height: 20),
+            ClipRRect(borderRadius: BorderRadius.circular(10), child: LinearProgressIndicator(value: matchValue, minHeight: 8, backgroundColor: const Color(0xFFD8E2FF), color: const Color(0xFF2170E4))),
+        ]),
+      );
+    });
   }
 
   Widget _buildSectionTitle(IconData icon, String title) {
