@@ -78,7 +78,7 @@ class RegisterView extends GetView<RegisterController> {
 
               _buildSocialButton(
                 "Daftar dengan Google", 
-                "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTlh1Kyfo9hJplmkiOKcHD9XcpUvlJaZrh5ZA&static/img/google_signin_buttons/web/2x/btn_google_signin_dark_normal_web.png"
+                "https://cdn1.iconfinder.com/data/icons/google-s-logo/150/Google_Icons-09-512.png"
               ),
 
               const SizedBox(height: 48),
@@ -241,7 +241,7 @@ class RegisterView extends GetView<RegisterController> {
 
   Widget _buildSocialButton(String text, String logoUrl) {
     return InkWell(
-      onTap: () => Get.snackbar("Google", "Fitur ini akan segera aktif"),
+      onTap: () => controller.signInWithGoogle(),
       borderRadius: BorderRadius.circular(16),
       child: Container(
         width: double.infinity,
