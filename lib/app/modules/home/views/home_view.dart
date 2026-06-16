@@ -185,7 +185,9 @@ class HomeView extends GetView<HomeController> {
                       Flexible(
                         child: Text(job.location ?? "", style: const TextStyle(fontSize: 10, color: Colors.blue)),
                       ),
-                      Text(job.salary ?? "", style: const TextStyle(color: Colors.blue, fontWeight: FontWeight.bold, fontSize: 12)),
+                      Flexible(
+                        child: Text(job.salary ?? "", style: const TextStyle(color: Colors.blue, fontWeight: FontWeight.bold, fontSize: 12), overflow: TextOverflow.ellipsis, textAlign: TextAlign.right),
+                      ),
                     ],
                   )
                 ],
@@ -242,10 +244,10 @@ class HomeView extends GetView<HomeController> {
                 const SizedBox(height: 16),
                 Row(children: [
                   Icon(Icons.location_on_outlined, size: 14, color: Colors.grey[400]),
-                  Text(" ${job.location}", style: TextStyle(color: Colors.grey[400], fontSize: 12)),
-                  const SizedBox(width: 16),
+                  Expanded(child: Text(" ${job.location}", style: TextStyle(color: Colors.grey[400], fontSize: 12), overflow: TextOverflow.ellipsis)),
+                  const SizedBox(width: 8),
                   Icon(Icons.monetization_on_outlined, size: 14, color: Colors.grey[400]),
-                  Text(" ${job.salary}", style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 12)),
+                  Expanded(child: Text(" ${job.salary}", style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 12), overflow: TextOverflow.ellipsis)),
                 ]),
                 const Divider(height: 32),
                 Row(

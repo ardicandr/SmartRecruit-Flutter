@@ -14,16 +14,33 @@ class SearchView extends GetView<AppSearchController> {
             _buildHeader(),
             _buildFilterSection(),
             Expanded(
-              child: ListView(
-                padding: EdgeInsets.all(20),
-                children: [
-                  _buildResultCount(),
-                  _buildJobItem("Senior UI/UX", "TechNova Solutions", "98% Match", "Rp 15jt - 22jt"),
-                  _buildAiBanner(), // Banner AI Recommendation
-                  _buildJobItem("Frontend Engineer", "Creative Pulse", "85% Match", "Rp 12jt - 18jt"),
-                  _buildJobItem("Product Manager", "GoGreen App", "72% Match", "Rp 20jt - 30jt"),
-                ],
-              ),
+              child: Obx(() {
+                if (controller.isLoading.value) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                
+                final jobs = controller.filteredJobs;
+                
+                return ListView(
+                  padding: EdgeInsets.all(20),
+                  children: [
+                    _buildResultCount(jobs.length),
+                    _buildAiBanner(), // Banner AI Recommendation
+                    if (jobs.isEmpty)
+                      const Padding(
+                        padding: EdgeInsets.only(top: 40),
+                        child: Center(child: Text("Tidak ada lowongan yang sesuai")),
+                      )
+                    else
+                      ...jobs.map((job) => _buildJobItem(
+                        job['title'] ?? 'Unknown',
+                        job['company_name'] ?? 'Unknown Company',
+                        "New",
+                        job['salary_range'] ?? 'Tidak ditampilkan',
+                      )).toList(),
+                  ],
+                );
+              }),
             ),
           ],
         ),
@@ -43,6 +60,7 @@ class SearchView extends GetView<AppSearchController> {
           Expanded(
           child: TextField(
             autofocus: true,
+            onChanged: controller.onSearchChanged,
             decoration: InputDecoration(
               hintText: "Cari posisi, skill...",
               prefixIcon: Icon(Icons.search),
@@ -79,10 +97,10 @@ class SearchView extends GetView<AppSearchController> {
     );
   }
 
-  Widget _buildResultCount() {
+  Widget _buildResultCount(int count) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 16),
-      child: Text("Ditemukan 124 lowongan kerja", style: TextStyle(color: Colors.grey, fontSize: 13)),
+      child: Text("Ditemukan $count lowongan kerja", style: TextStyle(color: Colors.grey, fontSize: 13)),
     );
   }
 
@@ -114,7 +132,7 @@ class SearchView extends GetView<AppSearchController> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(salary, style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold, fontSize: 12)),
+              Expanded(child: Text(salary, style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold, fontSize: 12), overflow: TextOverflow.ellipsis)),
               Text("Lihat Detail >", style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold, fontSize: 12)),
             ],
           )
@@ -141,10 +159,18 @@ class SearchView extends GetView<AppSearchController> {
               style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue[900])),
           ]),
           const SizedBox(height: 8),
-          const Text(
-            "Berdasarkan CV kamu, ada 5 lowongan baru yang memiliki kecocokan di atas 90%.", 
-            style: TextStyle(fontSize: 12, color: Color(0xFF2170E4), height: 1.4)
-          ),
+          Obx(() {
+            if (!controller.hasUploadedDocs.value) {
+              return const Text(
+                "Silakan unggah CV atau Sertifikat terlebih dahulu untuk mendapatkan rekomendasi lowongan cerdas dari AI.", 
+                style: TextStyle(fontSize: 12, color: Color(0xFF2170E4), height: 1.4)
+              );
+            }
+            return const Text(
+              "Berdasarkan profil kamu, AI akan mencarikan lowongan yang memiliki kecocokan tinggi.", 
+              style: TextStyle(fontSize: 12, color: Color(0xFF2170E4), height: 1.4)
+            );
+          }),
           const SizedBox(height: 16),
           ElevatedButton(
             onPressed: () => controller.goToAiInsight(), 
