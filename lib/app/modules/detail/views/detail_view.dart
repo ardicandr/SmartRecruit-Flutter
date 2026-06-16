@@ -106,9 +106,17 @@ class DetailView extends GetView<DetailController> {
             const SizedBox(height: 40),
             _buildSectionTitle(Icons.verified_outlined, "Benefit & Fasilitas"),
             const SizedBox(height: 16),
-            _buildBenefitItem("Gaji Kompetitif (Lihat info gaji)"),
-            _buildBenefitItem("Lingkungan Kerja Profesional"),
-            _buildBenefitItem("Kesempatan Pengembangan Karir"),
+            ...(jobData['facilities'] != null && jobData['facilities'].toString().trim().isNotEmpty
+                ? jobData['facilities']
+                    .toString()
+                    .split(',')
+                    .map<Widget>((e) => _buildBenefitItem(e.trim()))
+                    .toList()
+                : [
+                    _buildBenefitItem("Gaji Kompetitif (Lihat info gaji)"),
+                    _buildBenefitItem("Lingkungan Kerja Profesional"),
+                    _buildBenefitItem("Kesempatan Pengembangan Karir"),
+                  ]),
             const SizedBox(height: 40),
             _buildDottedDivider(),
             const SizedBox(height: 20),

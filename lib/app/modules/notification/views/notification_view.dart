@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/values/app_colors.dart';
+import '../controllers/notification_controller.dart';
 
-class NotificationView extends StatelessWidget {
+class NotificationView extends GetView<NotificationController> {
   const NotificationView({Key? key}) : super(key: key);
 
   @override
@@ -19,35 +20,40 @@ class NotificationView extends StatelessWidget {
         backgroundColor: Colors.white,
         elevation: 0,
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(20),
-        children: [
-          _buildNotificationItem(
-            title: "Lamaran Diterima",
-            desc: "Selamat! Lamaran Anda di TechNova Solutions telah lolos tahap screening AI.",
-            time: "2 jam yang lalu",
-            isNew: true,
-            icon: Icons.check_circle,
-            iconColor: Colors.green,
-          ),
-          _buildNotificationItem(
-            title: "Jadwal Wawancara",
-            desc: "HRD GoCreative Agency mengundang Anda untuk sesi wawancara user besok jam 10:00.",
-            time: "5 jam yang lalu",
-            isNew: true,
-            icon: Icons.calendar_today,
-            iconColor: Colors.blue,
-          ),
-          _buildNotificationItem(
-            title: "Tips Karir",
-            desc: "Lengkapi profil LinkedIn Anda untuk meningkatkan peluang dilirik rekruter hingga 40%.",
-            time: "1 hari yang lalu",
-            isNew: false,
-            icon: Icons.lightbulb,
-            iconColor: Colors.amber,
-          ),
-        ],
-      ),
+      body: Obx(() {
+        if (controller.isLoading.value) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        if (controller.notifications.isEmpty) {
+          return const Center(child: Text("Belum ada notifikasi"));
+        }
+        return ListView.builder(
+          padding: const EdgeInsets.all(20),
+          itemCount: controller.notifications.length,
+          itemBuilder: (context, index) {
+            final notif = controller.notifications[index];
+            final title = notif['title'] ?? 'Info';
+            final desc = notif['message'] ?? '';
+            final isNew = notif['is_read'] != true;
+            
+            // Format time simply or parse iso
+            final rawTime = notif['created_at']?.toString() ?? '';
+            final time = rawTime.length > 10 ? rawTime.substring(0, 10) : rawTime;
+
+            return GestureDetector(
+              onTap: () => controller.markAsRead(index),
+              child: _buildNotificationItem(
+                title: title,
+                desc: desc,
+                time: time,
+                isNew: isNew,
+                icon: title.toLowerCase().contains('interview') ? Icons.calendar_today : Icons.notifications_active,
+                iconColor: title.toLowerCase().contains('interview') ? Colors.blue : Colors.green,
+              ),
+            );
+          },
+        );
+      }),
     );
   }
 

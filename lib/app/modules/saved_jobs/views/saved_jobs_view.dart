@@ -124,13 +124,16 @@ class SavedJobsView extends GetView<SavedJobsController> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                job['salary'], 
-                style: const TextStyle(
-                  color: Color(0xFF2170E4), 
-                  fontWeight: FontWeight.w800, 
-                  fontSize: 14
-                )
+              Expanded(
+                child: Text(
+                  job['salary'], 
+                  style: const TextStyle(
+                    color: Color(0xFF2170E4), 
+                    fontWeight: FontWeight.w800, 
+                    fontSize: 14
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
               Row(
                 children: [

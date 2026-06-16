@@ -4,7 +4,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 class ApiProvider extends GetConnect {
   final storage = const FlutterSecureStorage();
 
-  static const String hostUrl = "http://10.164.225.225:5000";
+  static const String hostUrl = "http://192.168.165.225:5000";
   final String baseUrlStr = "$hostUrl/api";
 
   ApiProvider() {
@@ -151,6 +151,26 @@ class ApiProvider extends GetConnect {
     
     return get(
       "/ai/analyze-profile",
+      headers: {"Authorization": "Bearer $token"},
+    );
+  }
+
+  // ============================================
+  // NOTIFICATIONS
+  // ============================================
+  Future<Response> getNotifications() async {
+    final token = await storage.read(key: 'jwt_token');
+    return get(
+      "/notifications",
+      headers: {"Authorization": "Bearer $token"},
+    );
+  }
+
+  Future<Response> markNotificationRead(int id) async {
+    final token = await storage.read(key: 'jwt_token');
+    return put(
+      "/notifications/$id/read",
+      {},
       headers: {"Authorization": "Bearer $token"},
     );
   }
