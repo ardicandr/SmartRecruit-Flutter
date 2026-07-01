@@ -20,4 +20,5 @@ abstract class Routes {
   static const RESET_PASSWORD = '/reset-password';
   static const AI_INSIGHT = '/ai-insight';
   static const ADD_CERTIFICATE = '/add-certificate';
+  static const SETTINGS = '/settings';
 }

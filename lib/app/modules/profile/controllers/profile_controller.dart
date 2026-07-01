@@ -3,6 +3,8 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../../../data/providers/api_provider.dart';
 import '../../../routes/app_routes.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
 
 class ProfileController extends GetxController {
   final storage = const FlutterSecureStorage();
@@ -12,6 +14,11 @@ class ProfileController extends GetxController {
   var name = "Memuat...".obs;
   var email = "...".obs;
   var profileStrength = 0.85.obs;
+  
+  var profileImageUrl = "".obs;
+  var localImagePath = "".obs;
+
+  File? get localImageFile => localImagePath.value.isNotEmpty ? File(localImagePath.value) : null;
 
   // State untuk data sertifikat & CV
   var certificates = <dynamic>[].obs;
@@ -32,6 +39,9 @@ class ProfileController extends GetxController {
   void loadUserData() async {
     name.value = await storage.read(key: 'user_name') ?? "User";
     email.value = await storage.read(key: 'user_email') ?? "email@gmail.com";
+    
+    // Nanti bisa fetch profile image url dari API jika ada
+    // profileImageUrl.value = await apiProvider.getProfileImage();
   }
 
   // Ambil list sertifikat dari FastAPI
@@ -113,9 +123,22 @@ class ProfileController extends GetxController {
     }
   }
   
-  void logout() async {
-    await storage.deleteAll();
-    Get.offAllNamed(Routes.LOGIN);
+  Future<void> pickProfileImage() async {
+    final ImagePicker picker = ImagePicker();
+    try {
+      final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+      if (image != null) {
+        localImagePath.value = image.path;
+        profileImageUrl.value = ""; // Reset url if using local image
+        
+        // TODO: Upload image to backend
+        // await uploadProfileImage(File(image.path));
+        Get.snackbar("Sukses", "Foto profil berhasil dipilih");
+      }
+    } catch (e) {
+      Get.snackbar("Error", "Gagal memilih foto profil");
+      print("Error picking image: $e");
+    }
   }
 
   void goToNotifications() => Get.toNamed(Routes.NOTIFICATION);

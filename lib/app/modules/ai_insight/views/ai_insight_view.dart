@@ -6,7 +6,7 @@ import '../../../core/values/app_colors.dart';
 import '../controllers/ai_insight_controller.dart';
 
 class AiInsightView extends GetView<AiInsightController> {
-  const AiInsightView({Key? key}) : super(key: key);
+  const AiInsightView({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -219,7 +219,7 @@ class AiInsightView extends GetView<AiInsightController> {
           Icons.verified, 
           item['title'] ?? "", 
           item['description'] ?? ""
-        )).toList(),
+        )),
       ],
     ));
   }

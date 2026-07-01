@@ -5,7 +5,7 @@ import '../../../core/values/app_colors.dart';
 import '../controllers/assessment_controller.dart';
 
 class AssessmentView extends GetView<AssessmentController> {
-  const AssessmentView({Key? key}) : super(key: key);
+  const AssessmentView({super.key});
 
   @override
   Widget build(BuildContext context) {

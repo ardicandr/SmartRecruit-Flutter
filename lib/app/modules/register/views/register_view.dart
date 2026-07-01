@@ -5,7 +5,7 @@ import '../../../core/values/app_colors.dart';
 import '../controllers/register_controller.dart';
 
 class RegisterView extends GetView<RegisterController> {
-  const RegisterView({Key? key}) : super(key: key);
+  const RegisterView({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -177,21 +177,49 @@ class RegisterView extends GetView<RegisterController> {
   }
 
   Widget _buildOTPSection() {
-    return ElevatedButton(
-      onPressed: () => Get.snackbar("OTP", "Fitur OTP dilewati sementara"),
-      style: ElevatedButton.styleFrom(
-        backgroundColor: const Color(0xFFDCE9FF),
-        elevation: 0,
-        minimumSize: const Size(double.infinity, 48),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      ),
-      child: Text(
-        "Kirim Kode OTP",
-        style: GoogleFonts.plusJakartaSans(
-          color: AppColors.primary,
-          fontWeight: FontWeight.bold,
+    return Row(
+      children: [
+        Expanded(
+          child: TextField(
+            controller: controller.otpC,
+            keyboardType: TextInputType.number,
+            style: const TextStyle(fontSize: 14),
+            decoration: InputDecoration(
+              hintText: "6 Digit OTP",
+              hintStyle: const TextStyle(color: Color(0xFF9CA3AF)),
+              prefixIcon: const Icon(Icons.password, color: AppColors.textGray, size: 20),
+              filled: true,
+              fillColor: const Color(0xFFF8F9FF),
+              contentPadding: const EdgeInsets.symmetric(vertical: 18),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(16),
+                borderSide: BorderSide(color: AppColors.outline.withOpacity(0.4)),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(16),
+                borderSide: const BorderSide(color: AppColors.primary, width: 2),
+              ),
+            ),
+          ),
         ),
-      ),
+        const SizedBox(width: 12),
+        ElevatedButton(
+          onPressed: () => controller.requestOTP(),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: const Color(0xFFDCE9FF),
+            elevation: 0,
+            minimumSize: const Size(110, 56), // Menyesuaikan tinggi input field
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          ),
+          child: Text(
+            "Kirim Kode OTP",
+            style: GoogleFonts.plusJakartaSans(
+              color: AppColors.primary,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+      ],
     );
   }
 

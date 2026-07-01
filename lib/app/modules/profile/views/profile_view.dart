@@ -8,7 +8,7 @@ import '../controllers/profile_controller.dart';
 import '../../../data/providers/api_provider.dart';
 
 class ProfileView extends GetView<ProfileController> {
-  const ProfileView({Key? key}) : super(key: key);
+  const ProfileView({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -32,8 +32,8 @@ class ProfileView extends GetView<ProfileController> {
           ),
 
           IconButton(
-            onPressed: () => controller.logout(), 
-            icon: const Icon(Icons.logout, color: Colors.redAccent),
+            onPressed: () => Get.toNamed(Routes.SETTINGS), 
+            icon: const Icon(Icons.settings, color: Colors.black87),
           ),
         ],
       ),
@@ -159,11 +159,32 @@ class ProfileView extends GetView<ProfileController> {
     return Column(
       children: [
         Stack(alignment: Alignment.bottomRight, children: [
-          const CircleAvatar(radius: 60, backgroundColor: Colors.blue, child: Icon(Icons.person, color: Colors.white, size: 60)),
+          GestureDetector(
+            onTap: () => controller.pickProfileImage(),
+            child: Obx(() {
+              if (controller.profileImageUrl.value.isNotEmpty) {
+                return CircleAvatar(
+                  radius: 60, 
+                  backgroundImage: NetworkImage(controller.profileImageUrl.value),
+                );
+              } else if (controller.localImagePath.value.isNotEmpty) {
+                return CircleAvatar(
+                  radius: 60, 
+                  backgroundImage: FileImage(controller.localImageFile!),
+                );
+              } else {
+                return const CircleAvatar(
+                  radius: 60, 
+                  backgroundColor: Colors.blue, 
+                  child: Icon(Icons.person, color: Colors.white, size: 60)
+                );
+              }
+            }),
+          ),
           Container(
             padding: const EdgeInsets.all(4),
             decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle, boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 4)]),
-            child: const Icon(Icons.verified, color: Colors.blue, size: 24),
+            child: const Icon(Icons.camera_alt, color: Colors.blue, size: 24),
           ),
         ]),
         const SizedBox(height: 16),
@@ -481,7 +502,7 @@ class ProfileView extends GetView<ProfileController> {
 class CustomDashedButton extends StatelessWidget {
   final String text;
   final VoidCallback onTap;
-  const CustomDashedButton({Key? key, required this.text, required this.onTap}) : super(key: key);
+  const CustomDashedButton({super.key, required this.text, required this.onTap});
   @override
   Widget build(BuildContext context) {
     return GestureDetector(

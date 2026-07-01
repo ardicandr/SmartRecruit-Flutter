@@ -1,5 +1,4 @@
 import 'package:get/get.dart';
-import 'package:flutter/material.dart';
 import '../../../routes/app_routes.dart';
 import '../../../data/providers/api_provider.dart';
 

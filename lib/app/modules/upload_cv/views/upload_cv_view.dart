@@ -6,7 +6,7 @@ import '../../../routes/app_routes.dart';
 import '../controllers/upload_cv_controller.dart';
 
 class UploadCvView extends GetView<UploadCvController> {
-  const UploadCvView({Key? key}) : super(key: key);
+  const UploadCvView({super.key});
 
   @override
   Widget build(BuildContext context) {

@@ -5,7 +5,7 @@ import '../../../core/values/app_colors.dart';
 import '../controllers/interview_controller.dart';
 
 class InterviewListView extends GetView<InterviewController> {
-  const InterviewListView({Key? key}) : super(key: key);
+  const InterviewListView({super.key});
   
   @override
   Widget build(BuildContext context) {

@@ -4,6 +4,8 @@ import '../../../core/values/app_colors.dart';
 import '../controllers/certificates_controller.dart';
 
 class CertificatesView extends GetView<CertificatesController> {
+  const CertificatesView({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -140,12 +142,12 @@ class CertificatesView extends GetView<CertificatesController> {
               // Tombol Hapus (Merah)
               OutlinedButton(
                 onPressed: () => controller.deleteCertificate(index),
-                child: Icon(Icons.delete_outline, color: Colors.red[400], size: 20),
                 style: OutlinedButton.styleFrom(
                   side: BorderSide(color: Colors.grey[200]!),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   padding: EdgeInsets.all(12),
                 ),
+                child: Icon(Icons.delete_outline, color: Colors.red[400], size: 20),
               ),
             ],
           )

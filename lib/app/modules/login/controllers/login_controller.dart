@@ -50,14 +50,14 @@ class LoginController extends GetxController {
       isLoading.value = true;
       final googleSignIn = GoogleSignIn.instance;
 
-      final GoogleSignInAccount? googleUser = await googleSignIn.authenticate();
+      final GoogleSignInAccount googleUser = await googleSignIn.authenticate();
       if (googleUser == null) {
         // User membatalkan dialog login
         isLoading.value = false;
         return;
       }
 
-      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+      final GoogleSignInAuthentication googleAuth = googleUser.authentication;
       final String? idToken = googleAuth.idToken;
 
       if (idToken == null) {
@@ -98,6 +98,12 @@ class LoginController extends GetxController {
       logger.i("Login Berhasil sebagai $role");
       
       Get.offAllNamed(Routes.HOME);
+    } else if (response.statusCode == 403) {
+      String errorMsg = response.body?['message'] ?? "Verifikasi akun dulu, klik button verifikasi yang dikirim di mail baru bisa login";
+      Get.snackbar("Verifikasi Diperlukan", errorMsg, duration: const Duration(seconds: 5));
+    } else if (response.statusCode == 201) {
+      String msg = response.body?['message'] ?? "Registrasi berhasil, verifikasi dikirim ke email";
+      Get.snackbar("Verifikasi Diperlukan", msg, duration: const Duration(seconds: 5));
     } else {
       String errorMsg = response.body?['message'] ?? "Email atau password salah";
       Get.snackbar("Login Gagal", errorMsg);

@@ -37,10 +37,10 @@ class HomeController extends GetxController {
       } else {
         latestJobs.clear();
         specialJobs.clear();
-        print("Data kosong atau status code bukan 200");
+        Get.snackbar("Gagal Memuat", "Status: \${response.statusCode}. Pesan: \${response.bodyString}");
       }
     } catch (e) {
-      print("Error fetchJobs: $e");
+      Get.snackbar("Error Koneksi", "Gagal fetchJobs: \$e");
     } finally {
       isLoading(false);
     }

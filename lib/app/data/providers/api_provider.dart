@@ -1,11 +1,12 @@
 import 'package:get/get.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import '../../routes/app_routes.dart';
 
 class ApiProvider extends GetConnect {
   final storage = const FlutterSecureStorage();
 
-  static const String hostUrl = kIsWeb ? "http://127.0.0.1:5000" : "http://10.82.186.225:5000";
+  static const String hostUrl = kIsWeb ? "http://127.0.0.1:5000" : "http://10.170.46.33:5000";
   final String baseUrlStr = "$hostUrl/api";
 
   ApiProvider() {
@@ -32,6 +33,20 @@ class ApiProvider extends GetConnect {
       }
       return request;
     });
+
+    httpClient.addResponseModifier((request, response) async {
+      if (response.statusCode == 401) {
+        print("Token Kedaluwarsa, menghapus sesi...");
+        const storage = FlutterSecureStorage();
+        await storage.delete(key: 'jwt_token');
+        await storage.delete(key: 'user_name');
+        await storage.delete(key: 'user_email');
+        Get.offAllNamed(Routes.LOGIN);
+        Get.snackbar("Sesi Berakhir", "Sesi Anda telah kedaluwarsa. Silakan login kembali.", duration: const Duration(seconds: 5));
+      }
+      return response;
+    });
+
     super.onInit();
   }
 
@@ -64,6 +79,11 @@ class ApiProvider extends GetConnect {
     return post("/auth/register", form);
   }
 
+  // --- REQUEST OTP ---
+  Future<Response> requestOTP(String email) {
+    return post("/auth/request-otp", {"email": email});
+  }
+
   // --- LOGIN ---
   Future<Response> loginRequest(String email, String password) {
     return post(
@@ -76,11 +96,12 @@ class ApiProvider extends GetConnect {
   }
 
   // --- GOOGLE OAUTH ---
-  Future<Response> postGoogleAuth(String idToken) {
+  Future<Response> postGoogleAuth(String idToken, {String action = "login"}) {
     return post(
       "/auth/google",
       {
         "idToken": idToken,
+        "action": action,
       },
     );
   }
