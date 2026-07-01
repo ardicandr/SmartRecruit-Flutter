@@ -1,5 +1,4 @@
 import 'package:get/get.dart';
-import 'package:flutter/material.dart';
 import '../../../routes/app_routes.dart';
 import 'package:SmartRecruit/app/core/values/app_colors.dart';
 

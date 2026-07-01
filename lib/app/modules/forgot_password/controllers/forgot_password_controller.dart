@@ -1,6 +1,5 @@
 import 'package:get/get.dart';
 import '../../../routes/app_routes.dart';
-import '../../../core/values/app_colors.dart';
 import 'package:flutter/material.dart';
 
 class ForgotPasswordController extends GetxController {

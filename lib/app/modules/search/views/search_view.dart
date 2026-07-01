@@ -4,6 +4,8 @@ import '../../../core/values/app_colors.dart';
 import '../controllers/search_controller.dart';
 
 class SearchView extends GetView<AppSearchController> {
+  const SearchView({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -37,7 +39,7 @@ class SearchView extends GetView<AppSearchController> {
                         job['company_name'] ?? 'Unknown Company',
                         "New",
                         job['salary_range'] ?? 'Tidak ditampilkan',
-                      )).toList(),
+                      )),
                   ],
                 );
               }),

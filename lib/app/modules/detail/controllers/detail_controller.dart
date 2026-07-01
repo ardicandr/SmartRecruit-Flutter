@@ -1,6 +1,5 @@
 import 'package:get/get.dart';
 import '../../../routes/app_routes.dart';
-import 'package:flutter/material.dart';
 import '../../../data/providers/api_provider.dart';
 import '../../../data/models/job_model.dart';
 import '../../saved_jobs/controllers/saved_jobs_controller.dart';

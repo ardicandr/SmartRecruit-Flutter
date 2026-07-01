@@ -5,7 +5,7 @@ import '../../../core/values/app_colors.dart';
 import '../controllers/notification_controller.dart';
 
 class NotificationView extends GetView<NotificationController> {
-  const NotificationView({Key? key}) : super(key: key);
+  const NotificationView({super.key});
 
   @override
   Widget build(BuildContext context) {

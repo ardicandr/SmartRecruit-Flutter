@@ -5,7 +5,7 @@ import '../../../core/values/app_colors.dart';
 import '../controllers/saved_jobs_controller.dart';
 
 class SavedJobsView extends GetView<SavedJobsController> {
-  const SavedJobsView({Key? key}) : super(key: key);
+  const SavedJobsView({super.key});
 
   @override
   Widget build(BuildContext context) {

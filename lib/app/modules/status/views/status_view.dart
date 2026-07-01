@@ -220,7 +220,7 @@ class StatusView extends GetView<StatusController> {
           const SizedBox(height: 24),
           const Row(children: [Icon(Icons.history, size: 16, color: Colors.grey), SizedBox(width: 8), Text("Riwayat Aktivitas", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14))]),
           const SizedBox(height: 20),
-          ...activities.asMap().entries.map((e) => _buildTimelineStep(e.value, isLast: e.key == activities.length - 1)).toList(),
+          ...activities.asMap().entries.map((e) => _buildTimelineStep(e.value, isLast: e.key == activities.length - 1)),
           const SizedBox(height: 12),
           ElevatedButton(
             onPressed: () => controller.goToJobDetail(jobData),

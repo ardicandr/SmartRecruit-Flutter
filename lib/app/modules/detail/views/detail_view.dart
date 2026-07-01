@@ -6,7 +6,7 @@ import '../controllers/detail_controller.dart';
 import '../../../data/models/job_model.dart';
 
 class DetailView extends GetView<DetailController> {
-  const DetailView({Key? key}) : super(key: key);
+  const DetailView({super.key});
 
   @override
   Widget build(BuildContext context) {

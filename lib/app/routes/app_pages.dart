@@ -33,6 +33,10 @@ import '../modules/saved_jobs/bindings/saved_jobs_binding.dart';
 import '../modules/saved_jobs/views/saved_jobs_view.dart';
 import '../modules/search/bindings/search_binding.dart';
 import '../modules/search/views/search_view.dart';
+import '../modules/settings/bindings/settings_binding.dart';
+import '../modules/settings/bindings/settings_binding.dart';
+import '../modules/settings/views/settings_view.dart';
+import '../modules/settings/views/settings_view.dart';
 import '../modules/status/bindings/status_binding.dart';
 import '../modules/status/views/status_view.dart';
 import '../modules/upload_cv/bindings/upload_cv_binding.dart';
@@ -88,7 +92,6 @@ class AppPages {
       page: () => SearchView(),
       binding: SearchBinding(),
     ),
- 
     GetPage(
       name: Routes.STATUS,
       page: () => StatusView(),
@@ -144,6 +147,16 @@ class AppPages {
       name: Routes.ADD_CERTIFICATE,
       page: () => const AddCertificateView(),
       binding: AddCertificateBinding(),
+    ),
+    GetPage(
+      name: Routes.SETTINGS,
+      page: () => const SettingsView(),
+      binding: SettingsBinding(),
+    ),
+    GetPage(
+      name: Routes.SETTINGS,
+      page: () => const SettingsView(),
+      binding: SettingsBinding(),
     ),
   ];
 }

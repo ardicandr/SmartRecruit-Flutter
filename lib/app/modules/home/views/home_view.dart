@@ -8,6 +8,8 @@ import '../../profile/views/profile_view.dart';
 import '../../saved_jobs/views/saved_jobs_view.dart';
 
 class HomeView extends GetView<HomeController> {
+  const HomeView({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
