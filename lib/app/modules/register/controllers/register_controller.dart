@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../routes/app_routes.dart';
 import '../../../data/providers/api_provider.dart';
-import 'dart:async';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:logger/logger.dart';
@@ -21,9 +20,6 @@ class RegisterController extends GetxController {
   var isLoading = false.obs;
   var isOtpSent = false.obs;
   var isPasswordHidden = true.obs;
-  var isPasswordUnlocked = false.obs; // Tambahan untuk mengunci field password
-  var otpCooldown = 0.obs; // Timer cooldown
-  Timer? _timer;
 
   void togglePasswordVisibility() {
     isPasswordHidden.value = !isPasswordHidden.value;
@@ -56,7 +52,6 @@ class RegisterController extends GetxController {
       
       if (response.statusCode == 200) {
         isOtpSent.value = true;
-        _startCooldown();
         Get.snackbar("Berhasil", "OTP telah dikirim ke email Anda");
       } else {
         String msg = response.body?['message'] ?? "Gagal mengirim OTP";
@@ -64,27 +59,6 @@ class RegisterController extends GetxController {
       }
     } catch (e) {
       Get.snackbar("Error", "Terjadi kesalahan koneksi saat meminta OTP");
-    } finally {
-      isLoading.value = false;
-    }
-  }
-  Future<void> verifyOTP() async {
-    if (emailC.text.isEmpty || otpC.text.isEmpty) {
-      Get.snackbar("Error", "Email dan OTP wajib diisi");
-      return;
-    }
-    try {
-      isLoading.value = true;
-      final response = await apiProvider.verifyOTP(emailC.text, otpC.text);
-      if (response.statusCode == 200) {
-        isPasswordUnlocked.value = true; // Buka field password
-        Get.snackbar("Berhasil", "OTP valid! Silakan masukkan kata sandi Anda.");
-      } else {
-        String msg = response.body?['message'] ?? "OTP tidak valid";
-        Get.snackbar("Gagal", msg);
-      }
-    } catch (e) {
-      Get.snackbar("Error", "Terjadi kesalahan saat memverifikasi OTP");
     } finally {
       isLoading.value = false;
     }
@@ -199,10 +173,8 @@ class RegisterController extends GetxController {
 
   @override
   void onClose() {
-    _timer?.cancel();
     nameC.dispose();
     emailC.dispose();
-    otpC.dispose(); // jangan lupa dispose otpC juga
     passC.dispose();
     confirmPassC.dispose();
     super.onClose();
