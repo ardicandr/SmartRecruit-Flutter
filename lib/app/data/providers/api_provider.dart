@@ -1,11 +1,12 @@
 import 'package:get/get.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../../routes/app_routes.dart';
 
 class ApiProvider extends GetConnect {
   final storage = const FlutterSecureStorage();
 
-  static const String hostUrl = "http://10.170.46.33:5000";
+  static const String hostUrl = kIsWeb ? "http://127.0.0.1:5000" : "http://192.168.165.225:5000";
   final String baseUrlStr = "$hostUrl/api";
 
   ApiProvider() {
