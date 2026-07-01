@@ -25,22 +25,6 @@ class RegisterController extends GetxController {
     isPasswordHidden.value = !isPasswordHidden.value;
   }
 
-  void _startCooldown() {
-    otpCooldown.value = 60;
-    _timer?.cancel();
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (otpCooldown.value > 0) {
-        otpCooldown.value--;
-      } else {
-        timer.cancel();
-      }
-    });
-  }
-
-
-
-
-
   Future<void> requestOTP() async {
     if (emailC.text.isEmpty || !GetUtils.isEmail(emailC.text)) {
       Get.snackbar("Error", "Masukkan email yang valid terlebih dahulu");
