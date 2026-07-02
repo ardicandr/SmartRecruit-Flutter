@@ -242,4 +242,16 @@ class ApiProvider extends GetConnect {
       "new_password": newPassword,
     });
   }
+
+  // ============================================
+  // GANTI AKUN GOOGLE
+  // ============================================
+  /// Mengirim permintaan ganti akun Google ke backend.
+  /// Backend akan menyimpan [newGoogleEmail] ke pending_email
+  /// dan mengirimkan link verifikasi ke email tersebut.
+  Future<Response> requestGoogleAccountChange(String newGoogleEmail) {
+    return post("/auth/request-google-change", {
+      "new_google_email": newGoogleEmail,
+    });
+  }
 }

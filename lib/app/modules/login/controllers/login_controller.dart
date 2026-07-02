@@ -33,6 +33,7 @@ class LoginController extends GetxController {
 
     try {
       isLoading.value = true;
+      _isGoogleLogin = false; // login email/password
       logger.i("Mencoba login ke Flask: ${emailC.text}");
       
       final response = await apiProvider.loginRequest(emailC.text, passC.text);
@@ -48,6 +49,7 @@ class LoginController extends GetxController {
   Future<void> signInWithGoogle() async {
     try {
       isLoading.value = true;
+      _isGoogleLogin = true; // login via Google
       final googleSignIn = GoogleSignIn.instance;
 
       final GoogleSignInAccount googleUser = await googleSignIn.authenticate();
@@ -77,6 +79,9 @@ class LoginController extends GetxController {
     }
   }
 
+  // Flag untuk menentukan apakah response ini dari Google
+  bool _isGoogleLogin = false;
+
   void _handleAuthResponse(Response response) async {
     if (response.statusCode == 200) {
       String token = response.body['token'];
@@ -94,8 +99,13 @@ class LoginController extends GetxController {
       await storage.write(key: 'jwt_token', value: token);
       await storage.write(key: 'user_name', value: username);
       await storage.write(key: 'user_email', value: email);
+      // Simpan metode login untuk digunakan di halaman settings
+      await storage.write(
+        key: 'login_method',
+        value: _isGoogleLogin ? 'google' : 'email',
+      );
 
-      logger.i("Login Berhasil sebagai $role");
+      logger.i("Login Berhasil sebagai $role (metode: ${_isGoogleLogin ? 'google' : 'email'})");
       
       Get.offAllNamed(Routes.HOME);
     } else if (response.statusCode == 403) {
