@@ -2,7 +2,7 @@ import 'package:get/get.dart';
 import '../../../data/providers/api_provider.dart';
 
 class NotificationController extends GetxController {
-  final isLoading = true.obs;
+  final isLoading = true.obs; 
   final notifications = <Map<String, dynamic>>[].obs;
   final _api = ApiProvider();
 

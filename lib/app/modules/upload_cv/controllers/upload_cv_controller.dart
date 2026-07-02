@@ -20,6 +20,9 @@ class UploadCvController extends GetxController {
   final phoneC = TextEditingController();
   final experienceC = TextEditingController();
   var skills = <String>[].obs;
+  
+  // Data lengkap ekstraksi dari backend untuk mencegah field hilang (projects, education, dll)
+  var fullExtractedData = {}.obs;
 
   @override
   void onInit() {
@@ -37,6 +40,7 @@ class UploadCvController extends GetxController {
       final response = await apiProvider.getUserCv();
       if (response.statusCode == 200 && response.body['parsed_cv'] != null) {
         final parsed = response.body['parsed_cv'];
+        fullExtractedData.value = parsed;
         fullNameC.text = parsed['full_name'] ?? "";
         emailC.text = parsed['email'] ?? "";
         phoneC.text = parsed['phone'] ?? "";
@@ -66,10 +70,22 @@ class UploadCvController extends GetxController {
         final response = await apiProvider.scanCv(formData);
 
         if (response.statusCode == 200) {
+          // Simpan seluruh raw response agar data "experiences", "education", dll tidak hilang
+          fullExtractedData.value = response.body;
+
           fullNameC.text = response.body['full_name'] ?? "";
           emailC.text = response.body['email'] ?? "";
           phoneC.text = response.body['phone'] ?? "";
-          experienceC.text = response.body['last_experience'] ?? "";
+          
+          // last_experience mungkin diganti dengan array experiences di backend baru
+          String defaultExp = "";
+          if (response.body['last_experience'] != null) {
+            defaultExp = response.body['last_experience'];
+          } else if (response.body['experiences'] != null && response.body['experiences'] is List && response.body['experiences'].isNotEmpty) {
+            var firstExp = response.body['experiences'][0];
+            defaultExp = "${firstExp['title'] ?? ''} at ${firstExp['company'] ?? ''}";
+          }
+          experienceC.text = defaultExp;
           
           if (response.body['skills'] != null) {
             skills.assignAll(List<String>.from(response.body['skills']));
@@ -88,13 +104,15 @@ class UploadCvController extends GetxController {
     try {
       isLoading.value = true;
       
-      final parsedCvMap = {
-        "full_name": fullNameC.text,
-        "email": emailC.text,
-        "phone": phoneC.text,
-        "last_experience": experienceC.text,
-        "skills": skills.toList()
-      };
+      // Gunakan seluruh data ekstraksi awal agar field "projects", "education", dll ikut terkirim
+      final parsedCvMap = Map<String, dynamic>.from(fullExtractedData.value);
+      
+      // Update/Timpa field yang mungkin telah diedit oleh user secara manual di UI
+      parsedCvMap["full_name"] = fullNameC.text;
+      parsedCvMap["email"] = emailC.text;
+      parsedCvMap["phone"] = phoneC.text;
+      parsedCvMap["last_experience"] = experienceC.text;
+      parsedCvMap["skills"] = skills.toList();
 
       final formData = FormData({
         "parsed_cv": jsonEncode(parsedCvMap),

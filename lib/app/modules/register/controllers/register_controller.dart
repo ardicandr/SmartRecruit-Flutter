@@ -25,8 +25,6 @@ class RegisterController extends GetxController {
     isPasswordHidden.value = !isPasswordHidden.value;
   }
 
-
-
   Future<void> requestOTP() async {
     if (emailC.text.isEmpty || !GetUtils.isEmail(emailC.text)) {
       Get.snackbar("Error", "Masukkan email yang valid terlebih dahulu");
@@ -49,6 +47,7 @@ class RegisterController extends GetxController {
       isLoading.value = false;
     }
   }
+
   // Modifikasi fungsi register()
   Future<void> register() async {
     if (nameC.text.isEmpty || emailC.text.isEmpty || passC.text.isEmpty || otpC.text.isEmpty) {

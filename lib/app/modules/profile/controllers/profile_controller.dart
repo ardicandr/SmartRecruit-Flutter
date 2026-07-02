@@ -55,6 +55,13 @@ class ProfileController extends GetxController {
              profileImageUrl.value = "${ApiProvider.hostUrl}${userData['image']}";
           }
           
+          if (response.body['profile_strength'] != null) {
+            double rawStrength = (response.body['profile_strength'] as num).toDouble();
+            profileStrength.value = rawStrength / 100.0;
+          } else {
+            profileStrength.value = 0.0;
+          }
+          
           await storage.write(key: 'user_name', value: name.value);
           await storage.write(key: 'user_phone', value: phoneNumber.value);
         }

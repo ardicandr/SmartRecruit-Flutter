@@ -98,12 +98,14 @@ class InterviewDetailView extends GetView<InterviewController> {
             children: [
               Container(width: 50, height: 50, decoration: BoxDecoration(color: Colors.black, borderRadius: BorderRadius.circular(12))),
               const SizedBox(width: 16),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(data['role'], style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                  Text(data['company'], style: const TextStyle(color: Colors.grey)),
-                ],
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(data['role'], style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16), overflow: TextOverflow.ellipsis),
+                    Text(data['company'], style: const TextStyle(color: Colors.grey), overflow: TextOverflow.ellipsis),
+                  ],
+                ),
               )
             ],
           ),
@@ -154,10 +156,12 @@ class InterviewDetailView extends GetView<InterviewController> {
     return Row(children: [
       Icon(icon, size: 20, color: const Color(0xFF2170E4)),
       const SizedBox(width: 12),
-      Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text(label, style: const TextStyle(fontSize: 10, color: Colors.grey, fontWeight: FontWeight.bold)),
-        Text(value, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-      ])
+      Expanded(
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Text(label, style: const TextStyle(fontSize: 10, color: Colors.grey, fontWeight: FontWeight.bold)),
+          Text(value, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+        ]),
+      )
     ]);
   }
 

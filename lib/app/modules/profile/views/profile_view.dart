@@ -114,8 +114,67 @@ class ProfileView extends GetView<ProfileController> {
             const SizedBox(height: 32),
             
             // ... (Bagian Pengalaman & Pendidikan tetap sama) ...
-            _buildSectionHeader("Pengalaman Kerja", icon: Icons.work_outlined),
-            _buildProfileTimelineItem("Senior Frontend Engineer", "TechGiant Solutions", "2021 - SEKARANG", "Memimpin tim..."),
+            _buildSectionHeader("Pengalaman Kerja", icon: Icons.work_outlined, action: const SizedBox()),
+            Obx(() {
+              if (controller.parsedCv.isEmpty || controller.parsedCv['experiences'] == null) {
+                return _buildEmptyState("Belum ada data pengalaman kerja. Unggah CV Anda.");
+              }
+              List experiences = controller.parsedCv['experiences'];
+              if (experiences.isEmpty) {
+                return _buildEmptyState("Belum ada data pengalaman kerja.");
+              }
+              return Column(
+                children: experiences.map((exp) {
+                  return _buildProfileTimelineItem(
+                    exp['title'] ?? "-", 
+                    exp['company'] ?? "-", 
+                    exp['duration'] ?? "-", 
+                    exp['description'] ?? ""
+                  );
+                }).toList(),
+              );
+            }),
+            const SizedBox(height: 32),
+
+            _buildSectionHeader("Pendidikan", icon: Icons.school_outlined, action: const SizedBox()),
+            Obx(() {
+              if (controller.parsedCv.isEmpty || controller.parsedCv['education'] == null) {
+                return _buildEmptyState("Belum ada data pendidikan. Unggah CV Anda.");
+              }
+              List education = controller.parsedCv['education'];
+              if (education.isEmpty) {
+                return _buildEmptyState("Belum ada data pendidikan.");
+              }
+              return Column(
+                children: education.map((edu) {
+                  return _buildProfileTimelineItem(
+                    edu['degree'] ?? "-", 
+                    edu['institution'] ?? "-", 
+                    edu['duration'] ?? "-", 
+                    edu['description'] ?? ""
+                  );
+                }).toList(),
+              );
+            }),
+            const SizedBox(height: 32),
+            
+            _buildSectionHeader("Keahlian Utama", icon: Icons.star_border, action: const SizedBox()),
+            Obx(() {
+              if (controller.parsedCv.isEmpty || controller.parsedCv['skills'] == null) {
+                return _buildEmptyState("Belum ada data keahlian. Unggah CV Anda.");
+              }
+              List skills = controller.parsedCv['skills'];
+              if (skills.isEmpty) {
+                return _buildEmptyState("Belum ada data keahlian.");
+              }
+              return Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: skills.map((skill) {
+                  return _buildSkillChip(skill.toString(), true);
+                }).toList(),
+              );
+            }),
             const SizedBox(height: 32),
 
             // SECTION: SERTIFIKAT DINAMIS

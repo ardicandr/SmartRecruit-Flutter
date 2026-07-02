@@ -137,11 +137,15 @@ class SavedJobsView extends GetView<SavedJobsController> {
               ),
               Row(
                 children: [
-                  const Icon(Icons.bolt, color: Colors.purple, size: 18),
+                  Icon(
+                    Icons.bolt, 
+                    color: job['match'] == "Belum Dianalisis" ? Colors.grey : Colors.purple, 
+                    size: 18
+                  ),
                   Text(
-                    " ${job['match']} Match", 
-                    style: const TextStyle(
-                      color: Colors.purple, 
+                    job['match'] == "Belum Dianalisis" ? " Belum Dianalisis" : " ${job['match']} Match", 
+                    style: TextStyle(
+                      color: job['match'] == "Belum Dianalisis" ? Colors.grey : Colors.purple, 
                       fontWeight: FontWeight.bold, 
                       fontSize: 13
                     )

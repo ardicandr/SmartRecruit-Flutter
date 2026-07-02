@@ -13,6 +13,7 @@ class JobModel {
   int? maxApplicants;
   String? status;
   bool? isApplied;
+  int? matchScore;
 
   JobModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -30,5 +31,8 @@ class JobModel {
     maxApplicants = json['max_applicants'];
     status = json['status'];
     isApplied = json['is_applied'] ?? false;
+    if (json['match_score'] != null) {
+      matchScore = (json['match_score'] as num).toInt();
+    }
   }
 }
