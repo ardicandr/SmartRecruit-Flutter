@@ -42,16 +42,36 @@ class ResetPasswordView extends GetView<ForgotPasswordController> {
               const SizedBox(height: 40),
               
               _buildLabel("Kata Sandi Baru"),
-              _buildTextField("Masukkan kata sandi baru", Icons.lock_outline),
+              Obx(() => _buildTextField(
+                    hint: "Masukkan kata sandi baru",
+                    icon: Icons.lock_outline,
+                    controller: controller.newPassC,
+                    obscureText: controller.isPasswordHidden.value,
+                    suffixIcon: controller.isPasswordHidden.value
+                        ? Icons.visibility_outlined
+                        : Icons.visibility_off_outlined,
+                    onSuffixIconPressed: () => controller.togglePasswordVisibility(),
+                  )),
               
               const SizedBox(height: 24),
               
               _buildLabel("Konfirmasi Kata Sandi"),
-              _buildTextField("Ulangi kata sandi baru", Icons.history),
+              Obx(() => _buildTextField(
+                    hint: "Ulangi kata sandi baru",
+                    icon: Icons.history,
+                    controller: controller.confirmPassC,
+                    obscureText: controller.isConfirmPasswordHidden.value,
+                    suffixIcon: controller.isConfirmPasswordHidden.value
+                        ? Icons.visibility_outlined
+                        : Icons.visibility_off_outlined,
+                    onSuffixIconPressed: () => controller.toggleConfirmPasswordVisibility(),
+                  )),
               
               const SizedBox(height: 40),
               
-              _buildMainButton("Perbarui Kata Sandi", () => controller.updatePassword()),
+              Obx(() => controller.isLoading.value
+                  ? const Center(child: CircularProgressIndicator())
+                  : _buildMainButton("Perbarui Kata Sandi", () => controller.updatePassword())),
               
               const SizedBox(height: 20),
             ],
@@ -66,12 +86,26 @@ class ResetPasswordView extends GetView<ForgotPasswordController> {
     child: Text(label, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14))
   );
 
-  Widget _buildTextField(String hint, IconData icon) {
+  Widget _buildTextField({
+    required String hint,
+    required IconData icon,
+    TextEditingController? controller,
+    bool obscureText = true,
+    IconData? suffixIcon,
+    VoidCallback? onSuffixIconPressed,
+  }) {
     return TextField(
-      obscureText: true,
+      controller: controller,
+      obscureText: obscureText,
       decoration: InputDecoration(
         hintText: hint,
         prefixIcon: Icon(icon, color: AppColors.textGray),
+        suffixIcon: suffixIcon != null
+            ? IconButton(
+                icon: Icon(suffixIcon, color: AppColors.textGray),
+                onPressed: onSuffixIconPressed,
+              )
+            : null,
         filled: true,
         fillColor: const Color(0xFFF8F9FF),
         contentPadding: const EdgeInsets.symmetric(vertical: 18),
