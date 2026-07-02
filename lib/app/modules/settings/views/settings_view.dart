@@ -28,25 +28,41 @@ class SettingsView extends GetView<SettingsController> {
           : ListView(
               padding: const EdgeInsets.all(20),
               children: [
-                // ---- PENGATURAN AKUN ----
+                // ---- KEAMANAN AKUN (kondisional berdasarkan metode login) ----
                 _buildSectionTitle("Keamanan Akun"),
-                _buildSettingCard(children: [
-                  _buildSettingTile(
-                    icon: Icons.email_outlined,
-                    iconColor: const Color(0xFF2170E4),
-                    title: "Ganti Email",
-                    subtitle: "Ubah alamat email akun Anda",
-                    onTap: () => controller.showChangeEmailDialog(),
-                  ),
-                  const Divider(height: 1, indent: 56),
-                  _buildSettingTile(
-                    icon: Icons.lock_outline,
-                    iconColor: const Color(0xFF2170E4),
-                    title: "Ganti Password",
-                    subtitle: "Ubah password login Anda",
-                    onTap: () => controller.showChangePasswordDialog(),
-                  ),
-                ]),
+                Obx(() {
+                  if (controller.isGoogleLogin) {
+                    // Pengguna login via Google: hanya tampilkan opsi ganti akun Google
+                    return _buildSettingCard(children: [
+                      _buildSettingTile(
+                        icon: Icons.manage_accounts_outlined,
+                        iconColor: const Color(0xFF2170E4),
+                        title: "Ganti Email atau Akun Google",
+                        subtitle: "Kelola akun Google yang terhubung",
+                        onTap: () => controller.showChangeGoogleAccountDialog(),
+                      ),
+                    ]);
+                  } else {
+                    // Pengguna login via email+password: tampilkan Ganti Email & Ganti Password
+                    return _buildSettingCard(children: [
+                      _buildSettingTile(
+                        icon: Icons.email_outlined,
+                        iconColor: const Color(0xFF2170E4),
+                        title: "Ganti Email",
+                        subtitle: "Ubah alamat email akun Anda",
+                        onTap: () => controller.showChangeEmailDialog(),
+                      ),
+                      const Divider(height: 1, indent: 56),
+                      _buildSettingTile(
+                        icon: Icons.lock_outline,
+                        iconColor: const Color(0xFF2170E4),
+                        title: "Ganti Kata Sandi",
+                        subtitle: "Ubah kata sandi login Anda",
+                        onTap: () => controller.showChangePasswordDialog(),
+                      ),
+                    ]);
+                  }
+                }),
 
                 const SizedBox(height: 20),
 
