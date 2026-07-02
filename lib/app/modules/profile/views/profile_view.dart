@@ -97,8 +97,7 @@ class ProfileView extends GetView<ProfileController> {
               }
             }),
 
-            _buildSectionHeader("DETAIL INFORMASI", 
-                action: _buildSmallButton("Simpan Perubahan")),
+            _buildSectionHeader("DETAIL INFORMASI", action: const SizedBox()),
             
             // EMAIL DINAMIS
             Obx(() => _buildInfoTile(
@@ -107,7 +106,11 @@ class ProfileView extends GetView<ProfileController> {
               controller.email.value
             )),
             
-            _buildInfoTile(Icons.phone_outlined, "TELEPON", "+62 812 3456 7890"),
+            Obx(() => _buildInfoTile(
+              Icons.phone_outlined, 
+              "TELEPON", 
+              controller.phoneNumber.value
+            )),
             const SizedBox(height: 32),
             
             // ... (Bagian Pengalaman & Pendidikan tetap sama) ...
@@ -158,35 +161,25 @@ class ProfileView extends GetView<ProfileController> {
   Widget _buildHeroProfile() {
     return Column(
       children: [
-        Stack(alignment: Alignment.bottomRight, children: [
-          GestureDetector(
-            onTap: () => controller.pickProfileImage(),
-            child: Obx(() {
-              if (controller.profileImageUrl.value.isNotEmpty) {
-                return CircleAvatar(
-                  radius: 60, 
-                  backgroundImage: NetworkImage(controller.profileImageUrl.value),
-                );
-              } else if (controller.localImagePath.value.isNotEmpty) {
-                return CircleAvatar(
-                  radius: 60, 
-                  backgroundImage: FileImage(controller.localImageFile!),
-                );
-              } else {
-                return const CircleAvatar(
-                  radius: 60, 
-                  backgroundColor: Colors.blue, 
-                  child: Icon(Icons.person, color: Colors.white, size: 60)
-                );
-              }
-            }),
-          ),
-          Container(
-            padding: const EdgeInsets.all(4),
-            decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle, boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 4)]),
-            child: const Icon(Icons.camera_alt, color: Colors.blue, size: 24),
-          ),
-        ]),
+        Obx(() {
+          if (controller.profileImageUrl.value.isNotEmpty) {
+            return CircleAvatar(
+              radius: 60, 
+              backgroundImage: NetworkImage(controller.profileImageUrl.value),
+            );
+          } else if (controller.localImagePath.value.isNotEmpty) {
+            return CircleAvatar(
+              radius: 60, 
+              backgroundImage: FileImage(controller.localImageFile!),
+            );
+          } else {
+            return const CircleAvatar(
+              radius: 60, 
+              backgroundColor: Colors.blue, 
+              child: Icon(Icons.person, color: Colors.white, size: 60)
+            );
+          }
+        }),
         const SizedBox(height: 16),
         // NAMA DINAMIS
         Obx(() => Text(
@@ -194,7 +187,19 @@ class ProfileView extends GetView<ProfileController> {
           style: GoogleFonts.plusJakartaSans(fontSize: 24, fontWeight: FontWeight.w800)
         )),
         const Text("Pencari Kerja Aktif", style: TextStyle(color: Colors.grey, fontSize: 16)),
-        const SizedBox(height: 24),
+        const SizedBox(height: 16),
+        ElevatedButton.icon(
+          onPressed: () => controller.showEditProfileBottomSheet(),
+          icon: const Icon(Icons.edit, size: 16),
+          label: const Text("Edit Profil", style: TextStyle(fontWeight: FontWeight.bold)),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: const Color(0xFFF0F7FF),
+            foregroundColor: const Color(0xFF2170E4),
+            elevation: 0,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          ),
+        ),
+        const SizedBox(height: 8),
       ],
     );
   }
@@ -418,16 +423,19 @@ class ProfileView extends GetView<ProfileController> {
   }
 
   // --- REUSABLE HELPERS ---
-  Widget _buildInfoTile(IconData icon, String label, String value) {
+  Widget _buildInfoTile(IconData icon, String label, String value, {Widget? action}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: Row(children: [
         Container(padding: const EdgeInsets.all(10), decoration: BoxDecoration(color: Colors.grey[50], borderRadius: BorderRadius.circular(12)), child: Icon(icon, color: Colors.grey, size: 20)),
         const SizedBox(width: 16),
-        Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text(label, style: const TextStyle(fontSize: 10, color: Colors.grey, fontWeight: FontWeight.bold)),
-          Text(value, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-        ])
+        Expanded(
+          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Text(label, style: const TextStyle(fontSize: 10, color: Colors.grey, fontWeight: FontWeight.bold)),
+            Text(value, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+          ]),
+        ),
+        if (action != null) action,
       ]),
     );
   }

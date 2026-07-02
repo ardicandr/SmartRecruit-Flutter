@@ -13,6 +13,7 @@ class ProfileController extends GetxController {
   // State untuk data user
   var name = "Memuat...".obs;
   var email = "...".obs;
+  var phoneNumber = "08.. .... ....".obs;
   var profileStrength = 0.85.obs;
   
   var profileImageUrl = "".obs;
@@ -39,9 +40,28 @@ class ProfileController extends GetxController {
   void loadUserData() async {
     name.value = await storage.read(key: 'user_name') ?? "User";
     email.value = await storage.read(key: 'user_email') ?? "email@gmail.com";
+    phoneNumber.value = await storage.read(key: 'user_phone') ?? "08.. .... ....";
     
-    // Nanti bisa fetch profile image url dari API jika ada
-    // profileImageUrl.value = await apiProvider.getProfileImage();
+    // Fetch data terbaru dari backend
+    try {
+      final response = await apiProvider.get("/auth/profile");
+      if (response.statusCode == 200) {
+        final userData = response.body['user'];
+        if (userData != null) {
+          name.value = userData['username'] ?? userData['full_name'] ?? name.value;
+          phoneNumber.value = userData['phone_number'] ?? phoneNumber.value;
+          
+          if (userData['image'] != null && userData['image'].toString().isNotEmpty) {
+             profileImageUrl.value = "${ApiProvider.hostUrl}${userData['image']}";
+          }
+          
+          await storage.write(key: 'user_name', value: name.value);
+          await storage.write(key: 'user_phone', value: phoneNumber.value);
+        }
+      }
+    } catch (e) {
+      print("Gagal fetch data profil dari server: $e");
+    }
   }
 
   // Ambil list sertifikat dari FastAPI
@@ -123,22 +143,176 @@ class ProfileController extends GetxController {
     }
   }
   
-  Future<void> pickProfileImage() async {
-    final ImagePicker picker = ImagePicker();
+  void showEditProfileBottomSheet() {
+    TextEditingController nameCtrl = TextEditingController(text: name.value);
+    TextEditingController phoneCtrl = TextEditingController(text: phoneNumber.value);
+    var dialogImagePath = "".obs;
+
+    Get.bottomSheet(
+      Container(
+        padding: const EdgeInsets.all(24),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        ),
+        child: Wrap(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text("Ubah Profil", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                IconButton(icon: const Icon(Icons.close), onPressed: () => Get.back()),
+              ]
+            ),
+            const SizedBox(height: 24, width: double.infinity),
+            Center(
+              child: GestureDetector(
+                onTap: () => showImageSourceDialog(dialogImagePath),
+                child: Stack(
+                  alignment: Alignment.bottomRight,
+                  children: [
+                    Obx(() {
+                      if (dialogImagePath.value.isNotEmpty) {
+                        return CircleAvatar(radius: 50, backgroundImage: FileImage(File(dialogImagePath.value)));
+                      } else if (localImagePath.value.isNotEmpty) {
+                        return CircleAvatar(radius: 50, backgroundImage: FileImage(File(localImagePath.value)));
+                      } else if (profileImageUrl.value.isNotEmpty) {
+                        return CircleAvatar(radius: 50, backgroundImage: NetworkImage(profileImageUrl.value));
+                      } else {
+                        return const CircleAvatar(radius: 50, backgroundColor: Colors.blue, child: Icon(Icons.person, color: Colors.white, size: 50));
+                      }
+                    }),
+                    Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle, boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 4)]),
+                      child: const Icon(Icons.camera_alt, color: Colors.blue, size: 20),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 24, width: double.infinity),
+            TextField(
+              controller: nameCtrl,
+              decoration: const InputDecoration(labelText: "Username", hintText: "Masukkan username baru"),
+            ),
+            const SizedBox(height: 16, width: double.infinity),
+            TextField(
+              controller: phoneCtrl,
+              keyboardType: TextInputType.phone,
+              maxLength: 15,
+              decoration: const InputDecoration(
+                labelText: "Nomor Telepon", 
+                hintText: "Contoh: 081234567890",
+                counterText: "",
+              ),
+            ),
+            const SizedBox(height: 32, width: double.infinity),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF2170E4),
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+                onPressed: () {
+                  if (nameCtrl.text.trim().isNotEmpty || phoneCtrl.text.trim().isNotEmpty || dialogImagePath.value.isNotEmpty) {
+                    Get.back();
+                    updateProfileData(nameCtrl.text.trim(), phoneCtrl.text.trim(), dialogImagePath.value);
+                  } else {
+                    Get.snackbar("Error", "Minimal isi satu perubahan (Foto, Username, atau Telepon)");
+                  }
+                },
+                child: const Text("Simpan Perubahan", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+              ),
+            )
+          ],
+        ),
+      ),
+      isScrollControlled: true,
+    );
+  }
+
+  Future<void> updateProfileData(String newUsername, String newPhone, String newImagePath) async {
     try {
-      final XFile? image = await picker.pickImage(source: ImageSource.gallery);
-      if (image != null) {
-        localImagePath.value = image.path;
-        profileImageUrl.value = ""; // Reset url if using local image
+      final mapData = <String, dynamic>{};
+      
+      // Hanya kirim jika tidak kosong dan berbeda dari sebelumnya
+      if (newUsername.isNotEmpty && newUsername != name.value) {
+        mapData["username"] = newUsername;
+      }
+      if (newPhone.isNotEmpty && newPhone != phoneNumber.value) {
+        mapData["phone_number"] = newPhone;
+      }
+
+      final formData = FormData(mapData);
+
+      if (newImagePath.isNotEmpty) {
+        formData.files.add(MapEntry("image", MultipartFile(File(newImagePath), filename: newImagePath.split('/').last)));
+      }
+      
+      // Jika tidak ada data yang diubah
+      if (mapData.isEmpty && newImagePath.isEmpty) {
+        Get.snackbar("Info", "Tidak ada perubahan data yang disimpan");
+        return;
+      }
+
+      final response = await apiProvider.put("/auth/profile", formData);
+      
+      if (response.statusCode == 200) {
+        if (newUsername.isNotEmpty && newUsername != name.value) name.value = newUsername;
+        if (newPhone.isNotEmpty && newPhone != phoneNumber.value) phoneNumber.value = newPhone;
         
-        // TODO: Upload image to backend
-        // await uploadProfileImage(File(image.path));
-        Get.snackbar("Sukses", "Foto profil berhasil dipilih");
+        if (newImagePath.isNotEmpty) {
+          localImagePath.value = newImagePath;
+          profileImageUrl.value = "";
+        }
+        
+        await storage.write(key: 'user_name', value: name.value);
+        await storage.write(key: 'user_phone', value: phoneNumber.value);
+        
+        Get.snackbar("Sukses", "Profil berhasil diperbarui");
+      } else {
+        Get.snackbar("Error", "Gagal memperbarui profil: ${response.body}");
       }
     } catch (e) {
-      Get.snackbar("Error", "Gagal memilih foto profil");
-      print("Error picking image: $e");
+      print("Error updating profile: $e");
+      Get.snackbar("Error", "Terjadi kesalahan sistem");
     }
+  }
+
+  void showImageSourceDialog(RxString dialogImagePath) {
+    Get.bottomSheet(
+      Container(
+        color: Colors.white,
+        padding: const EdgeInsets.all(16),
+        child: Wrap(
+          children: [
+            ListTile(
+              leading: const Icon(Icons.photo_library),
+              title: const Text('Ambil dari Galeri'),
+              onTap: () async {
+                Get.back();
+                final ImagePicker picker = ImagePicker();
+                final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+                if (image != null) dialogImagePath.value = image.path;
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.camera_alt),
+              title: const Text('Buka Kamera'),
+              onTap: () async {
+                Get.back();
+                final ImagePicker picker = ImagePicker();
+                final XFile? image = await picker.pickImage(source: ImageSource.camera);
+                if (image != null) dialogImagePath.value = image.path;
+              },
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   void goToNotifications() => Get.toNamed(Routes.NOTIFICATION);

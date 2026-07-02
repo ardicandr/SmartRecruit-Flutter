@@ -41,24 +41,29 @@ class VerifyOtpView extends GetView<ForgotPasswordController> {
               Form(
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: List.generate(6, (index) => _buildOtpBox(context)),
+                  children: List.generate(6, (index) => _buildOtpBox(context, index)),
                 ),
               ),
               
               const SizedBox(height: 40),
-              _buildMainButton("Verifikasi Kode", () => controller.verifyOtp()),
+              Obx(() => controller.isLoading.value
+                  ? const Center(child: CircularProgressIndicator())
+                  : _buildMainButton("Verifikasi Kode", () => controller.verifyOtp())),
               const SizedBox(height: 24),
               Center(
-                child: RichText(
-                  text: TextSpan(
-                    style: const TextStyle(color: AppColors.textGray, fontSize: 14),
-                    children: [
-                      const TextSpan(text: "Belum menerima kode? "),
-                      TextSpan(
-                        text: "Kirim Ulang", 
-                        style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold)
-                      ),
-                    ],
+                child: GestureDetector(
+                  onTap: () => controller.sendInstructions(),
+                  child: RichText(
+                    text: TextSpan(
+                      style: const TextStyle(color: AppColors.textGray, fontSize: 14),
+                      children: [
+                        const TextSpan(text: "Belum menerima kode? "),
+                        TextSpan(
+                          text: "Kirim Ulang", 
+                          style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold)
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -70,7 +75,7 @@ class VerifyOtpView extends GetView<ForgotPasswordController> {
   }
 
   // Widget Kotak OTP dengan Logika Auto-Focus
-  Widget _buildOtpBox(BuildContext context) {
+  Widget _buildOtpBox(BuildContext context, int index) {
     return Container(
       width: 45,
       height: 56,
@@ -81,15 +86,23 @@ class VerifyOtpView extends GetView<ForgotPasswordController> {
       ),
       child: Center(
         child: TextField(
-          autofocus: true,
+          controller: controller.otpC[index],
+          focusNode: controller.otpFocusNodes[index],
+          autofocus: index == 0,
           onChanged: (value) {
             // LOGIKA PINDAH KE KANAN (Isi)
             if (value.length == 1) {
-              FocusScope.of(context).nextFocus();
+              if (index < 5) {
+                FocusScope.of(context).requestFocus(controller.otpFocusNodes[index + 1]);
+              } else {
+                FocusScope.of(context).unfocus();
+              }
             }
             // LOGIKA PINDAH KE KIRI (Hapus)
             if (value.isEmpty) {
-              FocusScope.of(context).previousFocus();
+              if (index > 0) {
+                FocusScope.of(context).requestFocus(controller.otpFocusNodes[index - 1]);
+              }
             }
           },
           textAlign: TextAlign.center,
