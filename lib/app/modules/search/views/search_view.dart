@@ -116,16 +116,21 @@ class SearchView extends GetView<AppSearchController> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                children: [
-                  Container(width: 40, height: 40, decoration: BoxDecoration(color: Colors.black, borderRadius: BorderRadius.circular(8))),
-                  SizedBox(width: 12),
-                  Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                    Text(title, style: TextStyle(fontWeight: FontWeight.bold)),
-                    Text(company, style: TextStyle(color: Colors.grey, fontSize: 12)),
-                  ]),
-                ],
+              Expanded(
+                child: Row(
+                  children: [
+                    Container(width: 40, height: 40, decoration: BoxDecoration(color: Colors.black, borderRadius: BorderRadius.circular(8))),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                        Text(title, style: const TextStyle(fontWeight: FontWeight.bold), maxLines: 1, overflow: TextOverflow.ellipsis),
+                        Text(company, style: const TextStyle(color: Colors.grey, fontSize: 12), maxLines: 1, overflow: TextOverflow.ellipsis),
+                      ]),
+                    ),
+                  ],
+                ),
               ),
+              const SizedBox(width: 8),
               Container(padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4), decoration: BoxDecoration(color: Colors.blue[50], borderRadius: BorderRadius.circular(8)), 
               child: Text(match, style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold, fontSize: 10))),
             ],

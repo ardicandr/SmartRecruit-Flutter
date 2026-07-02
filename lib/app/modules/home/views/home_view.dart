@@ -170,11 +170,21 @@ class HomeView extends GetView<HomeController> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Row(
+                  Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      CircleAvatar(backgroundColor: Colors.white, radius: 20, child: Icon(Icons.business, color: Colors.blue)),
-                      // Status atau badge lainnya
+                      const CircleAvatar(backgroundColor: Colors.white, radius: 20, child: Icon(Icons.business, color: Colors.blue)),
+                      if (job.matchScore != null)
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(color: Colors.purple.withOpacity(0.1), borderRadius: BorderRadius.circular(12)),
+                          child: Row(
+                            children: [
+                              const Icon(Icons.bolt, color: Colors.purple, size: 12),
+                              Text(" ${job.matchScore}% Match", style: const TextStyle(color: Colors.purple, fontSize: 10, fontWeight: FontWeight.bold)),
+                            ],
+                          ),
+                        ),
                     ],
                   ),
                   const Spacer(),
@@ -241,6 +251,17 @@ class HomeView extends GetView<HomeController> {
                         ],
                       ),
                     ),
+                    if (job.matchScore != null)
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(color: Colors.purple.withOpacity(0.1), borderRadius: BorderRadius.circular(12)),
+                        child: Row(
+                          children: [
+                            const Icon(Icons.bolt, color: Colors.purple, size: 12),
+                            Text(" ${job.matchScore}%", style: const TextStyle(color: Colors.purple, fontSize: 11, fontWeight: FontWeight.bold)),
+                          ],
+                        ),
+                      ),
                   ],
                 ),
                 const SizedBox(height: 16),
