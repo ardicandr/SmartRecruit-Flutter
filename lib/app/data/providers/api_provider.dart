@@ -5,7 +5,6 @@ import '../../routes/app_routes.dart';
 
 class ApiProvider extends GetConnect {
   final storage = const FlutterSecureStorage();
-
   static const String hostUrl = kIsWeb ? "http://127.0.0.1:5000" : "http://10.49.209.225:5000";
   final String baseUrlStr = "$hostUrl/api";
 
@@ -36,6 +35,22 @@ class ApiProvider extends GetConnect {
 
     httpClient.addResponseModifier((request, response) async {
       if (response.statusCode == 401) {
+        final path = request.url.path;
+        
+        // 1. Abaikan endpoint login/auth dasar
+        if (path.endsWith('/login') || path.endsWith('/google') || path.endsWith('/register')) {
+          return response;
+        }
+
+        // 2. Abaikan jika respon berisi info kesalahan password (bukan token expired)
+        final body = response.body;
+        if (body is Map && body.containsKey('message')) {
+          final msg = body['message'].toString().toLowerCase();
+          if (msg.contains('salah') || msg.contains('tidak valid')) {
+            return response;
+          }
+        }
+
         print("Token Kedaluwarsa, menghapus sesi...");
         const storage = FlutterSecureStorage();
         await storage.delete(key: 'jwt_token');
@@ -206,5 +221,24 @@ class ApiProvider extends GetConnect {
       "/jobs/$jobId/match-score",
       headers: {"Authorization": "Bearer $token"},
     );
+  }
+
+  // ============================================
+  // FORGOT PASSWORD / RESET PASSWORD
+  // ============================================
+  Future<Response> requestForgotPasswordOtp(String email) {
+    return post("/auth/forgot-password", {"email": email});
+  }
+
+  Future<Response> verifyResetOtp(String email, String otp) {
+    return post("/auth/verify-reset-otp", {"email": email, "otp": otp});
+  }
+
+  Future<Response> resetPassword(String email, String otp, String newPassword) {
+    return post("/auth/reset-password", {
+      "email": email,
+      "otp": otp,
+      "new_password": newPassword,
+    });
   }
 }

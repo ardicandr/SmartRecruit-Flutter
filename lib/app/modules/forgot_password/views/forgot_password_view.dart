@@ -33,36 +33,44 @@ class ForgotPasswordView extends GetView<ForgotPasswordController> {
                 "Masukkan alamat email Anda untuk menerima instruksi pengaturan ulang kata sandi.",
                 style: TextStyle(color: AppColors.textGray, fontSize: 14, height: 1.5)),
             const SizedBox(height: 40),
-            _buildLabel("Alamat Email"),
-            _buildTextField(hint: "nama@email.com", icon: Icons.email_outlined),
-            const SizedBox(height: 40),
-            _buildMainButton("Kirim Instruksi", () => controller.sendInstructions()),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildLabel(String label) => Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: Text(label, style: const TextStyle(fontWeight: FontWeight.bold)));
-
-  Widget _buildTextField({required String hint, required IconData icon}) {
-    return TextField(
-      decoration: InputDecoration(
-        hintText: hint,
-        prefixIcon: Icon(icon, color: AppColors.textGray),
-        filled: true,
-        fillColor: const Color(0xFFF8F9FF),
-        enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(16),
-            borderSide: BorderSide(color: AppColors.outline.withOpacity(0.4))),
-        focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(16),
-            borderSide: const BorderSide(color: AppColors.primary, width: 2)),
-      ),
-    );
-  }
+             _buildLabel("Alamat Email"),
+             _buildTextField(
+               hint: "nama@email.com",
+               icon: Icons.email_outlined,
+               controller: controller.emailC,
+             ),
+             const SizedBox(height: 40),
+             Obx(() => controller.isLoading.value
+                 ? const Center(child: CircularProgressIndicator())
+                 : _buildMainButton("Kirim Instruksi", () => controller.sendInstructions())),
+           ],
+         ),
+       ),
+     );
+   }
+ 
+   Widget _buildLabel(String label) => Padding(
+       padding: const EdgeInsets.only(bottom: 8),
+       child: Text(label, style: const TextStyle(fontWeight: FontWeight.bold)));
+ 
+   Widget _buildTextField({required String hint, required IconData icon, TextEditingController? controller}) {
+     return TextField(
+       controller: controller,
+       keyboardType: TextInputType.emailAddress,
+       decoration: InputDecoration(
+         hintText: hint,
+         prefixIcon: Icon(icon, color: AppColors.textGray),
+         filled: true,
+         fillColor: const Color(0xFFF8F9FF),
+         enabledBorder: OutlineInputBorder(
+             borderRadius: BorderRadius.circular(16),
+             borderSide: BorderSide(color: AppColors.outline.withOpacity(0.4))),
+         focusedBorder: OutlineInputBorder(
+             borderRadius: BorderRadius.circular(16),
+             borderSide: const BorderSide(color: AppColors.primary, width: 2)),
+       ),
+     );
+   }
 
   Widget _buildMainButton(String text, VoidCallback onTap) {
     return Container(

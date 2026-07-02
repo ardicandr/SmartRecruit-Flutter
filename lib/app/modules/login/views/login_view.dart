@@ -25,7 +25,7 @@ class LoginView extends GetView<LoginController> { // Gunakan GetView
                       fontWeight: FontWeight.w800,
                       fontSize: 20)),
               const SizedBox(height: 24),
-              Text("Selamat Datang\nKembali!",
+              Text("Selamat Datang",
                   style: GoogleFonts.plusJakartaSans(
                       fontSize: 32,
                       fontWeight: FontWeight.w800,
