@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../core/values/app_colors.dart';
 import '../controllers/detail_controller.dart';
 import '../../../data/models/job_model.dart';
+import '../../../data/providers/api_provider.dart';
 
 class DetailView extends GetView<DetailController> {
   const DetailView({super.key});
@@ -17,6 +18,7 @@ class DetailView extends GetView<DetailController> {
         'id': args.id,
         'title': args.title,
         'company': args.company,
+        'companyLogo': args.companyLogo,
         'location': args.location,
         'salary': args.salary,
         'postedAt': args.postedAt,
@@ -152,8 +154,11 @@ class DetailView extends GetView<DetailController> {
             color: const Color(0xFFEFF6FF),
             borderRadius: BorderRadius.circular(16),
             border: Border.all(color: Colors.blue[100]!),
+            image: data['companyLogo'] != null && data['companyLogo'].toString().isNotEmpty
+                ? DecorationImage(image: NetworkImage('${ApiProvider.hostUrl}${data['companyLogo']}'), fit: BoxFit.cover)
+                : null,
           ),
-          child: const Icon(Icons.apartment_rounded, color: Color(0xFF2170E4), size: 32),
+          child: (data['companyLogo'] == null || data['companyLogo'].toString().isEmpty) ? const Icon(Icons.apartment_rounded, color: Color(0xFF2170E4), size: 32) : null,
         ),
         const SizedBox(width: 16),
         Expanded(

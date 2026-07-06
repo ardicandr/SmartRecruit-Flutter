@@ -14,7 +14,7 @@ class ProfileController extends GetxController {
   var name = "Memuat...".obs;
   var email = "...".obs;
   var phoneNumber = "08.. .... ....".obs;
-  var profileStrength = 0.85.obs;
+  var profileStrength = 0.0.obs;
   
   var profileImageUrl = "".obs;
   var localImagePath = "".obs;
@@ -111,6 +111,12 @@ class ProfileController extends GetxController {
     await Get.toNamed(Routes.UPLOAD_CV, arguments: {'isFromApplication': false});
     // Refresh CV
     fetchUserCv();
+  }
+
+  void goToAiInsight() async {
+    await Get.toNamed(Routes.AI_INSIGHT, arguments: 'profile');
+    // Refresh data profil agar skor AI terbaru muncul di KEKUATAN PROFIL
+    loadUserData();
   }
 
   void confirmDelete(int id) {
@@ -274,6 +280,18 @@ class ProfileController extends GetxController {
         if (newImagePath.isNotEmpty) {
           localImagePath.value = newImagePath;
           profileImageUrl.value = "";
+          // Simpan ke storage agar HomeController juga terupdate
+          await storage.write(key: 'user_local_image', value: newImagePath);
+          await storage.delete(key: 'user_image_url');
+
+          // Jika server mengembalikan URL gambar baru, gunakan itu
+          final respUserData = response.body != null ? response.body['user'] : null;
+          if (respUserData != null && respUserData['image'] != null && respUserData['image'].toString().isNotEmpty) {
+            profileImageUrl.value = "${ApiProvider.hostUrl}${respUserData['image']}";
+            localImagePath.value = "";
+            await storage.write(key: 'user_image_url', value: profileImageUrl.value);
+            await storage.delete(key: 'user_local_image');
+          }
         }
         
         await storage.write(key: 'user_name', value: name.value);

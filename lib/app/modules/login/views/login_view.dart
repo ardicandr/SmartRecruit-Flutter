@@ -4,7 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../core/values/app_colors.dart';
 import '../controllers/login_controller.dart';
 
-class LoginView extends GetView<LoginController> { // Gunakan GetView
+class LoginView extends GetView<LoginController> { 
   const LoginView({super.key});
 
   @override
@@ -19,11 +19,25 @@ class LoginView extends GetView<LoginController> { // Gunakan GetView
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 12),
-              Text("SmartRecruit",
-                  style: GoogleFonts.plusJakartaSans(
-                      color: AppColors.primary,
-                      fontWeight: FontWeight.w800,
-                      fontSize: 20)),
+              Row(
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(6),
+                    child: Image.asset(
+                      'assets/icon_aplikasi.png',
+                      width: 24,
+                      height: 24,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Text("SmartRecruit",
+                      style: GoogleFonts.plusJakartaSans(
+                          color: AppColors.primary,
+                          fontWeight: FontWeight.w800,
+                          fontSize: 20)),
+                ],
+              ),
               const SizedBox(height: 24),
               Text("Selamat Datang",
                   style: GoogleFonts.plusJakartaSans(

@@ -5,7 +5,8 @@ import '../../routes/app_routes.dart';
 
 class ApiProvider extends GetConnect {
   final storage = const FlutterSecureStorage();
-  static const String hostUrl = kIsWeb ? "http://127.0.0.1:5000" : "http://10.49.209.225:5000";
+  // static const String hostUrl = kIsWeb ? "http://127.0.0.1:5000" : "http://10.49.209.225:5000";
+  static const String hostUrl = "http://10.133.3.33:5000";
   final String baseUrlStr = "$hostUrl/api";
 
   ApiProvider() {
@@ -252,5 +253,16 @@ class ApiProvider extends GetConnect {
     return post("/auth/request-google-change", {
       "new_google_email": newGoogleEmail,
     });
+  }
+
+  // ============================================
+  // TREN LOWONGAN
+  // ============================================
+  Future<Response> getTrendAllCategories(String filter) {
+    return get("/trends/all-categories?filter=$filter");
+  }
+
+  Future<Response> getTrendByCategory(String category, String filter) {
+    return get("/trends/by-category?category=$category&filter=$filter");
   }
 }

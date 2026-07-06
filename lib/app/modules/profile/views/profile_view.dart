@@ -288,7 +288,13 @@ class ProfileView extends GetView<ProfileController> {
         const SizedBox(height: 12),
         Obx(() => LinearProgressIndicator(value: controller.profileStrength.value, backgroundColor: Colors.blue[100], color: Colors.blue, minHeight: 6)),
         const SizedBox(height: 12),
-        const Text("Lengkapi profil untuk mencapai 100%!", textAlign: TextAlign.center, style: TextStyle(fontSize: 11, color: Colors.blue, fontStyle: FontStyle.italic)),
+        Obx(() => Text(
+          controller.profileStrength.value > 0.0 
+              ? "Skor berdasarkan analisis cerdas AI pada profil Anda" 
+              : "Lengkapi profil & jalankan analisis AI untuk mendapatkan skor!", 
+          textAlign: TextAlign.center, 
+          style: const TextStyle(fontSize: 11, color: Colors.blue, fontStyle: FontStyle.italic)
+        )),
       ]),
     );
   }
@@ -428,7 +434,7 @@ class ProfileView extends GetView<ProfileController> {
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
-              onPressed: () => Get.toNamed(Routes.AI_INSIGHT, arguments: 'profile'),
+              onPressed: () => controller.goToAiInsight(),
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF2170E4),
                 foregroundColor: Colors.white,

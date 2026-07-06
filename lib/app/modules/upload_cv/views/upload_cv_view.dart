@@ -28,16 +28,6 @@ class UploadCvView extends GetView<UploadCvController> {
         )),
         backgroundColor: Colors.white,
         elevation: 0,
-        actions: [
-          const Padding(
-            padding: EdgeInsets.only(right: 16),
-            child: CircleAvatar(
-              radius: 16,
-              backgroundColor: Colors.blue,
-              child: Icon(Icons.person, color: Colors.white, size: 20),
-            ),
-          )
-        ],
       ),
       body: Column(
         children: [

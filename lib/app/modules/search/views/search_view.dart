@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../core/values/app_colors.dart';
 import '../controllers/search_controller.dart';
+import '../../../data/providers/api_provider.dart';
 
 class SearchView extends GetView<AppSearchController> {
   const SearchView({super.key});
@@ -39,6 +40,7 @@ class SearchView extends GetView<AppSearchController> {
                         job['company_name'] ?? 'Unknown Company',
                         "New",
                         job['salary_range'] ?? 'Tidak ditampilkan',
+                        job['company_logo'],
                       )),
                   ],
                 );
@@ -106,7 +108,7 @@ class SearchView extends GetView<AppSearchController> {
     );
   }
 
-  Widget _buildJobItem(String title, String company, String match, String salary) {
+  Widget _buildJobItem(String title, String company, String match, String salary, String? companyLogo) {
     return Container(
       margin: EdgeInsets.only(bottom: 16),
       padding: EdgeInsets.all(20),
@@ -119,7 +121,17 @@ class SearchView extends GetView<AppSearchController> {
               Expanded(
                 child: Row(
                   children: [
-                    Container(width: 40, height: 40, decoration: BoxDecoration(color: Colors.black, borderRadius: BorderRadius.circular(8))),
+                    Container(
+                      width: 40, height: 40,
+                      decoration: BoxDecoration(
+                        color: Colors.black, 
+                        borderRadius: BorderRadius.circular(8),
+                        image: companyLogo != null && companyLogo.isNotEmpty
+                            ? DecorationImage(image: NetworkImage('${ApiProvider.hostUrl}$companyLogo'), fit: BoxFit.cover)
+                            : null,
+                      ),
+                      child: (companyLogo == null || companyLogo.isEmpty) ? const Icon(Icons.business, color: Colors.white, size: 20) : null,
+                    ),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [

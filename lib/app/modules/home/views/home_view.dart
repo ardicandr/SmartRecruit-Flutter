@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -6,6 +7,7 @@ import '../controllers/home_controller.dart';
 import '../../status/views/status_view.dart';
 import '../../profile/views/profile_view.dart';
 import '../../saved_jobs/views/saved_jobs_view.dart';
+import '../../../data/providers/api_provider.dart';
 
 class HomeView extends GetView<HomeController> {
   const HomeView({super.key});
@@ -39,7 +41,29 @@ class HomeView extends GetView<HomeController> {
               _buildCustomAppBar(),
               _buildGreeting(),
               _buildSearchBar(),
-              const SizedBox(height: 32),
+              const SizedBox(height: 16),
+              
+              // TREN LOWONGAN BUTTON
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: ElevatedButton.icon(
+                  onPressed: () => Get.toNamed('/trend'),
+                  icon: const Icon(Icons.trending_up, color: Colors.white, size: 20),
+                  label: const Text(
+                    "Tren Lowongan",
+                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    minimumSize: const Size(double.infinity, 50),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    elevation: 0,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 24),
               
               _buildSectionTitle("Rekomendasi Spesial"), 
               Obx(() => controller.isLoading.value 
@@ -70,10 +94,14 @@ class HomeView extends GetView<HomeController> {
       padding: const EdgeInsets.all(24),
       child: Row(
         children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(color: AppColors.primary, borderRadius: BorderRadius.circular(12)),
-            child: const Icon(Icons.star_rounded, color: Colors.white, size: 24),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: Image.asset(
+              'assets/icon_aplikasi.png',
+              width: 40,
+              height: 40,
+              fit: BoxFit.cover,
+            ),
           ),
           const SizedBox(width: 12),
           Text("SmartRecruit", style: GoogleFonts.plusJakartaSans(fontSize: 18, fontWeight: FontWeight.w800, color: AppColors.primary)),
@@ -85,41 +113,77 @@ class HomeView extends GetView<HomeController> {
           ),
           
           const SizedBox(width: 16),
-          const CircleAvatar(
-            radius: 18, 
-            backgroundColor: AppColors.primary,
-            child: Icon(Icons.person, color: Colors.white, size: 20),
-          ),
+          Obx(() {
+            if (controller.profileImageUrl.value.isNotEmpty) {
+              return CircleAvatar(
+                radius: 18,
+                backgroundImage: NetworkImage(controller.profileImageUrl.value),
+                backgroundColor: AppColors.primary,
+              );
+            } else if (controller.localImagePath.value.isNotEmpty) {
+              return CircleAvatar(
+                radius: 18,
+                backgroundImage: FileImage(controller.localImageFile!),
+                backgroundColor: AppColors.primary,
+              );
+            } else {
+              return const CircleAvatar(
+                radius: 18,
+                backgroundColor: AppColors.primary,
+                child: Icon(Icons.person, color: Colors.white, size: 20),
+              );
+            }
+          }),
         ],
       ),
     );
   }
 
   Widget _buildGreeting() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Obx(() => Text(
-            "Halo, ${controller.userName.value}! 👋", 
-            style: GoogleFonts.plusJakartaSans(
-              fontSize: 28, 
-              fontWeight: FontWeight.w800, 
-              color: AppColors.textDark
-            )
-          )),
-          const SizedBox(height: 4),
-          const Text("Temukan pekerjaan impianmu hari ini.", 
-            style: TextStyle(color: AppColors.textGray, fontSize: 14)),
-        ],
+    return Obx(() => AnimatedSize(
+      duration: const Duration(milliseconds: 400),
+      curve: Curves.easeInOut,
+      child: AnimatedOpacity(
+        duration: const Duration(milliseconds: 400),
+        opacity: controller.showGreeting.value ? 1.0 : 0.0,
+        child: controller.showGreeting.value
+            ? Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Halo, ${controller.userName.value}! 👋",
+                      style: GoogleFonts.plusJakartaSans(
+                        fontSize: 28,
+                        fontWeight: FontWeight.w800,
+                        color: AppColors.textDark,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    const Text(
+                      "Temukan pekerjaan impianmu hari ini.",
+                      style: TextStyle(color: AppColors.textGray, fontSize: 14),
+                    ),
+                    const SizedBox(height: 16),
+                  ],
+                ),
+              )
+            : const SizedBox.shrink(),
       ),
-    );
+    ));
   }
 
-    Widget _buildSearchBar() {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
+  Widget _buildSearchBar() {
+    return Obx(() => AnimatedPadding(
+      duration: const Duration(milliseconds: 400),
+      curve: Curves.easeInOut,
+      padding: EdgeInsets.fromLTRB(
+        24,
+        controller.showGreeting.value ? 24 : 16,
+        24,
+        0,
+      ),
       child: Row(
         children: [
           Expanded(
@@ -130,11 +194,11 @@ class HomeView extends GetView<HomeController> {
                 hintText: "Cari posisi, perusahaan, atau skill...",
                 hintStyle: const TextStyle(color: Colors.grey, fontSize: 13),
                 prefixIcon: const Icon(Icons.search, color: Colors.grey),
-                filled: true, 
+                filled: true,
                 fillColor: Colors.white,
                 contentPadding: const EdgeInsets.symmetric(vertical: 16),
                 enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(16), 
+                  borderRadius: BorderRadius.circular(16),
                   borderSide: BorderSide(color: Colors.grey[200]!),
                 ),
               ),
@@ -142,10 +206,45 @@ class HomeView extends GetView<HomeController> {
           ),
         ],
       ),
-    );
+    ));
   }
 
   Widget _buildHorizontalList() {
+    if (!controller.hasCvOrSkills.value) {
+      return Container(
+        margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: Colors.orange[50],
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Colors.orange[200]!),
+        ),
+        child: Column(
+          children: [
+            const Icon(Icons.assignment_ind_outlined, color: Colors.orange, size: 40),
+            const SizedBox(height: 12),
+            const Text("Profil Belum Lengkap", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+            const SizedBox(height: 8),
+            const Text(
+              "Upload CV agar mendapatkan rekomendasi sesuai dengan keahlian Anda.",
+              textAlign: TextAlign.center,
+              style: TextStyle(color: Colors.grey, fontSize: 13),
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () => controller.changeTabIndex(3), // Pergi ke tab Profil
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.orange,
+                elevation: 0,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+              child: const Text("Lengkapi Profil Sekarang", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+            ),
+          ],
+        ),
+      );
+    }
+
     if (controller.specialJobs.isEmpty) return const Center(child: Text("Tidak ada lowongan"));
     
     return SizedBox(
@@ -173,7 +272,9 @@ class HomeView extends GetView<HomeController> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const CircleAvatar(backgroundColor: Colors.white, radius: 20, child: Icon(Icons.business, color: Colors.blue)),
+                      job.companyLogo != null && job.companyLogo!.isNotEmpty
+                          ? CircleAvatar(backgroundColor: Colors.white, radius: 20, backgroundImage: NetworkImage('${ApiProvider.hostUrl}${job.companyLogo}'))
+                          : const CircleAvatar(backgroundColor: Colors.white, radius: 20, child: Icon(Icons.business, color: Colors.blue)),
                       if (job.matchScore != null)
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -238,8 +339,14 @@ class HomeView extends GetView<HomeController> {
                   children: [
                     Container(
                       width: 48, height: 48, 
-                      decoration: BoxDecoration(color: Colors.blue[50], borderRadius: BorderRadius.circular(12)),
-                      child: const Icon(Icons.work_outline, color: Colors.blue),
+                      decoration: BoxDecoration(
+                        color: Colors.blue[50], 
+                        borderRadius: BorderRadius.circular(12),
+                        image: job.companyLogo != null && job.companyLogo!.isNotEmpty
+                            ? DecorationImage(image: NetworkImage('${ApiProvider.hostUrl}${job.companyLogo}'), fit: BoxFit.cover)
+                            : null,
+                      ),
+                      child: (job.companyLogo == null || job.companyLogo!.isEmpty) ? const Icon(Icons.work_outline, color: Colors.blue) : null,
                     ),
                     const SizedBox(width: 12),
                     Expanded(

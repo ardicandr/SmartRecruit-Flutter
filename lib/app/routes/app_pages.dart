@@ -36,9 +36,10 @@ import '../modules/search/views/search_view.dart';
 import '../modules/settings/bindings/settings_binding.dart';
 import '../modules/settings/bindings/settings_binding.dart';
 import '../modules/settings/views/settings_view.dart';
-import '../modules/settings/views/settings_view.dart';
 import '../modules/status/bindings/status_binding.dart';
 import '../modules/status/views/status_view.dart';
+import '../modules/trend/bindings/trend_binding.dart';
+import '../modules/trend/views/trend_view.dart';
 import '../modules/upload_cv/bindings/upload_cv_binding.dart';
 import '../modules/upload_cv/views/upload_cv_view.dart';
 import 'app_routes.dart';
@@ -154,9 +155,9 @@ class AppPages {
       binding: SettingsBinding(),
     ),
     GetPage(
-      name: Routes.SETTINGS,
-      page: () => const SettingsView(),
-      binding: SettingsBinding(),
+      name: Routes.TREND,
+      page: () => const TrendView(),
+      binding: TrendBinding(),
     ),
   ];
 }

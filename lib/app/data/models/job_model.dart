@@ -2,6 +2,7 @@ class JobModel {
   int? id;
   String? title;
   String? company;
+  String? companyLogo;
   String? location;
   String? salary;
   String? postedAt;
@@ -17,8 +18,9 @@ class JobModel {
 
   JobModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    title = json['title'];
+    title = json['title'] ?? json['job_title'];
     company = json['company_name'] ?? json['company'];
+    companyLogo = json['company_logo'];
     location = json['location'];
     salary = json['salary_range'] ?? json['salary'];
     postedAt = json['created_at'] ?? json['posted'];

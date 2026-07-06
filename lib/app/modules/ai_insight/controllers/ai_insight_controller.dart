@@ -71,9 +71,9 @@ class AiInsightController extends GetxController {
           errorMessage.value = "Format respons tidak dikenali";
           print("=== AI INSIGHT: Body bukan Map! Tipe: ${data.runtimeType} ===");
         }
-      } else if (response.statusCode == 400 && response.body != null && response.body['message'] != null) {
+      } else if (response.body != null && response.body['message'] != null) {
         errorMessage.value = response.body['message'];
-        print("=== AI INSIGHT: Tidak ada dokumen! ===");
+        print("=== AI INSIGHT: Gagal dengan pesan! status=${response.statusCode}, message=${response.body['message']} ===");
       } else {
         errorMessage.value = "Server merespon: ${response.statusCode}";
         print("=== AI INSIGHT: Gagal! status=${response.statusCode}, body=${response.body} ===");

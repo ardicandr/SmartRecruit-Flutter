@@ -1,8 +1,11 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/values/app_colors.dart';
 import '../controllers/status_controller.dart';
+import '../../home/controllers/home_controller.dart';
+import '../../../data/providers/api_provider.dart';
 
 class StatusView extends GetView<StatusController> {
   const StatusView({super.key});
@@ -18,9 +21,30 @@ class StatusView extends GetView<StatusController> {
           IconButton(
           onPressed: () => controller.goToNotifications(), 
           icon: const Icon(Icons.notifications_none, color: Colors.black),),
-          const Padding(
-            padding: EdgeInsets.only(right: 16),
-            child: CircleAvatar(radius: 16, backgroundColor: Colors.blue, child: Icon(Icons.person, color: Colors.white, size: 20)),
+          Padding(
+            padding: const EdgeInsets.only(right: 16),
+            child: Obx(() {
+              final home = Get.find<HomeController>();
+              if (home.profileImageUrl.value.isNotEmpty) {
+                return CircleAvatar(
+                  radius: 16,
+                  backgroundImage: NetworkImage(home.profileImageUrl.value),
+                  backgroundColor: Colors.blue,
+                );
+              } else if (home.localImagePath.value.isNotEmpty) {
+                return CircleAvatar(
+                  radius: 16,
+                  backgroundImage: FileImage(File(home.localImagePath.value)),
+                  backgroundColor: Colors.blue,
+                );
+              } else {
+                return const CircleAvatar(
+                  radius: 16,
+                  backgroundColor: Colors.blue,
+                  child: Icon(Icons.person, color: Colors.white, size: 20),
+                );
+              }
+            }),
           )
         ],
       ),
@@ -76,7 +100,8 @@ class StatusView extends GetView<StatusController> {
                     match: (app['match_score'] as double).toInt(),
                     status: app['status'],
                     activities: activities,
-                    jobData: app
+                    jobData: app,
+                    companyLogo: app['company_logo'],
                   );
                 },
               );
@@ -182,7 +207,7 @@ class StatusView extends GetView<StatusController> {
     );
   }
 
-  Widget _buildJobStatusCard({required String title, required String company, required String location, required int match, required String status, required List<Map<String, dynamic>> activities, required Map<String, dynamic> jobData}) {
+  Widget _buildJobStatusCard({required String title, required String company, required String location, required int match, required String status, required List<Map<String, dynamic>> activities, required Map<String, dynamic> jobData, String? companyLogo}) {
     return Container(
       margin: const EdgeInsets.only(bottom: 20),
       padding: const EdgeInsets.all(20),
@@ -192,7 +217,17 @@ class StatusView extends GetView<StatusController> {
         children: [
           Row(
             children: [
-              Container(width: 48, height: 48, decoration: BoxDecoration(color: Colors.black, borderRadius: BorderRadius.circular(16))),
+              Container(
+                width: 48, height: 48,
+                decoration: BoxDecoration(
+                  color: Colors.black, 
+                  borderRadius: BorderRadius.circular(16),
+                  image: companyLogo != null && companyLogo.isNotEmpty
+                      ? DecorationImage(image: NetworkImage('${ApiProvider.hostUrl}$companyLogo'), fit: BoxFit.cover)
+                      : null,
+                ),
+                child: (companyLogo == null || companyLogo.isEmpty) ? const Icon(Icons.business, color: Colors.white, size: 24) : null,
+              ),
               const SizedBox(width: 12),
               Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                 Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),

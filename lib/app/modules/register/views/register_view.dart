@@ -94,13 +94,27 @@ class RegisterView extends GetView<RegisterController> {
   // --- Widget Helper ---
 
   Widget _buildBrandHeader() {
-    return Text(
-      "SmartRecruit",
-      style: GoogleFonts.plusJakartaSans(
-        color: AppColors.primary,
-        fontWeight: FontWeight.w800,
-        fontSize: 20,
-      ),
+    return Row(
+      children: [
+        ClipRRect(
+          borderRadius: BorderRadius.circular(6),
+          child: Image.asset(
+            'assets/icon_aplikasi.png',
+            width: 24,
+            height: 24,
+            fit: BoxFit.cover,
+          ),
+        ),
+        const SizedBox(width: 8),
+        Text(
+          "SmartRecruit",
+          style: GoogleFonts.plusJakartaSans(
+            color: AppColors.primary,
+            fontWeight: FontWeight.w800,
+            fontSize: 20,
+          ),
+        ),
+      ],
     );
   }
 

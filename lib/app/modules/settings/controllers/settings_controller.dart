@@ -211,41 +211,55 @@ class SettingsController extends GetxController {
   void showChangeEmailDialog() {
     final emailCtrl = TextEditingController();
     final passwordCtrl = TextEditingController();
-    Get.dialog(AlertDialog(
-      title: const Text("Ganti Email"),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Text("Masukkan email baru dan password Anda untuk konfirmasi.",
-              style: TextStyle(fontSize: 13, color: Colors.grey)),
-          const SizedBox(height: 16),
-          TextField(
-            controller: emailCtrl,
-            keyboardType: TextInputType.emailAddress,
-            decoration: const InputDecoration(labelText: "Email Baru"),
-          ),
-          const SizedBox(height: 12),
-          TextField(
-            controller: passwordCtrl,
-            obscureText: true,
-            decoration: const InputDecoration(labelText: "Password Saat Ini"),
+    bool isObscure = true;
+
+    Get.dialog(StatefulBuilder(builder: (context, setState) {
+      return AlertDialog(
+        title: const Text("Ganti Email"),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text("Masukkan email baru dan password Anda untuk konfirmasi.",
+                style: TextStyle(fontSize: 13, color: Colors.grey)),
+            const SizedBox(height: 16),
+            TextField(
+              controller: emailCtrl,
+              keyboardType: TextInputType.emailAddress,
+              decoration: const InputDecoration(labelText: "Email Baru"),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: passwordCtrl,
+              obscureText: isObscure,
+              decoration: InputDecoration(
+                labelText: "Password Saat Ini",
+                suffixIcon: IconButton(
+                  icon: Icon(isObscure ? Icons.visibility_off : Icons.visibility),
+                  onPressed: () {
+                    setState(() {
+                      isObscure = !isObscure;
+                    });
+                  },
+                ),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(onPressed: () => Get.back(), child: const Text("Batal")),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF2170E4)),
+            onPressed: () {
+              if (emailCtrl.text.trim().isNotEmpty && passwordCtrl.text.isNotEmpty) {
+                Get.back();
+                changeEmail(emailCtrl.text.trim(), passwordCtrl.text);
+              }
+            },
+            child: const Text("Simpan", style: TextStyle(color: Colors.white)),
           ),
         ],
-      ),
-      actions: [
-        TextButton(onPressed: () => Get.back(), child: const Text("Batal")),
-        ElevatedButton(
-          style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF2170E4)),
-          onPressed: () {
-            if (emailCtrl.text.trim().isNotEmpty && passwordCtrl.text.isNotEmpty) {
-              Get.back();
-              changeEmail(emailCtrl.text.trim(), passwordCtrl.text);
-            }
-          },
-          child: const Text("Simpan", style: TextStyle(color: Colors.white)),
-        ),
-      ],
-    ));
+      );
+    }));
   }
 
   Future<void> changeEmail(String newEmail, String password) async {
@@ -257,9 +271,65 @@ class SettingsController extends GetxController {
       });
       isLoading.value = false;
       if (response.statusCode == 200) {
-        await storage.write(key: 'user_email', value: newEmail);
-        Get.snackbar("Sukses", "Email berhasil diubah. Silakan verifikasi email baru Anda.",
-            backgroundColor: Colors.green, colorText: Colors.white);
+        // Jangan ubah storage.write user_email, karena belum diverifikasi
+        Get.dialog(
+          AlertDialog(
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16)),
+            title: const Row(
+              children: [
+                Icon(Icons.mark_email_read_outlined,
+                    color: Color(0xFF2170E4), size: 26),
+                SizedBox(width: 10),
+                Text("Verifikasi Dikirim!"),
+              ],
+            ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  "Link verifikasi telah dikirim ke:",
+                  style: TextStyle(fontSize: 13, color: Colors.grey),
+                ),
+                const SizedBox(height: 8),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 14, vertical: 10),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFE8F0FE),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    newEmail,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w700,
+                      color: Color(0xFF2170E4),
+                      fontSize: 13,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 14),
+                const Text(
+                  "Buka email tersebut dan klik link verifikasi. "
+                  "Akun Anda akan tetap aktif menggunakan email lama hingga Anda mengkonfirmasi pergantian.",
+                  style:
+                      TextStyle(fontSize: 12, color: Colors.grey, height: 1.5),
+                ),
+              ],
+            ),
+            actions: [
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF2170E4)),
+                onPressed: () => Get.back(),
+                child: const Text("Mengerti",
+                    style: TextStyle(color: Colors.white)),
+              ),
+            ],
+          ),
+        );
       } else {
         Get.snackbar("Error", response.body['message'] ?? "Gagal mengganti email",
             backgroundColor: Colors.red, colorText: Colors.white);
@@ -277,52 +347,89 @@ class SettingsController extends GetxController {
     final oldPassCtrl = TextEditingController();
     final newPassCtrl = TextEditingController();
     final confirmPassCtrl = TextEditingController();
-    Get.dialog(AlertDialog(
-      title: const Text("Ganti Password"),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          TextField(
-            controller: oldPassCtrl,
-            obscureText: true,
-            decoration: const InputDecoration(labelText: "Password Lama"),
-          ),
-          const SizedBox(height: 12),
-          TextField(
-            controller: newPassCtrl,
-            obscureText: true,
-            decoration: const InputDecoration(labelText: "Password Baru"),
-          ),
-          const SizedBox(height: 12),
-          TextField(
-            controller: confirmPassCtrl,
-            obscureText: true,
-            decoration: const InputDecoration(labelText: "Konfirmasi Password Baru"),
+    
+    bool isObscureOld = true;
+    bool isObscureNew = true;
+    bool isObscureConfirm = true;
+
+    Get.dialog(StatefulBuilder(builder: (context, setState) {
+      return AlertDialog(
+        title: const Text("Ganti Password"),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: oldPassCtrl,
+              obscureText: isObscureOld,
+              decoration: InputDecoration(
+                labelText: "Password Lama",
+                suffixIcon: IconButton(
+                  icon: Icon(isObscureOld ? Icons.visibility_off : Icons.visibility),
+                  onPressed: () {
+                    setState(() {
+                      isObscureOld = !isObscureOld;
+                    });
+                  },
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: newPassCtrl,
+              obscureText: isObscureNew,
+              decoration: InputDecoration(
+                labelText: "Password Baru",
+                suffixIcon: IconButton(
+                  icon: Icon(isObscureNew ? Icons.visibility_off : Icons.visibility),
+                  onPressed: () {
+                    setState(() {
+                      isObscureNew = !isObscureNew;
+                    });
+                  },
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: confirmPassCtrl,
+              obscureText: isObscureConfirm,
+              decoration: InputDecoration(
+                labelText: "Konfirmasi Password Baru",
+                suffixIcon: IconButton(
+                  icon: Icon(isObscureConfirm ? Icons.visibility_off : Icons.visibility),
+                  onPressed: () {
+                    setState(() {
+                      isObscureConfirm = !isObscureConfirm;
+                    });
+                  },
+                ),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(onPressed: () => Get.back(), child: const Text("Batal")),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF2170E4)),
+            onPressed: () {
+              if (newPassCtrl.text != confirmPassCtrl.text) {
+                Get.snackbar("Error", "Password baru tidak cocok");
+                return;
+              }
+              if (newPassCtrl.text.length < 6) {
+                Get.snackbar("Error", "Password minimal 6 karakter");
+                return;
+              }
+              if (oldPassCtrl.text.isNotEmpty && newPassCtrl.text.isNotEmpty) {
+                Get.back();
+                changePassword(oldPassCtrl.text, newPassCtrl.text);
+              }
+            },
+            child: const Text("Simpan", style: TextStyle(color: Colors.white)),
           ),
         ],
-      ),
-      actions: [
-        TextButton(onPressed: () => Get.back(), child: const Text("Batal")),
-        ElevatedButton(
-          style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF2170E4)),
-          onPressed: () {
-            if (newPassCtrl.text != confirmPassCtrl.text) {
-              Get.snackbar("Error", "Password baru tidak cocok");
-              return;
-            }
-            if (newPassCtrl.text.length < 6) {
-              Get.snackbar("Error", "Password minimal 6 karakter");
-              return;
-            }
-            if (oldPassCtrl.text.isNotEmpty && newPassCtrl.text.isNotEmpty) {
-              Get.back();
-              changePassword(oldPassCtrl.text, newPassCtrl.text);
-            }
-          },
-          child: const Text("Simpan", style: TextStyle(color: Colors.white)),
-        ),
-      ],
-    ));
+      );
+    }));
   }
 
   Future<void> changePassword(String oldPassword, String newPassword) async {
@@ -351,40 +458,52 @@ class SettingsController extends GetxController {
   // =========================================================
   void showDeleteAccountDialog() {
     final confirmCtrl = TextEditingController();
-    Get.dialog(AlertDialog(
-      title: const Text("Hapus Akun", style: TextStyle(color: Colors.red)),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Text(
-            "Tindakan ini PERMANEN dan tidak dapat dibatalkan. Semua data Anda akan terhapus selamanya.",
-            style: TextStyle(fontSize: 13, color: Colors.grey),
-          ),
-          const SizedBox(height: 16),
-          TextField(
-            controller: confirmCtrl,
-            obscureText: true,
-            decoration: const InputDecoration(
-              labelText: "Masukkan Password untuk Konfirmasi",
-              border: OutlineInputBorder(),
+    bool isObscure = true;
+
+    Get.dialog(StatefulBuilder(builder: (context, setState) {
+      return AlertDialog(
+        title: const Text("Hapus Akun", style: TextStyle(color: Colors.red)),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
+              "Tindakan ini PERMANEN dan tidak dapat dibatalkan. Semua data Anda akan terhapus selamanya.",
+              style: TextStyle(fontSize: 13, color: Colors.grey),
             ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: confirmCtrl,
+              obscureText: isObscure,
+              decoration: InputDecoration(
+                labelText: "Masukkan Password untuk Konfirmasi",
+                border: const OutlineInputBorder(),
+                suffixIcon: IconButton(
+                  icon: Icon(isObscure ? Icons.visibility_off : Icons.visibility),
+                  onPressed: () {
+                    setState(() {
+                      isObscure = !isObscure;
+                    });
+                  },
+                ),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(onPressed: () => Get.back(), child: const Text("Batal")),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            onPressed: () {
+              if (confirmCtrl.text.isNotEmpty) {
+                Get.back();
+                deleteAccount(confirmCtrl.text);
+              }
+            },
+            child: const Text("Hapus Akun", style: TextStyle(color: Colors.white)),
           ),
         ],
-      ),
-      actions: [
-        TextButton(onPressed: () => Get.back(), child: const Text("Batal")),
-        ElevatedButton(
-          style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-          onPressed: () {
-            if (confirmCtrl.text.isNotEmpty) {
-              Get.back();
-              deleteAccount(confirmCtrl.text);
-            }
-          },
-          child: const Text("Hapus Akun", style: TextStyle(color: Colors.white)),
-        ),
-      ],
-    ));
+      );
+    }));
   }
 
   Future<void> deleteAccount(String password) async {

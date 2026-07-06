@@ -1,8 +1,11 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/values/app_colors.dart';
 import '../controllers/saved_jobs_controller.dart';
+import '../../home/controllers/home_controller.dart';
+import '../../../data/providers/api_provider.dart';
 
 class SavedJobsView extends GetView<SavedJobsController> {
   const SavedJobsView({super.key});
@@ -29,13 +32,30 @@ class SavedJobsView extends GetView<SavedJobsController> {
             onPressed: () => controller.goToNotifications(), 
             icon: const Icon(Icons.notifications_none, color: Colors.black)
           ),
-          const Padding(
-            padding: EdgeInsets.only(right: 16),
-            child: CircleAvatar(
-              radius: 16, 
-              backgroundColor: Colors.blue,
-              child: Icon(Icons.person, color: Colors.white, size: 20),
-            ),
+          Padding(
+            padding: const EdgeInsets.only(right: 16),
+            child: Obx(() {
+              final home = Get.find<HomeController>();
+              if (home.profileImageUrl.value.isNotEmpty) {
+                return CircleAvatar(
+                  radius: 16,
+                  backgroundImage: NetworkImage(home.profileImageUrl.value),
+                  backgroundColor: Colors.blue,
+                );
+              } else if (home.localImagePath.value.isNotEmpty) {
+                return CircleAvatar(
+                  radius: 16,
+                  backgroundImage: FileImage(File(home.localImagePath.value)),
+                  backgroundColor: Colors.blue,
+                );
+              } else {
+                return const CircleAvatar(
+                  radius: 16,
+                  backgroundColor: Colors.blue,
+                  child: Icon(Icons.person, color: Colors.white, size: 20),
+                );
+              }
+            }),
           )
         ],
       ),
@@ -81,9 +101,12 @@ class SavedJobsView extends GetView<SavedJobsController> {
                 width: 48, height: 48,
                 decoration: BoxDecoration(
                   color: Colors.grey[900], 
-                  borderRadius: BorderRadius.circular(16)
+                  borderRadius: BorderRadius.circular(16),
+                  image: job['company_logo'] != null && job['company_logo'].toString().isNotEmpty
+                      ? DecorationImage(image: NetworkImage('${ApiProvider.hostUrl}${job['company_logo']}'), fit: BoxFit.cover)
+                      : null,
                 ),
-                child: const Icon(Icons.business, color: Colors.white, size: 24),
+                child: (job['company_logo'] == null || job['company_logo'].toString().isEmpty) ? const Icon(Icons.business, color: Colors.white, size: 24) : null,
               ),
               const SizedBox(width: 12),
               Expanded(
