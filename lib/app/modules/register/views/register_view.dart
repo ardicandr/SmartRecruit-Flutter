@@ -25,7 +25,7 @@ class RegisterView extends GetView<RegisterController> {
 
               _buildLabel("Nama Lengkap"),
               _buildTextField(
-                hint: "John Doe", 
+                hint: "John Doe",
                 icon: Icons.person_outline,
                 controller: controller.nameC,
               ),
@@ -33,43 +33,49 @@ class RegisterView extends GetView<RegisterController> {
 
               _buildLabel("Alamat Email"),
               _buildTextField(
-                hint: "nama@email.com", 
+                hint: "nama@email.com",
                 icon: Icons.email_outlined,
                 controller: controller.emailC,
               ),
               const SizedBox(height: 12),
-              
-              _buildOTPSection(), 
+
+              _buildOTPSection(),
               const SizedBox(height: 24),
 
               _buildLabel("Kata Sandi"),
-              Obx(() => _buildTextField(
-                hint: "••••••••",
-                icon: Icons.lock_outline,
-                controller: controller.passC,
-                isPassword: controller.isPasswordHidden.value,
-                suffixIcon: controller.isPasswordHidden.value 
-                    ? Icons.visibility_outlined 
-                    : Icons.visibility_off_outlined,
-                onSuffixIconPressed: () => controller.togglePasswordVisibility(),
-              )),
+              Obx(
+                () => _buildTextField(
+                  hint: "••••••••",
+                  icon: Icons.lock_outline,
+                  controller: controller.passC,
+                  isPassword: controller.isPasswordHidden.value,
+                  suffixIcon: controller.isPasswordHidden.value
+                      ? Icons.visibility_outlined
+                      : Icons.visibility_off_outlined,
+                  onSuffixIconPressed: () =>
+                      controller.togglePasswordVisibility(),
+                ),
+              ),
               const SizedBox(height: 24),
 
               _buildLabel("Konfirmasi Kata Sandi"),
-              Obx(() => _buildTextField(
-                hint: "••••••••",
-                icon: Icons.history, 
-                controller: controller.confirmPassC,
-                isPassword: controller.isPasswordHidden.value,
-              )),
+              Obx(
+                () => _buildTextField(
+                  hint: "••••••••",
+                  icon: Icons.history,
+                  controller: controller.confirmPassC,
+                  isPassword: controller.isPasswordHidden.value,
+                ),
+              ),
               const SizedBox(height: 24),
 
               // TOMBOL DAFTAR
-              Obx(() => controller.isLoading.value 
-                ? const Center(child: CircularProgressIndicator())
-                : _buildMainButton("Buat Akun", Icons.arrow_forward, () {
-                    controller.register();
-                  })
+              Obx(
+                () => controller.isLoading.value
+                    ? const Center(child: CircularProgressIndicator())
+                    : _buildMainButton("Buat Akun", Icons.arrow_forward, () {
+                        controller.register();
+                      }),
               ),
 
               const SizedBox(height: 24),
@@ -77,8 +83,8 @@ class RegisterView extends GetView<RegisterController> {
               const SizedBox(height: 24),
 
               _buildSocialButton(
-                "Daftar dengan Google", 
-                "https://cdn1.iconfinder.com/data/icons/google-s-logo/150/Google_Icons-09-512.png"
+                "Daftar dengan Google",
+                "https://cdn1.iconfinder.com/data/icons/google-s-logo/150/Google_Icons-09-512.png",
               ),
 
               const SizedBox(height: 48),
@@ -150,7 +156,11 @@ class RegisterView extends GetView<RegisterController> {
       padding: const EdgeInsets.only(bottom: 8, left: 4),
       child: Text(
         label,
-        style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold, color: AppColors.textDark, fontSize: 14),
+        style: GoogleFonts.plusJakartaSans(
+          fontWeight: FontWeight.bold,
+          color: AppColors.textDark,
+          fontSize: 14,
+        ),
       ),
     );
   }
@@ -171,10 +181,12 @@ class RegisterView extends GetView<RegisterController> {
         hintText: hint,
         hintStyle: const TextStyle(color: Color(0xFF9CA3AF)),
         prefixIcon: Icon(icon, color: AppColors.textGray, size: 20),
-        suffixIcon: suffixIcon != null ? IconButton(
-          icon: Icon(suffixIcon, color: AppColors.textGray, size: 20),
-          onPressed: onSuffixIconPressed,
-        ) : null,
+        suffixIcon: suffixIcon != null
+            ? IconButton(
+                icon: Icon(suffixIcon, color: AppColors.textGray, size: 20),
+                onPressed: onSuffixIconPressed,
+              )
+            : null,
         filled: true,
         fillColor: const Color(0xFFF8F9FF),
         contentPadding: const EdgeInsets.symmetric(vertical: 18),
@@ -201,17 +213,26 @@ class RegisterView extends GetView<RegisterController> {
             decoration: InputDecoration(
               hintText: "6 Digit OTP",
               hintStyle: const TextStyle(color: Color(0xFF9CA3AF)),
-              prefixIcon: const Icon(Icons.password, color: AppColors.textGray, size: 20),
+              prefixIcon: const Icon(
+                Icons.password,
+                color: AppColors.textGray,
+                size: 20,
+              ),
               filled: true,
               fillColor: const Color(0xFFF8F9FF),
               contentPadding: const EdgeInsets.symmetric(vertical: 18),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(16),
-                borderSide: BorderSide(color: AppColors.outline.withOpacity(0.4)),
+                borderSide: BorderSide(
+                  color: AppColors.outline.withOpacity(0.4),
+                ),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(16),
-                borderSide: const BorderSide(color: AppColors.primary, width: 2),
+                borderSide: const BorderSide(
+                  color: AppColors.primary,
+                  width: 2,
+                ),
               ),
             ),
           ),
@@ -223,7 +244,9 @@ class RegisterView extends GetView<RegisterController> {
             backgroundColor: const Color(0xFFDCE9FF),
             elevation: 0,
             minimumSize: const Size(110, 56), // Menyesuaikan tinggi input field
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
           ),
           child: Text(
             "Kirim Kode OTP",
@@ -245,7 +268,11 @@ class RegisterView extends GetView<RegisterController> {
         borderRadius: BorderRadius.circular(16),
         color: const Color(0xFF0058BE),
         boxShadow: [
-          BoxShadow(color: const Color(0xFF0058BE).withOpacity(0.3), blurRadius: 15, offset: const Offset(0, 8))
+          BoxShadow(
+            color: const Color(0xFF0058BE).withOpacity(0.3),
+            blurRadius: 15,
+            offset: const Offset(0, 8),
+          ),
         ],
       ),
       child: Material(
@@ -257,7 +284,14 @@ class RegisterView extends GetView<RegisterController> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(text, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+                Text(
+                  text,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
                 const SizedBox(width: 8),
                 Icon(icon, color: Colors.white, size: 20),
               ],
@@ -274,7 +308,15 @@ class RegisterView extends GetView<RegisterController> {
         Expanded(child: Divider(color: AppColors.outline.withOpacity(0.5))),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Text("ATAU", style: GoogleFonts.plusJakartaSans(color: AppColors.textGray, fontSize: 12, fontWeight: FontWeight.bold, letterSpacing: 1.5)),
+          child: Text(
+            "ATAU",
+            style: GoogleFonts.plusJakartaSans(
+              color: AppColors.textGray,
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 1.5,
+            ),
+          ),
         ),
         Expanded(child: Divider(color: AppColors.outline.withOpacity(0.5))),
       ],
@@ -295,12 +337,21 @@ class RegisterView extends GetView<RegisterController> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Image.network(logoUrl, width: 24, height: 24, 
-              errorBuilder: (c, e, s) => const Icon(Icons.g_mobiledata, size: 30)),
+            Image.network(
+              logoUrl,
+              width: 24,
+              height: 24,
+              errorBuilder: (c, e, s) =>
+                  const Icon(Icons.g_mobiledata, size: 30),
+            ),
             const SizedBox(width: 12),
             Text(
               text,
-              style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold, color: AppColors.textDark, fontSize: 14),
+              style: GoogleFonts.plusJakartaSans(
+                fontWeight: FontWeight.bold,
+                color: AppColors.textDark,
+                fontSize: 14,
+              ),
             ),
           ],
         ),
@@ -311,13 +362,22 @@ class RegisterView extends GetView<RegisterController> {
   Widget _buildLoginRedirect() {
     return Center(
       child: GestureDetector(
-        onTap: () => controller.goToLogin(), 
+        onTap: () => controller.goToLogin(),
         child: RichText(
           text: TextSpan(
-            style: GoogleFonts.plusJakartaSans(color: AppColors.textGray, fontSize: 14),
+            style: GoogleFonts.plusJakartaSans(
+              color: AppColors.textGray,
+              fontSize: 14,
+            ),
             children: [
               const TextSpan(text: "Sudah memiliki akun? "),
-              TextSpan(text: "Masuk di sini", style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold)),
+              TextSpan(
+                text: "Masuk di sini",
+                style: TextStyle(
+                  color: AppColors.primary,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ],
           ),
         ),

@@ -4,7 +4,7 @@ import '../../../data/providers/api_provider.dart';
 
 class SavedJobsController extends GetxController {
   final ApiProvider apiProvider = Get.find<ApiProvider>();
-  
+
   var savedJobs = <dynamic>[].obs;
   var isLoading = false.obs;
 

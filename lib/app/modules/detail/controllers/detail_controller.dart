@@ -7,7 +7,7 @@ import '../../home/controllers/home_controller.dart';
 
 class DetailController extends GetxController {
   final ApiProvider apiProvider = Get.find<ApiProvider>();
-  
+
   var isBookmarked = false.obs;
   var jobId = 0;
 
@@ -24,7 +24,7 @@ class DetailController extends GetxController {
         isBookmarked.value = args['is_bookmarked'] ?? false;
       }
     }
-    
+
     // Fetch AI Match Score when view is opened
     fetchMatchScore();
   }
@@ -36,11 +36,11 @@ class DetailController extends GetxController {
 
   void fetchMatchScore() async {
     if (jobId == 0) return;
-    
+
     try {
       isMatchLoading.value = true;
       final response = await apiProvider.getJobMatchScore(jobId);
-      
+
       if (response.statusCode == 200) {
         final data = response.body;
         if (data['overall_score'] != null) {
@@ -60,34 +60,40 @@ class DetailController extends GetxController {
 
   void toggleBookmark() async {
     if (jobId == 0) return;
-    
+
     // Optimistic UI update
     isBookmarked.value = !isBookmarked.value;
     bool newStatus = isBookmarked.value;
-    
+
     try {
       final response = await apiProvider.toggleBookmark(jobId, newStatus);
       if (response.statusCode == 200 || response.statusCode == 201) {
         Get.snackbar(
           newStatus ? "Lowongan Tersimpan" : "Dihapus",
-          newStatus ? "Berhasil disimpan ke Bookmark." : "Dihapus dari Bookmark.",
+          newStatus
+              ? "Berhasil disimpan ke Bookmark."
+              : "Dihapus dari Bookmark.",
           snackPosition: SnackPosition.BOTTOM,
         );
-        
+
         // Refresh SavedJobsController jika sudah aktif
         if (Get.isRegistered<SavedJobsController>()) {
           Get.find<SavedJobsController>().fetchBookmarks();
         }
-        
+
         // Sinkronkan state ke HomeController agar ikon di home ikut berubah
         if (Get.isRegistered<HomeController>()) {
           final homeCtrl = Get.find<HomeController>();
-          final int idxLatest = homeCtrl.latestJobs.indexWhere((j) => j.id == jobId);
+          final int idxLatest = homeCtrl.latestJobs.indexWhere(
+            (j) => j.id == jobId,
+          );
           if (idxLatest != -1) {
             homeCtrl.latestJobs[idxLatest].isBookmarked = newStatus;
             homeCtrl.latestJobs.refresh();
           }
-          final int idxSpecial = homeCtrl.specialJobs.indexWhere((j) => j.id == jobId);
+          final int idxSpecial = homeCtrl.specialJobs.indexWhere(
+            (j) => j.id == jobId,
+          );
           if (idxSpecial != -1) {
             homeCtrl.specialJobs[idxSpecial].isBookmarked = newStatus;
             homeCtrl.specialJobs.refresh();
@@ -104,5 +110,8 @@ class DetailController extends GetxController {
     }
   }
 
-  void applyNow() => Get.toNamed(Routes.UPLOAD_CV, arguments: {'isFromApplication': true, 'jobId': jobId});
+  void applyNow() => Get.toNamed(
+    Routes.UPLOAD_CV,
+    arguments: {'isFromApplication': true, 'jobId': jobId},
+  );
 }

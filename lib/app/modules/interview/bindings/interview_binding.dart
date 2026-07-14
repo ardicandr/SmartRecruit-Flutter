@@ -5,8 +5,6 @@ import '../controllers/interview_controller.dart';
 class InterviewBinding extends Bindings {
   @override
   void dependencies() {
-    Get.lazyPut<InterviewController>(
-      () => InterviewController(),
-    );
+    Get.lazyPut<InterviewController>(() => InterviewController());
   }
 }

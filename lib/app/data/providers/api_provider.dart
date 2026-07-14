@@ -6,7 +6,7 @@ import '../../routes/app_routes.dart';
 class ApiProvider extends GetConnect {
   final storage = const FlutterSecureStorage();
   // static const String hostUrl = kIsWeb ? "http://127.0.0.1:5000" : "http://10.49.209.225:5000";
-  static const String hostUrl = "http://192.168.0.167:5000";
+  static const String hostUrl = "http://10.49.209.225:5000";
   final String baseUrlStr = "$hostUrl/api";
 
   ApiProvider() {
@@ -20,11 +20,11 @@ class ApiProvider extends GetConnect {
     baseUrl = baseUrlStr;
     // Set timeout to 120 seconds explicitly on the HTTP client
     httpClient.timeout = const Duration(seconds: 120);
-    
+
     httpClient.addRequestModifier<dynamic>((request) async {
       const storage = FlutterSecureStorage();
       String? token = await storage.read(key: 'jwt_token');
-      
+
       if (token != null) {
         request.headers['Authorization'] = 'Bearer $token';
         print("TOKEN TERKIRIM: $token");
@@ -37,9 +37,11 @@ class ApiProvider extends GetConnect {
     httpClient.addResponseModifier((request, response) async {
       if (response.statusCode == 401) {
         final path = request.url.path;
-        
+
         // 1. Abaikan endpoint login/auth dasar
-        if (path.endsWith('/login') || path.endsWith('/google') || path.endsWith('/register')) {
+        if (path.endsWith('/login') ||
+            path.endsWith('/google') ||
+            path.endsWith('/register')) {
           return response;
         }
 
@@ -58,7 +60,11 @@ class ApiProvider extends GetConnect {
         await storage.delete(key: 'user_name');
         await storage.delete(key: 'user_email');
         Get.offAllNamed(Routes.LOGIN);
-        Get.snackbar("Sesi Berakhir", "Sesi Anda telah kedaluwarsa. Silakan login kembali.", duration: const Duration(seconds: 5));
+        Get.snackbar(
+          "Sesi Berakhir",
+          "Sesi Anda telah kedaluwarsa. Silakan login kembali.",
+          duration: const Duration(seconds: 5),
+        );
       }
       return response;
     });
@@ -67,31 +73,30 @@ class ApiProvider extends GetConnect {
   }
 
   // --- JOBS ---
-  
+
   Future<Response> getJobs() => get("/jobs/explore");
 
   Future<Response> getJobDetail(int id) => get("/jobs/$id");
 
   Future<Response> applyJob(int jobId) {
-    return post(
-      "/jobs/$jobId/apply",
-      {"job_id": jobId},
-    );
+    return post("/jobs/$jobId/apply", {"job_id": jobId});
   }
 
- 
   Future<Response> getMyApplications() => get("/my-applications");
 
   // --- REGISTER
-  Future<Response> registerPelamar(String username, String email, String password) {
-
+  Future<Response> registerPelamar(
+    String username,
+    String email,
+    String password,
+  ) {
     final form = FormData({
       'username': username,
       'email': email,
       'password': password,
       'role': 'Pelamar',
     });
-    
+
     return post("/auth/register", form);
   }
 
@@ -102,24 +107,12 @@ class ApiProvider extends GetConnect {
 
   // --- LOGIN ---
   Future<Response> loginRequest(String email, String password) {
-    return post(
-      "/auth/login", 
-      {
-        "email": email,
-        "password": password,
-      },
-    );
+    return post("/auth/login", {"email": email, "password": password});
   }
 
   // --- GOOGLE OAUTH ---
   Future<Response> postGoogleAuth(String idToken, {String action = "login"}) {
-    return post(
-      "/auth/google",
-      {
-        "idToken": idToken,
-        "action": action,
-      },
-    );
+    return post("/auth/google", {"idToken": idToken, "action": action});
   }
 
   Future<Response> deleteCertificate(int id) => delete("/certificates/$id");
@@ -129,10 +122,7 @@ class ApiProvider extends GetConnect {
   // ============================================
   Future<Response> getBookmarks() async {
     final token = await storage.read(key: 'jwt_token');
-    return get(
-      "/bookmarks",
-      headers: {"Authorization": "Bearer $token"},
-    );
+    return get("/bookmarks", headers: {"Authorization": "Bearer $token"});
   }
 
   Future<Response> toggleBookmark(int jobId, bool isAdding) async {
@@ -156,28 +146,17 @@ class ApiProvider extends GetConnect {
   // ============================================
   Future<Response> scanCv(FormData data) async {
     final token = await storage.read(key: 'jwt_token');
-    return post(
-      "/cv/scan",
-      data,
-      headers: {"Authorization": "Bearer $token"},
-    );
+    return post("/cv/scan", data, headers: {"Authorization": "Bearer $token"});
   }
 
   Future<Response> saveCv(FormData data) async {
     final token = await storage.read(key: 'jwt_token');
-    return post(
-      "/cv/save",
-      data,
-      headers: {"Authorization": "Bearer $token"},
-    );
+    return post("/cv/save", data, headers: {"Authorization": "Bearer $token"});
   }
 
   Future<Response> getUserCv() async {
     final token = await storage.read(key: 'jwt_token');
-    return get(
-      "/profile/cv",
-      headers: {"Authorization": "Bearer $token"},
-    );
+    return get("/profile/cv", headers: {"Authorization": "Bearer $token"});
   }
 
   // ============================================
@@ -186,7 +165,7 @@ class ApiProvider extends GetConnect {
   Future<Response> getAiAnalysis() async {
     final token = await storage.read(key: 'jwt_token');
     print("=== API PROVIDER: Calling /ai/analyze-profile ===");
-    
+
     return get(
       "/ai/analyze-profile",
       headers: {"Authorization": "Bearer $token"},
@@ -198,10 +177,7 @@ class ApiProvider extends GetConnect {
   // ============================================
   Future<Response> getNotifications() async {
     final token = await storage.read(key: 'jwt_token');
-    return get(
-      "/notifications",
-      headers: {"Authorization": "Bearer $token"},
-    );
+    return get("/notifications", headers: {"Authorization": "Bearer $token"});
   }
 
   Future<Response> markNotificationRead(int id) async {

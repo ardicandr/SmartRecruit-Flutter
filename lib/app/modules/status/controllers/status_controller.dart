@@ -8,6 +8,31 @@ class StatusController extends GetxController {
   var myApplications = [].obs;
   var filterIndex = 0.obs;
 
+  List<dynamic> get filteredApplications {
+    if (filterIndex.value == 1) {
+      // Aktif
+      return myApplications
+          .where(
+            (app) =>
+                app['status'] != 'Accepted' &&
+                app['status'] != 'Rejected' &&
+                app['status'] != 'Closed',
+          )
+          .toList();
+    } else if (filterIndex.value == 2) {
+      // Selesai
+      return myApplications
+          .where(
+            (app) =>
+                app['status'] == 'Accepted' ||
+                app['status'] == 'Rejected' ||
+                app['status'] == 'Closed',
+          )
+          .toList();
+    }
+    return myApplications;
+  }
+
   @override
   void onInit() {
     fetchMyApps();
@@ -29,13 +54,13 @@ class StatusController extends GetxController {
   void changeFilter(int index) => filterIndex.value = index;
 
   void goToInterview() {
-    Get.toNamed(Routes.INTERVIEW); 
+    Get.toNamed(Routes.INTERVIEW);
   }
 
   void goToNotifications() {
     Get.toNamed(Routes.NOTIFICATION);
   }
-  
+
   void goToJobDetail(Map<String, dynamic> jobData) {
     Get.toNamed(Routes.DETAIL, arguments: jobData);
   }

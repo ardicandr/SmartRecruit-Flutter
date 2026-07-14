@@ -10,19 +10,22 @@ class AddCertificateController extends GetxController {
   final titleC = TextEditingController();
   final institutionC = TextEditingController();
   final dateC = TextEditingController();
-  
+
   var isLoading = false.obs;
   XFile? selectedImage;
 
   Future<void> pickAndScanImage() async {
     selectedImage = await _picker.pickImage(source: ImageSource.gallery);
-    
+
     if (selectedImage != null) {
       try {
         isLoading.value = true;
         // 1. Jalankan OCR
         final formData = FormData({
-          'file': MultipartFile(await selectedImage!.readAsBytes(), filename: 'cert.jpg'),
+          'file': MultipartFile(
+            await selectedImage!.readAsBytes(),
+            filename: 'cert.jpg',
+          ),
         });
 
         final response = await apiProvider.post("/ocr/scan", formData);
@@ -56,11 +59,10 @@ class AddCertificateController extends GetxController {
         "date": dateC.text,
         if (selectedImage != null)
           "file": MultipartFile(
-            await selectedImage!.readAsBytes(), 
-            filename: 'certificate.jpg'
+            await selectedImage!.readAsBytes(),
+            filename: 'certificate.jpg',
           ),
       });
-
 
       final response = await apiProvider.post("/certificates/add", formData);
 
@@ -74,5 +76,4 @@ class AddCertificateController extends GetxController {
       isLoading.value = false;
     }
   }
-
 }

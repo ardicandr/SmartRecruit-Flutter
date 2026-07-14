@@ -14,10 +14,14 @@ class VerifyOtpView extends GetView<ForgotPasswordController> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         leading: IconButton(
-          onPressed: () => Get.back(), 
-          icon: const Icon(Icons.arrow_back_ios_new, size: 20, color: Colors.black)
+          onPressed: () => Get.back(),
+          icon: const Icon(
+            Icons.arrow_back_ios_new,
+            size: 20,
+            color: Colors.black,
+          ),
         ),
-        backgroundColor: Colors.white, 
+        backgroundColor: Colors.white,
         elevation: 0,
       ),
       body: SingleChildScrollView(
@@ -27,40 +31,63 @@ class VerifyOtpView extends GetView<ForgotPasswordController> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text("Verifikasi Email ✉️",
-                style: GoogleFonts.plusJakartaSans(fontSize: 28, fontWeight: FontWeight.w800, color: AppColors.textDark)
+              Text(
+                "Verifikasi Email ✉️",
+                style: GoogleFonts.plusJakartaSans(
+                  fontSize: 28,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.textDark,
+                ),
               ),
               const SizedBox(height: 12),
               const Text(
-                "Masukkan 6 digit kode yang baru saja kami kirimkan ke email Anda.", 
-                style: TextStyle(color: AppColors.textGray, fontSize: 14, height: 1.5)
+                "Masukkan 6 digit kode yang baru saja kami kirimkan ke email Anda.",
+                style: TextStyle(
+                  color: AppColors.textGray,
+                  fontSize: 14,
+                  height: 1.5,
+                ),
               ),
               const SizedBox(height: 40),
-              
+
               // GRID INPUT OTP
               Form(
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: List.generate(6, (index) => _buildOtpBox(context, index)),
+                  children: List.generate(
+                    6,
+                    (index) => _buildOtpBox(context, index),
+                  ),
                 ),
               ),
-              
+
               const SizedBox(height: 40),
-              Obx(() => controller.isLoading.value
-                  ? const Center(child: CircularProgressIndicator())
-                  : _buildMainButton("Verifikasi Kode", () => controller.verifyOtp())),
+              Obx(
+                () => controller.isLoading.value
+                    ? const Center(child: CircularProgressIndicator())
+                    : _buildMainButton(
+                        "Verifikasi Kode",
+                        () => controller.verifyOtp(),
+                      ),
+              ),
               const SizedBox(height: 24),
               Center(
                 child: GestureDetector(
                   onTap: () => controller.sendInstructions(),
                   child: RichText(
                     text: TextSpan(
-                      style: const TextStyle(color: AppColors.textGray, fontSize: 14),
+                      style: const TextStyle(
+                        color: AppColors.textGray,
+                        fontSize: 14,
+                      ),
                       children: [
                         const TextSpan(text: "Belum menerima kode? "),
                         TextSpan(
-                          text: "Kirim Ulang", 
-                          style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold)
+                          text: "Kirim Ulang",
+                          style: TextStyle(
+                            color: AppColors.primary,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ],
                     ),
@@ -93,7 +120,9 @@ class VerifyOtpView extends GetView<ForgotPasswordController> {
             // LOGIKA PINDAH KE KANAN (Isi)
             if (value.length == 1) {
               if (index < 5) {
-                FocusScope.of(context).requestFocus(controller.otpFocusNodes[index + 1]);
+                FocusScope.of(
+                  context,
+                ).requestFocus(controller.otpFocusNodes[index + 1]);
               } else {
                 FocusScope.of(context).unfocus();
               }
@@ -101,7 +130,9 @@ class VerifyOtpView extends GetView<ForgotPasswordController> {
             // LOGIKA PINDAH KE KIRI (Hapus)
             if (value.isEmpty) {
               if (index > 0) {
-                FocusScope.of(context).requestFocus(controller.otpFocusNodes[index - 1]);
+                FocusScope.of(
+                  context,
+                ).requestFocus(controller.otpFocusNodes[index - 1]);
               }
             }
           },
@@ -113,8 +144,8 @@ class VerifyOtpView extends GetView<ForgotPasswordController> {
             FilteringTextInputFormatter.digitsOnly, // Hanya boleh angka
           ],
           decoration: const InputDecoration(
-            border: InputBorder.none, 
-            counterText: ""
+            border: InputBorder.none,
+            counterText: "",
           ),
         ),
       ),
@@ -123,17 +154,17 @@ class VerifyOtpView extends GetView<ForgotPasswordController> {
 
   Widget _buildMainButton(String text, VoidCallback onTap) {
     return Container(
-      width: double.infinity, 
+      width: double.infinity,
       height: 60,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16), 
+        borderRadius: BorderRadius.circular(16),
         color: AppColors.primary,
         boxShadow: [
           BoxShadow(
             color: AppColors.primary.withOpacity(0.3),
             blurRadius: 12,
             offset: const Offset(0, 6),
-          )
+          ),
         ],
       ),
       child: Material(
@@ -142,9 +173,14 @@ class VerifyOtpView extends GetView<ForgotPasswordController> {
           onTap: onTap,
           borderRadius: BorderRadius.circular(16),
           child: Center(
-            child: Text(text, 
-              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)
-            )
+            child: Text(
+              text,
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
+            ),
           ),
         ),
       ),

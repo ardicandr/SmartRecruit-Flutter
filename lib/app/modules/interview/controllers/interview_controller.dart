@@ -20,8 +20,13 @@ class InterviewController extends GetxController {
       if (response.statusCode == 200) {
         List data = response.body;
         // Filter only those that are scheduled for interview
-        var filtered = data.where((app) => app['status'] == 'Interview' && app['interview_date'] != null).toList();
-        
+        var filtered = data
+            .where(
+              (app) =>
+                  app['status'] == 'Interview' && app['interview_date'] != null,
+            )
+            .toList();
+
         List<Map<String, dynamic>> formattedList = [];
         for (var f in filtered) {
           formattedList.add({

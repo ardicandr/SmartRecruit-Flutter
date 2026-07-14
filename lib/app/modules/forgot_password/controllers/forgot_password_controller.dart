@@ -12,8 +12,14 @@ class ForgotPasswordController extends GetxController {
   final emailC = TextEditingController();
 
   // Controllers for OTP Verification View (6 digits)
-  final List<TextEditingController> otpC = List.generate(6, (index) => TextEditingController());
-  final List<FocusNode> otpFocusNodes = List.generate(6, (index) => FocusNode());
+  final List<TextEditingController> otpC = List.generate(
+    6,
+    (index) => TextEditingController(),
+  );
+  final List<FocusNode> otpFocusNodes = List.generate(
+    6,
+    (index) => FocusNode(),
+  );
 
   // Controllers for Reset Password View
   final newPassC = TextEditingController();
@@ -22,18 +28,30 @@ class ForgotPasswordController extends GetxController {
   var isPasswordHidden = true.obs;
   var isConfirmPasswordHidden = true.obs;
 
-  void togglePasswordVisibility() => isPasswordHidden.value = !isPasswordHidden.value;
-  void toggleConfirmPasswordVisibility() => isConfirmPasswordHidden.value = !isConfirmPasswordHidden.value;
+  void togglePasswordVisibility() =>
+      isPasswordHidden.value = !isPasswordHidden.value;
+  void toggleConfirmPasswordVisibility() =>
+      isConfirmPasswordHidden.value = !isConfirmPasswordHidden.value;
 
   // 1. Fungsi Kirim Instruksi ke Email (Kirim OTP)
   Future<void> sendInstructions() async {
     final email = emailC.text.trim();
     if (email.isEmpty) {
-      Get.snackbar("Error", "Email wajib diisi", backgroundColor: Colors.red, colorText: Colors.white);
+      Get.snackbar(
+        "Error",
+        "Email wajib diisi",
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
       return;
     }
     if (!GetUtils.isEmail(email)) {
-      Get.snackbar("Error", "Alamat email tidak valid", backgroundColor: Colors.red, colorText: Colors.white);
+      Get.snackbar(
+        "Error",
+        "Alamat email tidak valid",
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
       return;
     }
 
@@ -42,17 +60,30 @@ class ForgotPasswordController extends GetxController {
       final response = await apiProvider.requestForgotPasswordOtp(email);
       isLoading.value = false;
       if (response.statusCode == 200) {
-        Get.snackbar("Sukses", "Kode OTP verifikasi berhasil dikirim ke email Anda",
-            backgroundColor: Colors.green, colorText: Colors.white);
+        Get.snackbar(
+          "Sukses",
+          "Kode OTP verifikasi berhasil dikirim ke email Anda",
+          backgroundColor: Colors.green,
+          colorText: Colors.white,
+        );
         Get.toNamed(Routes.VERIFY_OTP);
       } else {
         String msg = response.body?['message'] ?? "Gagal mengirim instruksi";
-        Get.snackbar("Gagal", msg, backgroundColor: Colors.red, colorText: Colors.white);
+        Get.snackbar(
+          "Gagal",
+          msg,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
       }
     } catch (e) {
       isLoading.value = false;
-      Get.snackbar("Error", "Terjadi kesalahan sistem saat menghubungi server",
-          backgroundColor: Colors.red, colorText: Colors.white);
+      Get.snackbar(
+        "Error",
+        "Terjadi kesalahan sistem saat menghubungi server",
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
     }
   }
 
@@ -62,8 +93,12 @@ class ForgotPasswordController extends GetxController {
     final otp = otpC.map((c) => c.text.trim()).join();
 
     if (otp.length < 6) {
-      Get.snackbar("Error", "Kode OTP lengkap 6 digit wajib diisi",
-          backgroundColor: Colors.red, colorText: Colors.white);
+      Get.snackbar(
+        "Error",
+        "Kode OTP lengkap 6 digit wajib diisi",
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
       return;
     }
 
@@ -72,17 +107,31 @@ class ForgotPasswordController extends GetxController {
       final response = await apiProvider.verifyResetOtp(email, otp);
       isLoading.value = false;
       if (response.statusCode == 200) {
-        Get.snackbar("Sukses", "Kode OTP valid. Silakan buat kata sandi baru.",
-            backgroundColor: Colors.green, colorText: Colors.white);
+        Get.snackbar(
+          "Sukses",
+          "Kode OTP valid. Silakan buat kata sandi baru.",
+          backgroundColor: Colors.green,
+          colorText: Colors.white,
+        );
         Get.toNamed(Routes.RESET_PASSWORD);
       } else {
-        String msg = response.body?['message'] ?? "Kode OTP salah atau kedaluwarsa";
-        Get.snackbar("Gagal", msg, backgroundColor: Colors.red, colorText: Colors.white);
+        String msg =
+            response.body?['message'] ?? "Kode OTP salah atau kedaluwarsa";
+        Get.snackbar(
+          "Gagal",
+          msg,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
       }
     } catch (e) {
       isLoading.value = false;
-      Get.snackbar("Error", "Terjadi kesalahan sistem saat menghubungi server",
-          backgroundColor: Colors.red, colorText: Colors.white);
+      Get.snackbar(
+        "Error",
+        "Terjadi kesalahan sistem saat menghubungi server",
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
     }
   }
 
@@ -94,20 +143,32 @@ class ForgotPasswordController extends GetxController {
     final confirmPass = confirmPassC.text;
 
     if (newPass.isEmpty || confirmPass.isEmpty) {
-      Get.snackbar("Error", "Semua kolom kata sandi wajib diisi",
-          backgroundColor: Colors.red, colorText: Colors.white);
+      Get.snackbar(
+        "Error",
+        "Semua kolom kata sandi wajib diisi",
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
       return;
     }
 
     if (newPass.length < 6) {
-      Get.snackbar("Error", "Kata sandi minimal 6 karakter",
-          backgroundColor: Colors.red, colorText: Colors.white);
+      Get.snackbar(
+        "Error",
+        "Kata sandi minimal 6 karakter",
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
       return;
     }
 
     if (newPass != confirmPass) {
-      Get.snackbar("Error", "Konfirmasi kata sandi tidak cocok",
-          backgroundColor: Colors.red, colorText: Colors.white);
+      Get.snackbar(
+        "Error",
+        "Konfirmasi kata sandi tidak cocok",
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
       return;
     }
 
@@ -134,12 +195,21 @@ class ForgotPasswordController extends GetxController {
         );
       } else {
         String msg = response.body?['message'] ?? "Gagal mereset kata sandi";
-        Get.snackbar("Gagal", msg, backgroundColor: Colors.red, colorText: Colors.white);
+        Get.snackbar(
+          "Gagal",
+          msg,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
       }
     } catch (e) {
       isLoading.value = false;
-      Get.snackbar("Error", "Terjadi kesalahan sistem saat menghubungi server",
-          backgroundColor: Colors.red, colorText: Colors.white);
+      Get.snackbar(
+        "Error",
+        "Terjadi kesalahan sistem saat menghubungi server",
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
     }
   }
 

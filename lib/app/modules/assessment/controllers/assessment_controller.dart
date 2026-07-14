@@ -16,7 +16,7 @@ class AssessmentController extends GetxController {
 
   void nextQuestion(int score) {
     answers.add(score);
-    
+
     if (currentQuestion.value < questions.length - 1) {
       currentQuestion.value++;
     } else {

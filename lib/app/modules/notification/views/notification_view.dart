@@ -14,9 +14,20 @@ class NotificationView extends GetView<NotificationController> {
       appBar: AppBar(
         leading: IconButton(
           onPressed: () => Get.back(),
-          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black, size: 20),
+          icon: const Icon(
+            Icons.arrow_back_ios_new,
+            color: Colors.black,
+            size: 20,
+          ),
         ),
-        title: Text("Notifikasi", style: GoogleFonts.plusJakartaSans(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 18)),
+        title: Text(
+          "Notifikasi",
+          style: GoogleFonts.plusJakartaSans(
+            color: Colors.black,
+            fontWeight: FontWeight.bold,
+            fontSize: 18,
+          ),
+        ),
         backgroundColor: Colors.white,
         elevation: 0,
       ),
@@ -35,10 +46,12 @@ class NotificationView extends GetView<NotificationController> {
             final title = notif['title'] ?? 'Info';
             final desc = notif['message'] ?? '';
             final isNew = notif['is_read'] != true;
-            
+
             // Format time simply or parse iso
             final rawTime = notif['created_at']?.toString() ?? '';
-            final time = rawTime.length > 10 ? rawTime.substring(0, 10) : rawTime;
+            final time = rawTime.length > 10
+                ? rawTime.substring(0, 10)
+                : rawTime;
 
             return GestureDetector(
               onTap: () => controller.markAsRead(index),
@@ -47,8 +60,12 @@ class NotificationView extends GetView<NotificationController> {
                 desc: desc,
                 time: time,
                 isNew: isNew,
-                icon: title.toLowerCase().contains('interview') ? Icons.calendar_today : Icons.notifications_active,
-                iconColor: title.toLowerCase().contains('interview') ? Colors.blue : Colors.green,
+                icon: title.toLowerCase().contains('interview')
+                    ? Icons.calendar_today
+                    : Icons.notifications_active,
+                iconColor: title.toLowerCase().contains('interview')
+                    ? Colors.blue
+                    : Colors.green,
               ),
             );
           },
@@ -57,19 +74,31 @@ class NotificationView extends GetView<NotificationController> {
     );
   }
 
-  Widget _buildNotificationItem({required String title, required String desc, required String time, required bool isNew, required IconData icon, required Color iconColor}) {
+  Widget _buildNotificationItem({
+    required String title,
+    required String desc,
+    required String time,
+    required bool isNew,
+    required IconData icon,
+    required Color iconColor,
+  }) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
-        border: isNew ? Border.all(color: const Color(0xFF2170E4).withOpacity(0.3)) : null,
+        border: isNew
+            ? Border.all(color: const Color(0xFF2170E4).withOpacity(0.3))
+            : null,
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          CircleAvatar(backgroundColor: iconColor.withOpacity(0.1), child: Icon(icon, color: iconColor, size: 20)),
+          CircleAvatar(
+            backgroundColor: iconColor.withOpacity(0.1),
+            child: Icon(icon, color: iconColor, size: 20),
+          ),
           const SizedBox(width: 16),
           Expanded(
             child: Column(
@@ -78,20 +107,41 @@ class NotificationView extends GetView<NotificationController> {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Expanded(child: Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14))),
+                    Expanded(
+                      child: Text(
+                        title,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ),
                     if (isNew) ...[
                       const SizedBox(width: 8),
                       const Padding(
                         padding: EdgeInsets.only(top: 4.0),
-                        child: CircleAvatar(radius: 4, backgroundColor: Colors.red),
+                        child: CircleAvatar(
+                          radius: 4,
+                          backgroundColor: Colors.red,
+                        ),
                       ),
                     ],
                   ],
                 ),
                 const SizedBox(height: 4),
-                Text(desc, style: TextStyle(color: Colors.grey[600], fontSize: 12, height: 1.4)),
+                Text(
+                  desc,
+                  style: TextStyle(
+                    color: Colors.grey[600],
+                    fontSize: 12,
+                    height: 1.4,
+                  ),
+                ),
                 const SizedBox(height: 8),
-                Text(time, style: const TextStyle(color: Colors.grey, fontSize: 10)),
+                Text(
+                  time,
+                  style: const TextStyle(color: Colors.grey, fontSize: 10),
+                ),
               ],
             ),
           ),
