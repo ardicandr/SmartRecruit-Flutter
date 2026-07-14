@@ -47,7 +47,8 @@ class OnboardingView extends GetView<OnboardingController> {
               child: PageView.builder(
                 controller: controller.pageController,
                 onPageChanged: (index) {
-                  controller.currentPage.value = index % controller.onboardingData.length;
+                  controller.currentPage.value =
+                      index % controller.onboardingData.length;
                 },
                 itemBuilder: (context, index) {
                   int realIndex = index % controller.onboardingData.length;
@@ -70,19 +71,21 @@ class OnboardingView extends GetView<OnboardingController> {
                                 color: Colors.black.withOpacity(0.05),
                                 blurRadius: 20,
                                 offset: const Offset(0, 10),
-                              )
+                              ),
                             ],
                           ),
                         ),
                       ),
-                      
+
                       // Content Area (Teks Deskripsi)
                       Container(
                         padding: const EdgeInsets.fromLTRB(32, 40, 32, 20),
                         width: double.infinity,
                         decoration: const BoxDecoration(
                           color: Colors.white,
-                          borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
+                          borderRadius: BorderRadius.vertical(
+                            top: Radius.circular(32),
+                          ),
                         ),
                         child: Column(
                           children: [
@@ -120,26 +123,28 @@ class OnboardingView extends GetView<OnboardingController> {
               child: Column(
                 children: [
                   // Dots Indicator
-                  Obx(() => Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: List.generate(
-                          controller.onboardingData.length,
-                          (index) => AnimatedContainer(
-                            duration: const Duration(milliseconds: 300),
-                            margin: const EdgeInsets.only(right: 8),
-                            height: 8,
-                            width: controller.currentPage.value == index ? 24 : 8,
-                            decoration: BoxDecoration(
-                              color: controller.currentPage.value == index
-                                  ? AppColors.primary
-                                  : Colors.blue[100],
-                              borderRadius: BorderRadius.circular(4),
-                            ),
+                  Obx(
+                    () => Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: List.generate(
+                        controller.onboardingData.length,
+                        (index) => AnimatedContainer(
+                          duration: const Duration(milliseconds: 300),
+                          margin: const EdgeInsets.only(right: 8),
+                          height: 8,
+                          width: controller.currentPage.value == index ? 24 : 8,
+                          decoration: BoxDecoration(
+                            color: controller.currentPage.value == index
+                                ? AppColors.primary
+                                : Colors.blue[100],
+                            borderRadius: BorderRadius.circular(4),
                           ),
                         ),
-                      )),
+                      ),
+                    ),
+                  ),
                   const SizedBox(height: 40),
-                  
+
                   // Tombol Tunggal "Mulai Sekarang"
                   ElevatedButton(
                     onPressed: () => controller.goToLogin(),
@@ -163,7 +168,7 @@ class OnboardingView extends GetView<OnboardingController> {
                   ),
                 ],
               ),
-            )
+            ),
           ],
         ),
       ),

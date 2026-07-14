@@ -34,50 +34,59 @@ class AssessmentView extends GetView<AssessmentController> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // 1. Progress Bar
-            Obx(() => Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      "Pertanyaan ${controller.currentQuestion.value + 1}",
-                      style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF2170E4)),
-                    ),
-                    Text(
-                      "${controller.currentQuestion.value + 1}/${controller.questions.length}",
-                      style: const TextStyle(color: Colors.grey),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
-                  child: LinearProgressIndicator(
-                    value: (controller.currentQuestion.value + 1) / controller.questions.length,
-                    minHeight: 8,
-                    backgroundColor: Colors.blue[50],
-                    color: const Color(0xFF2170E4),
+            Obx(
+              () => Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "Pertanyaan ${controller.currentQuestion.value + 1}",
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF2170E4),
+                        ),
+                      ),
+                      Text(
+                        "${controller.currentQuestion.value + 1}/${controller.questions.length}",
+                        style: const TextStyle(color: Colors.grey),
+                      ),
+                    ],
                   ),
-                ),
-              ],
-            )),
+                  const SizedBox(height: 12),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: LinearProgressIndicator(
+                      value:
+                          (controller.currentQuestion.value + 1) /
+                          controller.questions.length,
+                      minHeight: 8,
+                      backgroundColor: Colors.blue[50],
+                      color: const Color(0xFF2170E4),
+                    ),
+                  ),
+                ],
+              ),
+            ),
 
             const SizedBox(height: 60),
 
             // 2. Pertanyaan
             Expanded(
               child: Center(
-                child: Obx(() => Text(
-                  controller.questions[controller.currentQuestion.value],
-                  textAlign: TextAlign.center,
-                  style: GoogleFonts.plusJakartaSans(
-                    fontSize: 22,
-                    fontWeight: FontWeight.w800,
-                    color: const Color(0xFF0B1C30),
-                    height: 1.4,
+                child: Obx(
+                  () => Text(
+                    controller.questions[controller.currentQuestion.value],
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w800,
+                      color: const Color(0xFF0B1C30),
+                      height: 1.4,
+                    ),
                   ),
-                )),
+                ),
               ),
             ),
 
@@ -93,7 +102,10 @@ class AssessmentView extends GetView<AssessmentController> {
             // 4. Likert Scale Buttons (1-5)
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: List.generate(5, (index) => _buildChoiceButton(index + 1)),
+              children: List.generate(
+                5,
+                (index) => _buildChoiceButton(index + 1),
+              ),
             ),
 
             const SizedBox(height: 20),
@@ -102,8 +114,16 @@ class AssessmentView extends GetView<AssessmentController> {
             const Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text("Sangat Tidak\nSetuju", textAlign: TextAlign.center, style: TextStyle(fontSize: 11, color: Colors.grey)),
-                Text("Sangat\nSetuju", textAlign: TextAlign.center, style: TextStyle(fontSize: 11, color: Colors.grey)),
+                Text(
+                  "Sangat Tidak\nSetuju",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 11, color: Colors.grey),
+                ),
+                Text(
+                  "Sangat\nSetuju",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 11, color: Colors.grey),
+                ),
               ],
             ),
             const SizedBox(height: 40),
@@ -130,7 +150,7 @@ class AssessmentView extends GetView<AssessmentController> {
               color: Colors.black.withOpacity(0.05),
               blurRadius: 10,
               offset: const Offset(0, 4),
-            )
+            ),
           ],
         ),
         child: Center(

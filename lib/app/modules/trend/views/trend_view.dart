@@ -58,15 +58,17 @@ class TrendView extends GetView<TrendController> {
           ),
         ),
         const SizedBox(height: 12),
-        Obx(() => Row(
-              children: [
-                _buildFilterChip('today', 'Hari Ini'),
-                const SizedBox(width: 8),
-                _buildFilterChip('7_days', '7 Hari'),
-                const SizedBox(width: 8),
-                _buildFilterChip('1_month', '1 Bulan'),
-              ],
-            )),
+        Obx(
+          () => Row(
+            children: [
+              _buildFilterChip('today', 'Hari Ini'),
+              const SizedBox(width: 8),
+              _buildFilterChip('7_days', '7 Hari'),
+              const SizedBox(width: 8),
+              _buildFilterChip('1_month', '1 Bulan'),
+            ],
+          ),
+        ),
         Obx(() {
           if (controller.lastUpdatedMessage.value.isNotEmpty) {
             return Padding(
@@ -104,7 +106,9 @@ class TrendView extends GetView<TrendController> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
         side: BorderSide(
-          color: isSelected ? AppColors.primary : AppColors.outline.withOpacity(0.5),
+          color: isSelected
+              ? AppColors.primary
+              : AppColors.outline.withOpacity(0.5),
         ),
       ),
     );
@@ -161,16 +165,22 @@ class TrendView extends GetView<TrendController> {
                       sideTitles: SideTitles(
                         showTitles: true,
                         getTitlesWidget: (value, meta) {
-                          if (value < 0 || value >= controller.allCategoriesData.length) {
+                          if (value < 0 ||
+                              value >= controller.allCategoriesData.length) {
                             return const SizedBox.shrink();
                           }
-                          String cat = controller.allCategoriesData[value.toInt()]['category'].toString();
+                          String cat = controller
+                              .allCategoriesData[value.toInt()]['category']
+                              .toString();
                           if (cat.length > 5) cat = cat.substring(0, 5) + '...';
                           return Padding(
                             padding: const EdgeInsets.only(top: 8.0),
                             child: Text(
                               cat,
-                              style: const TextStyle(fontSize: 10, color: AppColors.textGray),
+                              style: const TextStyle(
+                                fontSize: 10,
+                                color: AppColors.textGray,
+                              ),
                             ),
                           );
                         },
@@ -185,18 +195,27 @@ class TrendView extends GetView<TrendController> {
                           if (value == 0) return const SizedBox.shrink();
                           return Text(
                             value.toInt().toString(),
-                            style: const TextStyle(fontSize: 10, color: AppColors.textGray),
+                            style: const TextStyle(
+                              fontSize: 10,
+                              color: AppColors.textGray,
+                            ),
                           );
                         },
                       ),
                     ),
-                    topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                    rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                    topTitles: const AxisTitles(
+                      sideTitles: SideTitles(showTitles: false),
+                    ),
+                    rightTitles: const AxisTitles(
+                      sideTitles: SideTitles(showTitles: false),
+                    ),
                   ),
                   gridData: FlGridData(
                     show: true,
                     drawVerticalLine: false,
-                    horizontalInterval: maxTotal > 0 ? (maxTotal / 4).ceilToDouble() : 1,
+                    horizontalInterval: maxTotal > 0
+                        ? (maxTotal / 4).ceilToDouble()
+                        : 1,
                     getDrawingHorizontalLine: (value) => FlLine(
                       color: AppColors.outline.withOpacity(0.3),
                       strokeWidth: 1,
@@ -215,7 +234,9 @@ class TrendView extends GetView<TrendController> {
                             toY: (item['total'] as num).toDouble(),
                             color: AppColors.primary,
                             width: 16,
-                            borderRadius: const BorderRadius.vertical(top: Radius.circular(4)),
+                            borderRadius: const BorderRadius.vertical(
+                              top: Radius.circular(4),
+                            ),
                           ),
                         ],
                       );
@@ -254,14 +275,19 @@ class TrendView extends GetView<TrendController> {
             if (controller.categoryList.isEmpty) {
               return const SizedBox(
                 height: 48,
-                child: Center(child: Text("Tidak ada kategori", style: TextStyle(color: Colors.grey))),
+                child: Center(
+                  child: Text(
+                    "Tidak ada kategori",
+                    style: TextStyle(color: Colors.grey),
+                  ),
+                ),
               );
             }
             return DropdownButtonHideUnderline(
               child: DropdownButton<String>(
                 isExpanded: true,
-                value: controller.selectedCategory.value.isEmpty 
-                    ? null 
+                value: controller.selectedCategory.value.isEmpty
+                    ? null
                     : controller.selectedCategory.value,
                 hint: const Text("Pilih kategori"),
                 items: controller.categoryList.map((cat) {
@@ -298,16 +324,18 @@ class TrendView extends GetView<TrendController> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Obx(() => Text(
-                "Tren Harian: ${controller.selectedCategory.value.isNotEmpty ? controller.selectedCategory.value : 'Pilih kategori'}",
-                style: GoogleFonts.plusJakartaSans(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.textDark,
-                ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              )),
+          Obx(
+            () => Text(
+              "Tren Harian: ${controller.selectedCategory.value.isNotEmpty ? controller.selectedCategory.value : 'Pilih kategori'}",
+              style: GoogleFonts.plusJakartaSans(
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+                color: AppColors.textDark,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
           const SizedBox(height: 24),
           SizedBox(
             height: 250,
@@ -325,7 +353,13 @@ class TrendView extends GetView<TrendController> {
 
               List<FlSpot> spots = [];
               for (int i = 0; i < controller.categoryTrendData.length; i++) {
-                spots.add(FlSpot(i.toDouble(), (controller.categoryTrendData[i]['total'] as num).toDouble()));
+                spots.add(
+                  FlSpot(
+                    i.toDouble(),
+                    (controller.categoryTrendData[i]['total'] as num)
+                        .toDouble(),
+                  ),
+                );
               }
 
               return LineChart(
@@ -343,12 +377,13 @@ class TrendView extends GetView<TrendController> {
                       isStrokeCapRound: true,
                       dotData: FlDotData(
                         show: true,
-                        getDotPainter: (spot, percent, barData, index) => FlDotCirclePainter(
-                          radius: 4,
-                          color: Colors.white,
-                          strokeWidth: 2,
-                          strokeColor: Colors.orange,
-                        ),
+                        getDotPainter: (spot, percent, barData, index) =>
+                            FlDotCirclePainter(
+                              radius: 4,
+                              color: Colors.white,
+                              strokeWidth: 2,
+                              strokeColor: Colors.orange,
+                            ),
                       ),
                       belowBarData: BarAreaData(
                         show: true,
@@ -362,15 +397,23 @@ class TrendView extends GetView<TrendController> {
                       sideTitles: SideTitles(
                         showTitles: true,
                         reservedSize: 30,
-                        interval: (controller.categoryTrendData.length / 5).ceilToDouble().clamp(1.0, 100.0),
+                        interval: (controller.categoryTrendData.length / 5)
+                            .ceilToDouble()
+                            .clamp(1.0, 100.0),
                         getTitlesWidget: (value, meta) {
-                          if (value < 0 || value >= controller.categoryTrendData.length) {
+                          if (value < 0 ||
+                              value >= controller.categoryTrendData.length) {
                             return const SizedBox.shrink();
                           }
-                          String dateStr = controller.categoryTrendData[value.toInt()]['date'].toString();
+                          String dateStr = controller
+                              .categoryTrendData[value.toInt()]['date']
+                              .toString();
                           try {
                             DateTime date = DateTime.parse(dateStr);
-                            dateStr = DateFormat('dd MMM', 'id_ID').format(date);
+                            dateStr = DateFormat(
+                              'dd MMM',
+                              'id_ID',
+                            ).format(date);
                           } catch (e) {
                             // ignore
                           }
@@ -378,7 +421,10 @@ class TrendView extends GetView<TrendController> {
                             padding: const EdgeInsets.only(top: 8.0),
                             child: Text(
                               dateStr,
-                              style: const TextStyle(fontSize: 10, color: AppColors.textGray),
+                              style: const TextStyle(
+                                fontSize: 10,
+                                color: AppColors.textGray,
+                              ),
                             ),
                           );
                         },
@@ -389,21 +435,31 @@ class TrendView extends GetView<TrendController> {
                         showTitles: true,
                         reservedSize: 30,
                         getTitlesWidget: (value, meta) {
-                          if (value == 0 || value != value.toInt()) return const SizedBox.shrink();
+                          if (value == 0 || value != value.toInt())
+                            return const SizedBox.shrink();
                           return Text(
                             value.toInt().toString(),
-                            style: const TextStyle(fontSize: 10, color: AppColors.textGray),
+                            style: const TextStyle(
+                              fontSize: 10,
+                              color: AppColors.textGray,
+                            ),
                           );
                         },
                       ),
                     ),
-                    topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                    rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                    topTitles: const AxisTitles(
+                      sideTitles: SideTitles(showTitles: false),
+                    ),
+                    rightTitles: const AxisTitles(
+                      sideTitles: SideTitles(showTitles: false),
+                    ),
                   ),
                   gridData: FlGridData(
                     show: true,
                     drawVerticalLine: false,
-                    horizontalInterval: maxTotal > 0 ? (maxTotal / 4).ceilToDouble() : 1,
+                    horizontalInterval: maxTotal > 0
+                        ? (maxTotal / 4).ceilToDouble()
+                        : 1,
                     getDrawingHorizontalLine: (value) => FlLine(
                       color: AppColors.outline.withOpacity(0.3),
                       strokeWidth: 1,

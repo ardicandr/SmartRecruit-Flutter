@@ -35,7 +35,7 @@ class JobModel {
         postedAt = rawPostedAt;
       }
     }
-    
+
     category = json['category'];
     department = json['department'];
     employmentType = json['employment_type'];

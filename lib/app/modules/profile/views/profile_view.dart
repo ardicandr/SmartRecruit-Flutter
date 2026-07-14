@@ -28,7 +28,7 @@ class ProfileView extends GetView<ProfileController> {
         elevation: 0,
         actions: [
           IconButton(
-            onPressed: () => controller.goToNotifications(), 
+            onPressed: () => controller.goToNotifications(),
             icon: Stack(
               children: [
                 const Icon(Icons.notifications_none, color: Colors.black),
@@ -57,7 +57,7 @@ class ProfileView extends GetView<ProfileController> {
           ),
 
           IconButton(
-            onPressed: () => Get.toNamed(Routes.SETTINGS), 
+            onPressed: () => Get.toNamed(Routes.SETTINGS),
             icon: const Icon(Icons.settings, color: Colors.black87),
           ),
         ],
@@ -71,18 +71,22 @@ class ProfileView extends GetView<ProfileController> {
             _buildStrengthBar(),
             _buildAiAnalysisCard(),
             const SizedBox(height: 24),
-            
+
             // SECTION: CV / RESUME
             _buildSectionHeader(
-              "CV & Resume", 
+              "CV & Resume",
               icon: Icons.contact_page_outlined,
-              action: Obx(() => IconButton(
-                onPressed: () => controller.goToUploadCv(), 
-                icon: Icon(
-                  controller.cvUrl.value.isNotEmpty ? Icons.edit : Icons.add_circle_outline, 
-                  color: const Color(0xFF2170E4)
-                )
-              ))
+              action: Obx(
+                () => IconButton(
+                  onPressed: () => controller.goToUploadCv(),
+                  icon: Icon(
+                    controller.cvUrl.value.isNotEmpty
+                        ? Icons.edit
+                        : Icons.add_circle_outline,
+                    color: const Color(0xFF2170E4),
+                  ),
+                ),
+              ),
             ),
             Obx(() {
               if (controller.cvUrl.value.isNotEmpty) {
@@ -96,53 +100,80 @@ class ProfileView extends GetView<ProfileController> {
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.check_circle, color: Colors.green, size: 24),
+                      const Icon(
+                        Icons.check_circle,
+                        color: Colors.green,
+                        size: 24,
+                      ),
                       const SizedBox(width: 12),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text("CV Terverifikasi AI", style: TextStyle(fontWeight: FontWeight.bold)),
-                            Text("Data berhasil diekstrak otomatis", style: TextStyle(color: Colors.grey[700], fontSize: 11)),
+                            const Text(
+                              "CV Terverifikasi AI",
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                            Text(
+                              "Data berhasil diekstrak otomatis",
+                              style: TextStyle(
+                                color: Colors.grey[700],
+                                fontSize: 11,
+                              ),
+                            ),
                           ],
                         ),
                       ),
                       TextButton(
                         onPressed: () => controller.goToUploadCv(),
                         child: const Text("Lihat/Ubah"),
-                      )
+                      ),
                     ],
                   ),
                 );
               } else {
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 32),
-                  child: CustomDashedButton(text: "Unggah & Scan CV Baru", onTap: () => controller.goToUploadCv()),
+                  child: CustomDashedButton(
+                    text: "Unggah & Scan CV Baru",
+                    onTap: () => controller.goToUploadCv(),
+                  ),
                 );
               }
             }),
 
             _buildSectionHeader("DETAIL INFORMASI", action: const SizedBox()),
-            
+
             // EMAIL DINAMIS
-            Obx(() => _buildInfoTile(
-              Icons.mail_outlined, 
-              "EMAIL", 
-              controller.email.value
-            )),
-            
-            Obx(() => _buildInfoTile(
-              Icons.phone_outlined, 
-              "TELEPON", 
-              controller.phoneNumber.value
-            )),
+            Obx(
+              () => _buildInfoTile(
+                Icons.mail_outlined,
+                "EMAIL",
+                controller.email.value,
+              ),
+            ),
+
+            Obx(
+              () => _buildInfoTile(
+                Icons.phone_outlined,
+                "TELEPON",
+                controller.phoneNumber.value,
+              ),
+            ),
             const SizedBox(height: 32),
-            
+
             // ... (Bagian Pengalaman & Pendidikan tetap sama) ...
-            _buildSectionHeader("Pengalaman Kerja", icon: Icons.work_outlined, action: const SizedBox()),
+            _buildSectionHeader(
+              "Pengalaman Kerja",
+              icon: Icons.work_outlined,
+              action: const SizedBox(),
+            ),
             Obx(() {
-              if (controller.parsedCv.isEmpty || controller.parsedCv['experiences'] == null) {
-                return _buildEmptyState("Belum ada data pengalaman kerja. Unggah CV Anda.");
+              if (controller.parsedCv.isEmpty ||
+                  controller.parsedCv['experiences'] == null) {
+                return _buildEmptyState(
+                  "Belum ada data pengalaman kerja. Unggah CV Anda.",
+                );
               }
               List experiences = controller.parsedCv['experiences'];
               if (experiences.isEmpty) {
@@ -151,20 +182,27 @@ class ProfileView extends GetView<ProfileController> {
               return Column(
                 children: experiences.map((exp) {
                   return _buildProfileTimelineItem(
-                    exp['title'] ?? "-", 
-                    exp['company'] ?? "-", 
-                    exp['duration'] ?? "-", 
-                    exp['description'] ?? ""
+                    exp['title'] ?? "-",
+                    exp['company'] ?? "-",
+                    exp['duration'] ?? "-",
+                    exp['description'] ?? "",
                   );
                 }).toList(),
               );
             }),
             const SizedBox(height: 32),
 
-            _buildSectionHeader("Pendidikan", icon: Icons.school_outlined, action: const SizedBox()),
+            _buildSectionHeader(
+              "Pendidikan",
+              icon: Icons.school_outlined,
+              action: const SizedBox(),
+            ),
             Obx(() {
-              if (controller.parsedCv.isEmpty || controller.parsedCv['education'] == null) {
-                return _buildEmptyState("Belum ada data pendidikan. Unggah CV Anda.");
+              if (controller.parsedCv.isEmpty ||
+                  controller.parsedCv['education'] == null) {
+                return _buildEmptyState(
+                  "Belum ada data pendidikan. Unggah CV Anda.",
+                );
               }
               List education = controller.parsedCv['education'];
               if (education.isEmpty) {
@@ -173,20 +211,27 @@ class ProfileView extends GetView<ProfileController> {
               return Column(
                 children: education.map((edu) {
                   return _buildProfileTimelineItem(
-                    edu['degree'] ?? "-", 
-                    edu['institution'] ?? "-", 
-                    edu['duration'] ?? "-", 
-                    edu['description'] ?? ""
+                    edu['degree'] ?? "-",
+                    edu['institution'] ?? "-",
+                    edu['duration'] ?? "-",
+                    edu['description'] ?? "",
                   );
                 }).toList(),
               );
             }),
             const SizedBox(height: 32),
-            
-            _buildSectionHeader("Keahlian Utama", icon: Icons.star_border, action: const SizedBox()),
+
+            _buildSectionHeader(
+              "Keahlian Utama",
+              icon: Icons.star_border,
+              action: const SizedBox(),
+            ),
             Obx(() {
-              if (controller.parsedCv.isEmpty || controller.parsedCv['skills'] == null) {
-                return _buildEmptyState("Belum ada data keahlian. Unggah CV Anda.");
+              if (controller.parsedCv.isEmpty ||
+                  controller.parsedCv['skills'] == null) {
+                return _buildEmptyState(
+                  "Belum ada data keahlian. Unggah CV Anda.",
+                );
               }
               List skills = controller.parsedCv['skills'];
               if (skills.isEmpty) {
@@ -204,12 +249,15 @@ class ProfileView extends GetView<ProfileController> {
 
             // SECTION: SERTIFIKAT DINAMIS
             _buildSectionHeader(
-              "Sertifikat & Kompetensi", 
+              "Sertifikat & Kompetensi",
               icon: Icons.verified_user_outlined,
               action: IconButton(
-                onPressed: () => controller.goToAddCertificate(), 
-                icon: const Icon(Icons.add_circle_outline, color: Color(0xFF2170E4))
-              )
+                onPressed: () => controller.goToAddCertificate(),
+                icon: const Icon(
+                  Icons.add_circle_outline,
+                  color: Color(0xFF2170E4),
+                ),
+              ),
             ),
 
             // LIST SERTIFIKAT DARI BACKEND
@@ -224,16 +272,16 @@ class ProfileView extends GetView<ProfileController> {
                 children: controller.certificates.map((cert) {
                   return _buildExistingCertificateTile(
                     cert['id'] ?? 0,
-                    cert['title'] ?? "Tanpa Judul", 
-                    cert['issued_by'] ?? "Tanpa Institusi", 
+                    cert['title'] ?? "Tanpa Judul",
+                    cert['issued_by'] ?? "Tanpa Institusi",
                     cert['date'] ?? "-",
-                    cert['image_url'] ?? ""
+                    cert['image_url'] ?? "",
                   );
                 }).toList(),
               );
             }),
 
-            const SizedBox(height: 100), 
+            const SizedBox(height: 100),
           ],
         ),
       ),
@@ -248,39 +296,52 @@ class ProfileView extends GetView<ProfileController> {
         Obx(() {
           if (controller.profileImageUrl.value.isNotEmpty) {
             return CircleAvatar(
-              radius: 60, 
+              radius: 60,
               backgroundImage: NetworkImage(controller.profileImageUrl.value),
             );
           } else if (controller.localImagePath.value.isNotEmpty) {
             return CircleAvatar(
-              radius: 60, 
+              radius: 60,
               backgroundImage: FileImage(controller.localImageFile!),
             );
           } else {
             return const CircleAvatar(
-              radius: 60, 
-              backgroundColor: Colors.blue, 
-              child: Icon(Icons.person, color: Colors.white, size: 60)
+              radius: 60,
+              backgroundColor: Colors.blue,
+              child: Icon(Icons.person, color: Colors.white, size: 60),
             );
           }
         }),
         const SizedBox(height: 16),
         // NAMA DINAMIS
-        Obx(() => Text(
-          controller.name.value, 
-          style: GoogleFonts.plusJakartaSans(fontSize: 24, fontWeight: FontWeight.w800)
-        )),
-        const Text("Pencari Kerja Aktif", style: TextStyle(color: Colors.grey, fontSize: 16)),
+        Obx(
+          () => Text(
+            controller.name.value,
+            style: GoogleFonts.plusJakartaSans(
+              fontSize: 24,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+        ),
+        const Text(
+          "Pencari Kerja Aktif",
+          style: TextStyle(color: Colors.grey, fontSize: 16),
+        ),
         const SizedBox(height: 16),
         ElevatedButton.icon(
           onPressed: () => controller.showEditProfileBottomSheet(),
           icon: const Icon(Icons.edit, size: 16),
-          label: const Text("Edit Profil", style: TextStyle(fontWeight: FontWeight.bold)),
+          label: const Text(
+            "Edit Profil",
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
           style: ElevatedButton.styleFrom(
             backgroundColor: const Color(0xFFF0F7FF),
             foregroundColor: const Color(0xFF2170E4),
             elevation: 0,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
           ),
         ),
         const SizedBox(height: 8),
@@ -297,34 +358,80 @@ class ProfileView extends GetView<ProfileController> {
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: Colors.grey[200]!, style: BorderStyle.solid),
       ),
-      child: Text(msg, textAlign: TextAlign.center, style: const TextStyle(color: Colors.grey, fontSize: 12)),
+      child: Text(
+        msg,
+        textAlign: TextAlign.center,
+        style: const TextStyle(color: Colors.grey, fontSize: 12),
+      ),
     );
   }
 
   Widget _buildStrengthBar() {
     return Container(
       padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(color: const Color(0xFFF0F7FF), borderRadius: BorderRadius.circular(20)),
-      child: Column(children: [
-        Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-          const Text("KEKUATAN PROFIL", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF2170E4))),
-          Obx(() => Text("${(controller.profileStrength.value * 100).toInt()}%", style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF2170E4)))),
-        ]),
-        const SizedBox(height: 12),
-        Obx(() => LinearProgressIndicator(value: controller.profileStrength.value, backgroundColor: Colors.blue[100], color: Colors.blue, minHeight: 6)),
-        const SizedBox(height: 12),
-        Obx(() => Text(
-          controller.profileStrength.value > 0.0 
-              ? "Skor berdasarkan analisis cerdas AI pada profil Anda" 
-              : "Lengkapi profil & jalankan analisis AI untuk mendapatkan skor!", 
-          textAlign: TextAlign.center, 
-          style: const TextStyle(fontSize: 11, color: Colors.blue, fontStyle: FontStyle.italic)
-        )),
-      ]),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF0F7FF),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                "KEKUATAN PROFIL",
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF2170E4),
+                ),
+              ),
+              Obx(
+                () => Text(
+                  "${(controller.profileStrength.value * 100).toInt()}%",
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF2170E4),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Obx(
+            () => LinearProgressIndicator(
+              value: controller.profileStrength.value,
+              backgroundColor: Colors.blue[100],
+              color: Colors.blue,
+              minHeight: 6,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Obx(
+            () => Text(
+              controller.profileStrength.value > 0.0
+                  ? "Skor berdasarkan analisis cerdas AI pada profil Anda"
+                  : "Lengkapi profil & jalankan analisis AI untuk mendapatkan skor!",
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontSize: 11,
+                color: Colors.blue,
+                fontStyle: FontStyle.italic,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
-  Widget _buildExistingCertificateTile(int id, String title, String issuer, String date, String imageUrl) {
+  Widget _buildExistingCertificateTile(
+    int id,
+    String title,
+    String issuer,
+    String date,
+    String imageUrl,
+  ) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
@@ -336,11 +443,11 @@ class ProfileView extends GetView<ProfileController> {
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(8),
-            child: imageUrl.isNotEmpty 
+            child: imageUrl.isNotEmpty
                 ? Image.network(
-                    "${ApiProvider.hostUrl}$imageUrl", 
-                    width: 40, 
-                    height: 40, 
+                    "${ApiProvider.hostUrl}$imageUrl",
+                    width: 40,
+                    height: 40,
                     fit: BoxFit.cover,
                     errorBuilder: (context, error, stackTrace) {
                       return const Icon(Icons.broken_image, color: Colors.red);
@@ -349,17 +456,26 @@ class ProfileView extends GetView<ProfileController> {
                 : const Icon(Icons.description, color: Color(0xFF2170E4)),
           ),
           const SizedBox(width: 12),
-          
+
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
-                Text("Oleh: $issuer • $date", style: const TextStyle(color: Colors.grey, fontSize: 11)),
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 13,
+                  ),
+                ),
+                Text(
+                  "Oleh: $issuer • $date",
+                  style: const TextStyle(color: Colors.grey, fontSize: 11),
+                ),
               ],
             ),
           ),
-          
+
           TextButton(
             onPressed: () {
               if (imageUrl.isNotEmpty) {
@@ -394,18 +510,22 @@ class ProfileView extends GetView<ProfileController> {
                 );
               } else {
                 Get.snackbar(
-                  "Informasi", 
+                  "Informasi",
                   "Gambar sertifikat tidak tersedia",
                   snackPosition: SnackPosition.BOTTOM,
                 );
               }
-            }, 
+            },
             child: const Text("Lihat"),
           ),
 
           IconButton(
-            onPressed: () => controller.confirmDelete(id), 
-            icon: const Icon(Icons.delete_outline, color: Colors.redAccent, size: 20),
+            onPressed: () => controller.confirmDelete(id),
+            icon: const Icon(
+              Icons.delete_outline,
+              color: Colors.redAccent,
+              size: 20,
+            ),
           ),
         ],
       ),
@@ -425,7 +545,7 @@ class ProfileView extends GetView<ProfileController> {
             color: Colors.black.withOpacity(0.03),
             blurRadius: 15,
             offset: const Offset(0, 8),
-          )
+          ),
         ],
       ),
       child: Column(
@@ -438,7 +558,11 @@ class ProfileView extends GetView<ProfileController> {
                   color: const Color(0xFFF0F7FF),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(Icons.auto_awesome, color: Color(0xFF2170E4), size: 20),
+                child: const Icon(
+                  Icons.auto_awesome,
+                  color: Color(0xFF2170E4),
+                  size: 20,
+                ),
               ),
               const SizedBox(width: 12),
               Text(
@@ -465,11 +589,16 @@ class ProfileView extends GetView<ProfileController> {
                 foregroundColor: Colors.white,
                 elevation: 0,
                 padding: const EdgeInsets.symmetric(vertical: 14),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
               ),
-              child: const Text("Lihat Hasil Analisis Profil", style: TextStyle(fontWeight: FontWeight.bold)),
+              child: const Text(
+                "Lihat Hasil Analisis Profil",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
             ),
-          )
+          ),
         ],
       ),
     );
@@ -493,19 +622,31 @@ class ProfileView extends GetView<ProfileController> {
         ),
         child: Wrap(
           children: [
-            Text("Tambah $title", style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+            Text(
+              "Tambah $title",
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
             const SizedBox(height: 40),
-            const TextField(decoration: InputDecoration(labelText: "Nama Instansi / Perusahaan")),
-            const TextField(decoration: InputDecoration(labelText: "Posisi / Gelar")),
+            const TextField(
+              decoration: InputDecoration(
+                labelText: "Nama Instansi / Perusahaan",
+              ),
+            ),
+            const TextField(
+              decoration: InputDecoration(labelText: "Posisi / Gelar"),
+            ),
             const SizedBox(height: 40),
             Padding(
               padding: const EdgeInsets.only(top: 24, bottom: 12),
               child: ElevatedButton(
                 onPressed: () => Get.back(),
-                style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF2170E4), minimumSize: const Size(double.infinity, 50)),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF2170E4),
+                  minimumSize: const Size(double.infinity, 50),
+                ),
                 child: const Text("Simpan"),
               ),
-            )
+            ),
           ],
         ),
       ),
@@ -513,24 +654,58 @@ class ProfileView extends GetView<ProfileController> {
   }
 
   // --- REUSABLE HELPERS ---
-  Widget _buildInfoTile(IconData icon, String label, String value, {Widget? action}) {
+  Widget _buildInfoTile(
+    IconData icon,
+    String label,
+    String value, {
+    Widget? action,
+  }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
-      child: Row(children: [
-        Container(padding: const EdgeInsets.all(10), decoration: BoxDecoration(color: Colors.grey[50], borderRadius: BorderRadius.circular(12)), child: Icon(icon, color: Colors.grey, size: 20)),
-        const SizedBox(width: 16),
-        Expanded(
-          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(label, style: const TextStyle(fontSize: 10, color: Colors.grey, fontWeight: FontWeight.bold)),
-            Text(value, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-          ]),
-        ),
-        if (action != null) action,
-      ]),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: Colors.grey[50],
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(icon, color: Colors.grey, size: 20),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: const TextStyle(
+                    fontSize: 10,
+                    color: Colors.grey,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text(
+                  value,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          if (action != null) action,
+        ],
+      ),
     );
   }
 
-  Widget _buildSkillChip(String label, bool isSelected, {bool isDashed = false}) {
+  Widget _buildSkillChip(
+    String label,
+    bool isSelected, {
+    bool isDashed = false,
+  }) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
@@ -538,61 +713,179 @@ class ProfileView extends GetView<ProfileController> {
         borderRadius: BorderRadius.circular(20),
         border: isDashed ? Border.all(color: Colors.grey[300]!) : null,
       ),
-      child: Text(label, style: TextStyle(color: isSelected ? Colors.white : Colors.grey[700], fontWeight: FontWeight.bold, fontSize: 12)),
+      child: Text(
+        label,
+        style: TextStyle(
+          color: isSelected ? Colors.white : Colors.grey[700],
+          fontWeight: FontWeight.bold,
+          fontSize: 12,
+        ),
+      ),
     );
   }
 
   Widget _buildSectionHeader(String title, {IconData? icon, Widget? action}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 20),
-      child: Row(children: [
-        if (icon != null) Icon(icon, color: const Color(0xFF2170E4), size: 22),
-        if (icon != null) const SizedBox(width: 12),
-        Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-        const Spacer(),
-        if (action != null) action else const Icon(Icons.edit_outlined, color: Colors.grey, size: 20),
-      ]),
+      child: Row(
+        children: [
+          if (icon != null)
+            Icon(icon, color: const Color(0xFF2170E4), size: 22),
+          if (icon != null) const SizedBox(width: 12),
+          Text(
+            title,
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          const Spacer(),
+          if (action != null)
+            action
+          else
+            const Icon(Icons.edit_outlined, color: Colors.grey, size: 20),
+        ],
+      ),
     );
   }
 
   Widget _buildSmallButton(String text) {
-    return Container(padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6), decoration: BoxDecoration(color: const Color(0xFF10B981), borderRadius: BorderRadius.circular(20)), child: Text(text, style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold)));
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: const Color(0xFF10B981),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Text(
+        text,
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 11,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    );
   }
 
-  Widget _buildProfileTimelineItem(String title, String company, String date, String desc) {
-    return Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Column(children: [
-        Container(width: 18, height: 18, decoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(color: const Color(0xFF2170E4), width: 2))),
-        Container(width: 1, height: 80, color: Colors.grey[200]),
-      ]),
-      const SizedBox(width: 16),
-      Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-          Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
-          Container(padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2), decoration: BoxDecoration(color: Colors.grey[100], borderRadius: BorderRadius.circular(4)), child: Text(date, style: const TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: Colors.grey))),
-        ]),
-        Text(company, style: const TextStyle(color: Color(0xFF2170E4), fontWeight: FontWeight.w600, fontSize: 13)),
-        const SizedBox(height: 8),
-        Text(desc, style: const TextStyle(color: Colors.grey, fontSize: 12, height: 1.5)),
-        const SizedBox(height: 20),
-      ]))
-    ]);
+  Widget _buildProfileTimelineItem(
+    String title,
+    String company,
+    String date,
+    String desc,
+  ) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Column(
+          children: [
+            Container(
+              width: 18,
+              height: 18,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(color: const Color(0xFF2170E4), width: 2),
+              ),
+            ),
+            Container(width: 1, height: 80, color: Colors.grey[200]),
+          ],
+        ),
+        const SizedBox(width: 16),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 15,
+                    ),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 6,
+                      vertical: 2,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.grey[100],
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: Text(
+                      date,
+                      style: const TextStyle(
+                        fontSize: 9,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.grey,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              Text(
+                company,
+                style: const TextStyle(
+                  color: Color(0xFF2170E4),
+                  fontWeight: FontWeight.w600,
+                  fontSize: 13,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                desc,
+                style: const TextStyle(
+                  color: Colors.grey,
+                  fontSize: 12,
+                  height: 1.5,
+                ),
+              ),
+              const SizedBox(height: 20),
+            ],
+          ),
+        ),
+      ],
+    );
   }
 
   Widget _buildLanguageSection() {
-    return Column(children: [
-      _buildSectionHeader("Bahasa", action: const Text("Edit", style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold, fontSize: 12))),
-      _buildLangRow("Bahasa Indonesia", "Native"),
-      const SizedBox(height: 12),
-      _buildLangRow("Bahasa Inggris", "Professional (TOEFL 600)", isBlue: true),
-    ]);
+    return Column(
+      children: [
+        _buildSectionHeader(
+          "Bahasa",
+          action: const Text(
+            "Edit",
+            style: TextStyle(
+              color: Colors.blue,
+              fontWeight: FontWeight.bold,
+              fontSize: 12,
+            ),
+          ),
+        ),
+        _buildLangRow("Bahasa Indonesia", "Native"),
+        const SizedBox(height: 12),
+        _buildLangRow(
+          "Bahasa Inggris",
+          "Professional (TOEFL 600)",
+          isBlue: true,
+        ),
+      ],
+    );
   }
 
   Widget _buildLangRow(String lang, String level, {bool isBlue = false}) {
-    return Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-      Text(lang, style: const TextStyle(color: Colors.grey, fontSize: 13)),
-      Text(level, style: TextStyle(color: isBlue ? const Color(0xFF2170E4) : Colors.black, fontWeight: FontWeight.bold, fontSize: 13)),
-    ]);
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(lang, style: const TextStyle(color: Colors.grey, fontSize: 13)),
+        Text(
+          level,
+          style: TextStyle(
+            color: isBlue ? const Color(0xFF2170E4) : Colors.black,
+            fontWeight: FontWeight.bold,
+            fontSize: 13,
+          ),
+        ),
+      ],
+    );
   }
 }
 
@@ -600,14 +893,30 @@ class ProfileView extends GetView<ProfileController> {
 class CustomDashedButton extends StatelessWidget {
   final String text;
   final VoidCallback onTap;
-  const CustomDashedButton({super.key, required this.text, required this.onTap});
+  const CustomDashedButton({
+    super.key,
+    required this.text,
+    required this.onTap,
+  });
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
       child: CustomPaint(
         painter: DashPainter(),
-        child: Container(width: double.infinity, padding: const EdgeInsets.symmetric(vertical: 16), child: Text(text, textAlign: TextAlign.center, style: const TextStyle(color: Color(0xFF2170E4), fontWeight: FontWeight.bold, fontSize: 14))),
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          child: Text(
+            text,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              color: Color(0xFF2170E4),
+              fontWeight: FontWeight.bold,
+              fontSize: 14,
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -617,19 +926,29 @@ class DashPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     double dashWidth = 5, dashSpace = 5;
-    final paint = Paint()..color = const Color(0xFF2170E4).withOpacity(0.3)..strokeWidth = 1.5..style = PaintingStyle.stroke;
-    RRect rect = RRect.fromRectAndRadius(Rect.fromLTWH(0, 0, size.width, size.height), const Radius.circular(12));
+    final paint = Paint()
+      ..color = const Color(0xFF2170E4).withOpacity(0.3)
+      ..strokeWidth = 1.5
+      ..style = PaintingStyle.stroke;
+    RRect rect = RRect.fromRectAndRadius(
+      Rect.fromLTWH(0, 0, size.width, size.height),
+      const Radius.circular(12),
+    );
     Path path = Path()..addRRect(rect);
     Path dashPath = Path();
     for (var pathMetric in path.computeMetrics()) {
       double distance = 0;
       while (distance < pathMetric.length) {
-        dashPath.addPath(pathMetric.extractPath(distance, distance + dashWidth), Offset.zero);
+        dashPath.addPath(
+          pathMetric.extractPath(distance, distance + dashWidth),
+          Offset.zero,
+        );
         distance += dashWidth + dashSpace;
       }
     }
     canvas.drawPath(dashPath, paint);
   }
+
   @override
   bool shouldRepaint(CustomPainter oldDelegate) => false;
 }

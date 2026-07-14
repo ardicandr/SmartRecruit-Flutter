@@ -12,15 +12,15 @@ class UploadCvController extends GetxController {
   var isFromApplication = false.obs;
   var isLoading = false.obs;
   var jobId = 0;
-  
+
   var selectedImage = Rx<XFile?>(null);
-  
+
   final fullNameC = TextEditingController();
   final emailC = TextEditingController();
   final phoneC = TextEditingController();
   final experienceC = TextEditingController();
   var skills = <String>[].obs;
-  
+
   // Data lengkap ekstraksi dari backend untuk mencegah field hilang (projects, education, dll)
   var fullExtractedData = {}.obs;
 
@@ -45,7 +45,7 @@ class UploadCvController extends GetxController {
         emailC.text = parsed['email'] ?? "";
         phoneC.text = parsed['phone'] ?? "";
         experienceC.text = parsed['last_experience'] ?? "";
-        
+
         if (parsed['skills'] != null) {
           skills.assignAll(List<String>.from(parsed['skills']));
         }
@@ -59,12 +59,15 @@ class UploadCvController extends GetxController {
 
   Future<void> pickAndScanCv() async {
     selectedImage.value = await _picker.pickImage(source: ImageSource.gallery);
-    
+
     if (selectedImage.value != null) {
       try {
         isLoading.value = true;
         final formData = FormData({
-          'file': MultipartFile(await selectedImage.value!.readAsBytes(), filename: 'cv_scan.jpg'),
+          'file': MultipartFile(
+            await selectedImage.value!.readAsBytes(),
+            filename: 'cv_scan.jpg',
+          ),
         });
 
         final response = await apiProvider.scanCv(formData);
@@ -76,17 +79,20 @@ class UploadCvController extends GetxController {
           fullNameC.text = response.body['full_name'] ?? "";
           emailC.text = response.body['email'] ?? "";
           phoneC.text = response.body['phone'] ?? "";
-          
+
           // last_experience mungkin diganti dengan array experiences di backend baru
           String defaultExp = "";
           if (response.body['last_experience'] != null) {
             defaultExp = response.body['last_experience'];
-          } else if (response.body['experiences'] != null && response.body['experiences'] is List && response.body['experiences'].isNotEmpty) {
+          } else if (response.body['experiences'] != null &&
+              response.body['experiences'] is List &&
+              response.body['experiences'].isNotEmpty) {
             var firstExp = response.body['experiences'][0];
-            defaultExp = "${firstExp['title'] ?? ''} at ${firstExp['company'] ?? ''}";
+            defaultExp =
+                "${firstExp['title'] ?? ''} at ${firstExp['company'] ?? ''}";
           }
           experienceC.text = defaultExp;
-          
+
           if (response.body['skills'] != null) {
             skills.assignAll(List<String>.from(response.body['skills']));
           }
@@ -103,10 +109,10 @@ class UploadCvController extends GetxController {
   Future<void> handleFinalAction() async {
     try {
       isLoading.value = true;
-      
+
       // Gunakan seluruh data ekstraksi awal agar field "projects", "education", dll ikut terkirim
       final parsedCvMap = Map<String, dynamic>.from(fullExtractedData.value);
-      
+
       // Update/Timpa field yang mungkin telah diedit oleh user secara manual di UI
       parsedCvMap["full_name"] = fullNameC.text;
       parsedCvMap["email"] = emailC.text;
@@ -118,13 +124,13 @@ class UploadCvController extends GetxController {
         "parsed_cv": jsonEncode(parsedCvMap),
         if (selectedImage.value != null)
           "file": MultipartFile(
-            await selectedImage.value!.readAsBytes(), 
-            filename: 'my_cv.jpg'
+            await selectedImage.value!.readAsBytes(),
+            filename: 'my_cv.jpg',
           ),
       });
 
       final response = await apiProvider.saveCv(formData);
-      
+
       if (response.statusCode == 200) {
         if (isFromApplication.value) {
           final applyRes = await apiProvider.applyJob(jobId);
@@ -136,7 +142,10 @@ class UploadCvController extends GetxController {
               snackPosition: SnackPosition.BOTTOM,
             );
           } else {
-            Get.snackbar("Error", applyRes.body['message'] ?? "Gagal mengirim lamaran");
+            Get.snackbar(
+              "Error",
+              applyRes.body['message'] ?? "Gagal mengirim lamaran",
+            );
           }
         } else {
           Get.back(result: true);

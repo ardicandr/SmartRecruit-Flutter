@@ -8,23 +8,24 @@ import 'dart:io';
 
 class ProfileController extends GetxController {
   final storage = const FlutterSecureStorage();
-  final ApiProvider apiProvider = Get.find<ApiProvider>(); 
-  
+  final ApiProvider apiProvider = Get.find<ApiProvider>();
+
   // State untuk data user
   var name = "Memuat...".obs;
   var email = "...".obs;
   var phoneNumber = "08.. .... ....".obs;
   var profileStrength = 0.0.obs;
-  
+
   var profileImageUrl = "".obs;
   var localImagePath = "".obs;
 
-  File? get localImageFile => localImagePath.value.isNotEmpty ? File(localImagePath.value) : null;
+  File? get localImageFile =>
+      localImagePath.value.isNotEmpty ? File(localImagePath.value) : null;
 
   // State untuk data sertifikat & CV
   var certificates = <dynamic>[].obs;
   var isLoadingCert = false.obs;
-  
+
   var cvUrl = "".obs;
   var parsedCv = {}.obs;
 
@@ -40,28 +41,33 @@ class ProfileController extends GetxController {
   void loadUserData() async {
     name.value = await storage.read(key: 'user_name') ?? "User";
     email.value = await storage.read(key: 'user_email') ?? "email@gmail.com";
-    phoneNumber.value = await storage.read(key: 'user_phone') ?? "08.. .... ....";
-    
+    phoneNumber.value =
+        await storage.read(key: 'user_phone') ?? "08.. .... ....";
+
     // Fetch data terbaru dari backend
     try {
       final response = await apiProvider.get("/auth/profile");
       if (response.statusCode == 200) {
         final userData = response.body['user'];
         if (userData != null) {
-          name.value = userData['username'] ?? userData['full_name'] ?? name.value;
+          name.value =
+              userData['username'] ?? userData['full_name'] ?? name.value;
           phoneNumber.value = userData['phone_number'] ?? phoneNumber.value;
-          
-          if (userData['image'] != null && userData['image'].toString().isNotEmpty) {
-             profileImageUrl.value = "${ApiProvider.hostUrl}${userData['image']}";
+
+          if (userData['image'] != null &&
+              userData['image'].toString().isNotEmpty) {
+            profileImageUrl.value =
+                "${ApiProvider.hostUrl}${userData['image']}";
           }
-          
+
           if (response.body['profile_strength'] != null) {
-            double rawStrength = (response.body['profile_strength'] as num).toDouble();
+            double rawStrength = (response.body['profile_strength'] as num)
+                .toDouble();
             profileStrength.value = rawStrength / 100.0;
           } else {
             profileStrength.value = 0.0;
           }
-          
+
           await storage.write(key: 'user_name', value: name.value);
           await storage.write(key: 'user_phone', value: phoneNumber.value);
         }
@@ -76,7 +82,7 @@ class ProfileController extends GetxController {
     try {
       isLoadingCert.value = true;
       final response = await apiProvider.get("/certificates");
-      
+
       if (response.statusCode == 200) {
         certificates.assignAll(response.body);
       } else {
@@ -108,7 +114,10 @@ class ProfileController extends GetxController {
   }
 
   void goToUploadCv() async {
-    await Get.toNamed(Routes.UPLOAD_CV, arguments: {'isFromApplication': false});
+    await Get.toNamed(
+      Routes.UPLOAD_CV,
+      arguments: {'isFromApplication': false},
+    );
     // Refresh CV
     fetchUserCv();
   }
@@ -123,12 +132,11 @@ class ProfileController extends GetxController {
     Get.dialog(
       AlertDialog(
         title: const Text("Hapus Sertifikat"),
-        content: const Text("Apakah Anda yakin ingin menghapus sertifikat ini?"),
+        content: const Text(
+          "Apakah Anda yakin ingin menghapus sertifikat ini?",
+        ),
         actions: [
-          TextButton(
-            onPressed: () => Get.back(),
-            child: const Text("Batal"),
-          ),
+          TextButton(onPressed: () => Get.back(), child: const Text("Batal")),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
             onPressed: () {
@@ -155,10 +163,12 @@ class ProfileController extends GetxController {
       print("Error delete: $e");
     }
   }
-  
+
   void showEditProfileBottomSheet() {
     TextEditingController nameCtrl = TextEditingController(text: name.value);
-    TextEditingController phoneCtrl = TextEditingController(text: phoneNumber.value);
+    TextEditingController phoneCtrl = TextEditingController(
+      text: phoneNumber.value,
+    );
     var dialogImagePath = "".obs;
 
     Get.bottomSheet(
@@ -173,9 +183,15 @@ class ProfileController extends GetxController {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text("Ubah Profil", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                IconButton(icon: const Icon(Icons.close), onPressed: () => Get.back()),
-              ]
+                const Text(
+                  "Ubah Profil",
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.close),
+                  onPressed: () => Get.back(),
+                ),
+              ],
             ),
             const SizedBox(height: 24, width: double.infinity),
             Center(
@@ -186,19 +202,50 @@ class ProfileController extends GetxController {
                   children: [
                     Obx(() {
                       if (dialogImagePath.value.isNotEmpty) {
-                        return CircleAvatar(radius: 50, backgroundImage: FileImage(File(dialogImagePath.value)));
+                        return CircleAvatar(
+                          radius: 50,
+                          backgroundImage: FileImage(
+                            File(dialogImagePath.value),
+                          ),
+                        );
                       } else if (localImagePath.value.isNotEmpty) {
-                        return CircleAvatar(radius: 50, backgroundImage: FileImage(File(localImagePath.value)));
+                        return CircleAvatar(
+                          radius: 50,
+                          backgroundImage: FileImage(
+                            File(localImagePath.value),
+                          ),
+                        );
                       } else if (profileImageUrl.value.isNotEmpty) {
-                        return CircleAvatar(radius: 50, backgroundImage: NetworkImage(profileImageUrl.value));
+                        return CircleAvatar(
+                          radius: 50,
+                          backgroundImage: NetworkImage(profileImageUrl.value),
+                        );
                       } else {
-                        return const CircleAvatar(radius: 50, backgroundColor: Colors.blue, child: Icon(Icons.person, color: Colors.white, size: 50));
+                        return const CircleAvatar(
+                          radius: 50,
+                          backgroundColor: Colors.blue,
+                          child: Icon(
+                            Icons.person,
+                            color: Colors.white,
+                            size: 50,
+                          ),
+                        );
                       }
                     }),
                     Container(
                       padding: const EdgeInsets.all(4),
-                      decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle, boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 4)]),
-                      child: const Icon(Icons.camera_alt, color: Colors.blue, size: 20),
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(color: Colors.black12, blurRadius: 4),
+                        ],
+                      ),
+                      child: const Icon(
+                        Icons.camera_alt,
+                        color: Colors.blue,
+                        size: 20,
+                      ),
                     ),
                   ],
                 ),
@@ -207,7 +254,10 @@ class ProfileController extends GetxController {
             const SizedBox(height: 24, width: double.infinity),
             TextField(
               controller: nameCtrl,
-              decoration: const InputDecoration(labelText: "Username", hintText: "Masukkan username baru"),
+              decoration: const InputDecoration(
+                labelText: "Username",
+                hintText: "Masukkan username baru",
+              ),
             ),
             const SizedBox(height: 16, width: double.infinity),
             TextField(
@@ -215,7 +265,7 @@ class ProfileController extends GetxController {
               keyboardType: TextInputType.phone,
               maxLength: 15,
               decoration: const InputDecoration(
-                labelText: "Nomor Telepon", 
+                labelText: "Nomor Telepon",
                 hintText: "Contoh: 081234567890",
                 counterText: "",
               ),
@@ -227,19 +277,36 @@ class ProfileController extends GetxController {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF2170E4),
                   padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
                 onPressed: () {
-                  if (nameCtrl.text.trim().isNotEmpty || phoneCtrl.text.trim().isNotEmpty || dialogImagePath.value.isNotEmpty) {
+                  if (nameCtrl.text.trim().isNotEmpty ||
+                      phoneCtrl.text.trim().isNotEmpty ||
+                      dialogImagePath.value.isNotEmpty) {
                     Get.back();
-                    updateProfileData(nameCtrl.text.trim(), phoneCtrl.text.trim(), dialogImagePath.value);
+                    updateProfileData(
+                      nameCtrl.text.trim(),
+                      phoneCtrl.text.trim(),
+                      dialogImagePath.value,
+                    );
                   } else {
-                    Get.snackbar("Error", "Minimal isi satu perubahan (Foto, Username, atau Telepon)");
+                    Get.snackbar(
+                      "Error",
+                      "Minimal isi satu perubahan (Foto, Username, atau Telepon)",
+                    );
                   }
                 },
-                child: const Text("Simpan Perubahan", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                child: const Text(
+                  "Simpan Perubahan",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
-            )
+            ),
           ],
         ),
       ),
@@ -247,10 +314,14 @@ class ProfileController extends GetxController {
     );
   }
 
-  Future<void> updateProfileData(String newUsername, String newPhone, String newImagePath) async {
+  Future<void> updateProfileData(
+    String newUsername,
+    String newPhone,
+    String newImagePath,
+  ) async {
     try {
       final mapData = <String, dynamic>{};
-      
+
       // Hanya kirim jika tidak kosong dan berbeda dari sebelumnya
       if (newUsername.isNotEmpty && newUsername != name.value) {
         mapData["username"] = newUsername;
@@ -262,9 +333,17 @@ class ProfileController extends GetxController {
       final formData = FormData(mapData);
 
       if (newImagePath.isNotEmpty) {
-        formData.files.add(MapEntry("image", MultipartFile(File(newImagePath), filename: newImagePath.split('/').last)));
+        formData.files.add(
+          MapEntry(
+            "image",
+            MultipartFile(
+              File(newImagePath),
+              filename: newImagePath.split('/').last,
+            ),
+          ),
+        );
       }
-      
+
       // Jika tidak ada data yang diubah
       if (mapData.isEmpty && newImagePath.isEmpty) {
         Get.snackbar("Info", "Tidak ada perubahan data yang disimpan");
@@ -272,11 +351,13 @@ class ProfileController extends GetxController {
       }
 
       final response = await apiProvider.put("/auth/profile", formData);
-      
+
       if (response.statusCode == 200) {
-        if (newUsername.isNotEmpty && newUsername != name.value) name.value = newUsername;
-        if (newPhone.isNotEmpty && newPhone != phoneNumber.value) phoneNumber.value = newPhone;
-        
+        if (newUsername.isNotEmpty && newUsername != name.value)
+          name.value = newUsername;
+        if (newPhone.isNotEmpty && newPhone != phoneNumber.value)
+          phoneNumber.value = newPhone;
+
         if (newImagePath.isNotEmpty) {
           localImagePath.value = newImagePath;
           profileImageUrl.value = "";
@@ -285,18 +366,26 @@ class ProfileController extends GetxController {
           await storage.delete(key: 'user_image_url');
 
           // Jika server mengembalikan URL gambar baru, gunakan itu
-          final respUserData = response.body != null ? response.body['user'] : null;
-          if (respUserData != null && respUserData['image'] != null && respUserData['image'].toString().isNotEmpty) {
-            profileImageUrl.value = "${ApiProvider.hostUrl}${respUserData['image']}";
+          final respUserData = response.body != null
+              ? response.body['user']
+              : null;
+          if (respUserData != null &&
+              respUserData['image'] != null &&
+              respUserData['image'].toString().isNotEmpty) {
+            profileImageUrl.value =
+                "${ApiProvider.hostUrl}${respUserData['image']}";
             localImagePath.value = "";
-            await storage.write(key: 'user_image_url', value: profileImageUrl.value);
+            await storage.write(
+              key: 'user_image_url',
+              value: profileImageUrl.value,
+            );
             await storage.delete(key: 'user_local_image');
           }
         }
-        
+
         await storage.write(key: 'user_name', value: name.value);
         await storage.write(key: 'user_phone', value: phoneNumber.value);
-        
+
         Get.snackbar("Sukses", "Profil berhasil diperbarui");
       } else {
         Get.snackbar("Error", "Gagal memperbarui profil: ${response.body}");
@@ -320,7 +409,9 @@ class ProfileController extends GetxController {
               onTap: () async {
                 Get.back();
                 final ImagePicker picker = ImagePicker();
-                final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+                final XFile? image = await picker.pickImage(
+                  source: ImageSource.gallery,
+                );
                 if (image != null) dialogImagePath.value = image.path;
               },
             ),
@@ -330,7 +421,9 @@ class ProfileController extends GetxController {
               onTap: () async {
                 Get.back();
                 final ImagePicker picker = ImagePicker();
-                final XFile? image = await picker.pickImage(source: ImageSource.camera);
+                final XFile? image = await picker.pickImage(
+                  source: ImageSource.camera,
+                );
                 if (image != null) dialogImagePath.value = image.path;
               },
             ),

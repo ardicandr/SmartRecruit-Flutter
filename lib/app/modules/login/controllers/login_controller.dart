@@ -9,7 +9,7 @@ import '../../../data/services/notification_service.dart';
 
 class LoginController extends GetxController {
   // Gunakan Get.find jika ApiProvider sudah di-inject di Binding
-  final ApiProvider apiProvider = Get.find<ApiProvider>(); 
+  final ApiProvider apiProvider = Get.find<ApiProvider>();
   final storage = const FlutterSecureStorage();
   final logger = Logger();
 
@@ -36,7 +36,7 @@ class LoginController extends GetxController {
       isLoading.value = true;
       _isGoogleLogin = false; // login email/password
       logger.i("Mencoba login ke Flask: ${emailC.text}");
-      
+
       final response = await apiProvider.loginRequest(emailC.text, passC.text);
       _handleAuthResponse(response);
     } catch (e) {
@@ -71,7 +71,6 @@ class LoginController extends GetxController {
       logger.i("Mencoba login via Google OAuth ke Flask...");
       final response = await apiProvider.postGoogleAuth(idToken);
       _handleAuthResponse(response);
-
     } catch (error) {
       logger.e("Error Google Sign In: $error");
       Get.snackbar("Error", "Terjadi kesalahan saat login dengan Google");
@@ -87,13 +86,16 @@ class LoginController extends GetxController {
     if (response.statusCode == 200) {
       String token = response.body['token'];
       var userData = response.body['user'];
-      
+
       String username = userData['username'] ?? "User";
       String email = userData['email'] ?? "";
       String role = userData['role'] ?? "Pelamar";
 
       if (role != "Pelamar") {
-        Get.snackbar("Akses Ditolak", "Akun HRD silakan login melalui Web Platform.");
+        Get.snackbar(
+          "Akses Ditolak",
+          "Akun HRD silakan login melalui Web Platform.",
+        );
         return;
       }
 
@@ -106,8 +108,10 @@ class LoginController extends GetxController {
         value: _isGoogleLogin ? 'google' : 'email',
       );
 
-      logger.i("Login Berhasil sebagai $role (metode: ${_isGoogleLogin ? 'google' : 'email'})");
-      
+      logger.i(
+        "Login Berhasil sebagai $role (metode: ${_isGoogleLogin ? 'google' : 'email'})",
+      );
+
       // Kirim ulang FCM Token setelah login sukses karena sebelumnya mungkin jwt_token belum ada
       if (Get.isRegistered<NotificationService>()) {
         Get.find<NotificationService>().sendTokenToBackendNow();
@@ -115,13 +119,26 @@ class LoginController extends GetxController {
 
       Get.offAllNamed(Routes.HOME);
     } else if (response.statusCode == 403) {
-      String errorMsg = response.body?['message'] ?? "Verifikasi akun dulu, klik button verifikasi yang dikirim di mail baru bisa login";
-      Get.snackbar("Verifikasi Diperlukan", errorMsg, duration: const Duration(seconds: 5));
+      String errorMsg =
+          response.body?['message'] ??
+          "Verifikasi akun dulu, klik button verifikasi yang dikirim di mail baru bisa login";
+      Get.snackbar(
+        "Verifikasi Diperlukan",
+        errorMsg,
+        duration: const Duration(seconds: 5),
+      );
     } else if (response.statusCode == 201) {
-      String msg = response.body?['message'] ?? "Registrasi berhasil, verifikasi dikirim ke email";
-      Get.snackbar("Verifikasi Diperlukan", msg, duration: const Duration(seconds: 5));
+      String msg =
+          response.body?['message'] ??
+          "Registrasi berhasil, verifikasi dikirim ke email";
+      Get.snackbar(
+        "Verifikasi Diperlukan",
+        msg,
+        duration: const Duration(seconds: 5),
+      );
     } else {
-      String errorMsg = response.body?['message'] ?? "Email atau password salah";
+      String errorMsg =
+          response.body?['message'] ?? "Email atau password salah";
       Get.snackbar("Login Gagal", errorMsg);
     }
   }

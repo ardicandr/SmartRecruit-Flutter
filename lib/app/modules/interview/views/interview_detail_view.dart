@@ -20,10 +20,20 @@ class InterviewDetailView extends GetView<InterviewController> {
       appBar: AppBar(
         leading: IconButton(
           onPressed: () => Get.back(),
-          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black, size: 20),
+          icon: const Icon(
+            Icons.arrow_back_ios_new,
+            color: Colors.black,
+            size: 20,
+          ),
         ),
-        title: Text("Detail Wawancara", 
-          style: GoogleFonts.plusJakartaSans(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 18)),
+        title: Text(
+          "Detail Wawancara",
+          style: GoogleFonts.plusJakartaSans(
+            color: Colors.black,
+            fontWeight: FontWeight.bold,
+            fontSize: 18,
+          ),
+        ),
         backgroundColor: Colors.white,
         elevation: 0,
       ),
@@ -34,24 +44,31 @@ class InterviewDetailView extends GetView<InterviewController> {
           children: [
             _buildInfoCard(data),
             const SizedBox(height: 24),
-            
+
             // Detail khusus sesuai tipe (Online/Onsite)
-            isOnline ? _buildOnlineDetails(data['location']) : _buildOnsiteDetails(data['location']),
-            
+            isOnline
+                ? _buildOnlineDetails(data['location'])
+                : _buildOnsiteDetails(data['location']),
+
             const SizedBox(height: 32),
-            const Text("Persiapan Wawancara", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+            const Text(
+              "Persiapan Wawancara",
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
             const SizedBox(height: 16),
             _buildPrepItem("1", "Pastikan koneksi internet stabil."),
             _buildPrepItem("2", "Gunakan pakaian formal profesional."),
             _buildPrepItem("3", "Siapkan portofolio terbaru."),
-            
+
             if (isOnline) ...[
               const SizedBox(height: 40),
               ElevatedButton(
                 onPressed: () {
-                  Clipboard.setData(ClipboardData(text: data['location'] ?? ''));
+                  Clipboard.setData(
+                    ClipboardData(text: data['location'] ?? ''),
+                  );
                   Get.snackbar(
-                    "Berhasil", 
+                    "Berhasil",
                     "Link Meeting disalin ke clipboard!",
                     snackPosition: SnackPosition.BOTTOM,
                     backgroundColor: Colors.green,
@@ -61,11 +78,16 @@ class InterviewDetailView extends GetView<InterviewController> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF2170E4),
                   minimumSize: const Size(double.infinity, 60),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
                 ),
                 child: const Text(
                   "Salin Link Meeting",
-                  style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
                 ),
               ),
             ],
@@ -83,55 +105,79 @@ class InterviewDetailView extends GetView<InterviewController> {
       DateTime dt = DateTime.parse(dateRaw);
       dateFormatted = DateFormat('dd MMMM yyyy', 'id_ID').format(dt);
       timeFormatted = "${DateFormat('HH:mm', 'id_ID').format(dt)} WIB";
-    } catch(e) {}
+    } catch (e) {}
 
     return Container(
       padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(28)),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(28),
+      ),
       child: Column(
         children: [
           Row(
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(12),
-                child: data['company_logo'] != null && data['company_logo'].toString().isNotEmpty
-                  ? Image.network(
-                      data['company_logo'].toString().startsWith('http') 
-                          ? data['company_logo'] 
-                          : '${ApiProvider.hostUrl}${data['company_logo']}',
-                      width: 50,
-                      height: 50,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) => Container(
+                child:
+                    data['company_logo'] != null &&
+                        data['company_logo'].toString().isNotEmpty
+                    ? Image.network(
+                        data['company_logo'].toString().startsWith('http')
+                            ? data['company_logo']
+                            : '${ApiProvider.hostUrl}${data['company_logo']}',
+                        width: 50,
+                        height: 50,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) => Container(
+                          width: 50,
+                          height: 50,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF2170E4).withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: const Icon(
+                            Icons.business,
+                            color: Color(0xFF2170E4),
+                            size: 28,
+                          ),
+                        ),
+                      )
+                    : Container(
                         width: 50,
                         height: 50,
                         decoration: BoxDecoration(
                           color: const Color(0xFF2170E4).withOpacity(0.1),
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        child: const Icon(Icons.business, color: Color(0xFF2170E4), size: 28),
+                        child: const Icon(
+                          Icons.business,
+                          color: Color(0xFF2170E4),
+                          size: 28,
+                        ),
                       ),
-                    )
-                  : Container(
-                      width: 50,
-                      height: 50,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF2170E4).withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: const Icon(Icons.business, color: Color(0xFF2170E4), size: 28),
-                    ),
               ),
               const SizedBox(width: 16),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(data['role'], style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16), overflow: TextOverflow.ellipsis),
-                    Text(data['company'], style: const TextStyle(color: Colors.grey), overflow: TextOverflow.ellipsis),
+                    Text(
+                      data['role'],
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    Text(
+                      data['company'],
+                      style: const TextStyle(color: Colors.grey),
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ],
                 ),
-              )
+              ),
             ],
           ),
           const Divider(height: 40),
@@ -139,7 +185,11 @@ class InterviewDetailView extends GetView<InterviewController> {
           const SizedBox(height: 16),
           _buildDetailRow(Icons.access_time, "Waktu", timeFormatted),
           const SizedBox(height: 16),
-          _buildDetailRow(data['isOnline'] ? Icons.videocam : Icons.location_on, "Metode", data['isOnline'] ? "Online (Zoom)" : "Onsite (Tatap Muka)"),
+          _buildDetailRow(
+            data['isOnline'] ? Icons.videocam : Icons.location_on,
+            "Metode",
+            data['isOnline'] ? "Online (Zoom)" : "Onsite (Tatap Muka)",
+          ),
         ],
       ),
     );
@@ -149,13 +199,30 @@ class InterviewDetailView extends GetView<InterviewController> {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(color: Colors.blue[50], borderRadius: BorderRadius.circular(20)),
+      decoration: BoxDecoration(
+        color: Colors.blue[50],
+        borderRadius: BorderRadius.circular(20),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text("LINK MEETING (ZOOM/GMEET)", style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.blue, letterSpacing: 1)),
+          const Text(
+            "LINK MEETING (ZOOM/GMEET)",
+            style: TextStyle(
+              fontSize: 10,
+              fontWeight: FontWeight.bold,
+              color: Colors.blue,
+              letterSpacing: 1,
+            ),
+          ),
           const SizedBox(height: 12),
-          Text(location, style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.blueAccent)),
+          Text(
+            location,
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Colors.blueAccent,
+            ),
+          ),
         ],
       ),
     );
@@ -165,11 +232,22 @@ class InterviewDetailView extends GetView<InterviewController> {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(color: Colors.green[50], borderRadius: BorderRadius.circular(20)),
+      decoration: BoxDecoration(
+        color: Colors.green[50],
+        borderRadius: BorderRadius.circular(20),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text("ALAMAT LOKASI WAWANCARA", style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.green, letterSpacing: 1)),
+          const Text(
+            "ALAMAT LOKASI WAWANCARA",
+            style: TextStyle(
+              fontSize: 10,
+              fontWeight: FontWeight.bold,
+              color: Colors.green,
+              letterSpacing: 1,
+            ),
+          ),
           const SizedBox(height: 12),
           Text(location, style: const TextStyle(fontWeight: FontWeight.bold)),
         ],
@@ -178,26 +256,62 @@ class InterviewDetailView extends GetView<InterviewController> {
   }
 
   Widget _buildDetailRow(IconData icon, String label, String value) {
-    return Row(children: [
-      Icon(icon, size: 20, color: const Color(0xFF2170E4)),
-      const SizedBox(width: 12),
-      Expanded(
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text(label, style: const TextStyle(fontSize: 10, color: Colors.grey, fontWeight: FontWeight.bold)),
-          Text(value, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-        ]),
-      )
-    ]);
+    return Row(
+      children: [
+        Icon(icon, size: 20, color: const Color(0xFF2170E4)),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                label,
+                style: const TextStyle(
+                  fontSize: 10,
+                  color: Colors.grey,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              Text(
+                value,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
   }
 
   Widget _buildPrepItem(String num, String text) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
-      child: Row(children: [
-        CircleAvatar(radius: 12, backgroundColor: const Color(0xFF2170E4).withOpacity(0.1), child: Text(num, style: const TextStyle(fontSize: 12, color: Color(0xFF2170E4), fontWeight: FontWeight.bold))),
-        const SizedBox(width: 12),
-        Expanded(child: Text(text, style: const TextStyle(fontSize: 13, color: Colors.grey))),
-      ]),
+      child: Row(
+        children: [
+          CircleAvatar(
+            radius: 12,
+            backgroundColor: const Color(0xFF2170E4).withOpacity(0.1),
+            child: Text(
+              num,
+              style: const TextStyle(
+                fontSize: 12,
+                color: Color(0xFF2170E4),
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              text,
+              style: const TextStyle(fontSize: 13, color: Colors.grey),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

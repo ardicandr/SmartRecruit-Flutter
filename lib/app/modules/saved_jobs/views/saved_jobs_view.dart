@@ -20,8 +20,8 @@ class SavedJobsView extends GetView<SavedJobsController> {
         title: Text(
           "Lowongan Tersimpan",
           style: GoogleFonts.plusJakartaSans(
-            color: const Color(0xFF2170E4), 
-            fontWeight: FontWeight.w800, 
+            color: const Color(0xFF2170E4),
+            fontWeight: FontWeight.w800,
             fontSize: 24,
           ),
         ),
@@ -29,7 +29,7 @@ class SavedJobsView extends GetView<SavedJobsController> {
         elevation: 0,
         actions: [
           IconButton(
-            onPressed: () => controller.goToNotifications(), 
+            onPressed: () => controller.goToNotifications(),
             icon: Stack(
               children: [
                 const Icon(Icons.notifications_none, color: Colors.black),
@@ -80,7 +80,7 @@ class SavedJobsView extends GetView<SavedJobsController> {
                 );
               }
             }),
-          )
+          ),
         ],
       ),
       body: Obx(() {
@@ -112,10 +112,10 @@ class SavedJobsView extends GetView<SavedJobsController> {
         border: Border.all(color: Colors.grey[100]!),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.02), 
-            blurRadius: 10, 
-            offset: const Offset(0, 4)
-          )
+            color: Colors.black.withOpacity(0.02),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
         ],
       ),
       child: Column(
@@ -125,15 +125,27 @@ class SavedJobsView extends GetView<SavedJobsController> {
             children: [
               // Logo Perusahaan
               Container(
-                width: 48, height: 48,
+                width: 48,
+                height: 48,
                 decoration: BoxDecoration(
-                  color: Colors.grey[900], 
+                  color: Colors.grey[900],
                   borderRadius: BorderRadius.circular(16),
-                  image: job['company_logo'] != null && job['company_logo'].toString().isNotEmpty
-                      ? DecorationImage(image: NetworkImage('${ApiProvider.hostUrl}${job['company_logo']}'), fit: BoxFit.cover)
+                  image:
+                      job['company_logo'] != null &&
+                          job['company_logo'].toString().isNotEmpty
+                      ? DecorationImage(
+                          image: NetworkImage(
+                            '${ApiProvider.hostUrl}${job['company_logo']}',
+                          ),
+                          fit: BoxFit.cover,
+                        )
                       : null,
                 ),
-                child: (job['company_logo'] == null || job['company_logo'].toString().isEmpty) ? const Icon(Icons.business, color: Colors.white, size: 24) : null,
+                child:
+                    (job['company_logo'] == null ||
+                        job['company_logo'].toString().isEmpty)
+                    ? const Icon(Icons.business, color: Colors.white, size: 24)
+                    : null,
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -141,21 +153,21 @@ class SavedJobsView extends GetView<SavedJobsController> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      job['title'], 
+                      job['title'],
                       style: GoogleFonts.plusJakartaSans(
-                        fontWeight: FontWeight.bold, 
+                        fontWeight: FontWeight.bold,
                         fontSize: 16,
-                        color: AppColors.textDark
-                      )
+                        color: AppColors.textDark,
+                      ),
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      job['company'], 
-                      style: const TextStyle(color: Colors.grey, fontSize: 13)
+                      job['company'],
+                      style: const TextStyle(color: Colors.grey, fontSize: 13),
                     ),
                     Text(
-                      job['location'], 
-                      style: const TextStyle(color: Colors.grey, fontSize: 11)
+                      job['location'],
+                      style: const TextStyle(color: Colors.grey, fontSize: 11),
                     ),
                   ],
                 ),
@@ -163,8 +175,12 @@ class SavedJobsView extends GetView<SavedJobsController> {
               // Tombol Hapus Bookmark
               IconButton(
                 onPressed: () => controller.removeBookmark(index),
-                icon: const Icon(Icons.bookmark, color: Color(0xFF2170E4), size: 28),
-              )
+                icon: const Icon(
+                  Icons.bookmark,
+                  color: Color(0xFF2170E4),
+                  size: 28,
+                ),
+              ),
             ],
           ),
           const Padding(
@@ -176,11 +192,11 @@ class SavedJobsView extends GetView<SavedJobsController> {
             children: [
               Expanded(
                 child: Text(
-                  job['salary'], 
+                  job['salary'],
                   style: const TextStyle(
-                    color: Color(0xFF2170E4), 
-                    fontWeight: FontWeight.w800, 
-                    fontSize: 14
+                    color: Color(0xFF2170E4),
+                    fontWeight: FontWeight.w800,
+                    fontSize: 14,
                   ),
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -188,20 +204,26 @@ class SavedJobsView extends GetView<SavedJobsController> {
               Row(
                 children: [
                   Icon(
-                    Icons.bolt, 
-                    color: job['match'] == "Belum Dianalisis" ? Colors.grey : Colors.purple, 
-                    size: 18
+                    Icons.bolt,
+                    color: job['match'] == "Belum Dianalisis"
+                        ? Colors.grey
+                        : Colors.purple,
+                    size: 18,
                   ),
                   Text(
-                    job['match'] == "Belum Dianalisis" ? " Belum Dianalisis" : " ${job['match']} Match", 
+                    job['match'] == "Belum Dianalisis"
+                        ? " Belum Dianalisis"
+                        : " ${job['match']} Match",
                     style: TextStyle(
-                      color: job['match'] == "Belum Dianalisis" ? Colors.grey : Colors.purple, 
-                      fontWeight: FontWeight.bold, 
-                      fontSize: 13
-                    )
+                      color: job['match'] == "Belum Dianalisis"
+                          ? Colors.grey
+                          : Colors.purple,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 13,
+                    ),
                   ),
                 ],
-              )
+              ),
             ],
           ),
         ],
@@ -218,22 +240,26 @@ class SavedJobsView extends GetView<SavedJobsController> {
             padding: const EdgeInsets.all(32),
             decoration: BoxDecoration(
               color: Colors.grey[50],
-              shape: BoxShape.circle
+              shape: BoxShape.circle,
             ),
-            child: Icon(Icons.bookmark_border_rounded, size: 80, color: Colors.grey[300]),
+            child: Icon(
+              Icons.bookmark_border_rounded,
+              size: 80,
+              color: Colors.grey[300],
+            ),
           ),
           const SizedBox(height: 24),
           Text(
-            "Belum ada lowongan disimpan", 
+            "Belum ada lowongan disimpan",
             style: GoogleFonts.plusJakartaSans(
-              color: AppColors.textDark, 
+              color: AppColors.textDark,
               fontWeight: FontWeight.bold,
-              fontSize: 18
-            )
+              fontSize: 18,
+            ),
           ),
           const SizedBox(height: 8),
           const Text(
-            "Pekerjaan yang Anda simpan akan muncul di sini.", 
+            "Pekerjaan yang Anda simpan akan muncul di sini.",
             textAlign: TextAlign.center,
             style: TextStyle(color: Colors.grey, fontSize: 14),
           ),

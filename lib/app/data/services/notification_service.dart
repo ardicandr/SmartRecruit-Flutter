@@ -17,7 +17,7 @@ class NotificationService extends GetxService {
 
     if (settings.authorizationStatus == AuthorizationStatus.authorized) {
       print('User granted permission for notifications');
-      
+
       // Ambil token FCM
       String? token = await _fcm.getToken();
       if (token != null) {
@@ -37,7 +37,9 @@ class NotificationService extends GetxService {
         print('Message data: ${message.data}');
 
         if (message.notification != null) {
-          print('Message also contained a notification: ${message.notification}');
+          print(
+            'Message also contained a notification: ${message.notification}',
+          );
           // Tampilkan snackbar atau dialog
           Get.snackbar(
             message.notification?.title ?? "Notifikasi Baru",
@@ -46,7 +48,6 @@ class NotificationService extends GetxService {
           );
         }
       });
-      
     } else {
       print('User declined or has not accepted permission');
     }
@@ -57,7 +58,7 @@ class NotificationService extends GetxService {
   Future<void> sendTokenToBackendNow([String? providedToken]) async {
     String? token = providedToken ?? await _fcm.getToken();
     if (token == null) return;
-    
+
     String? jwt = await storage.read(key: 'jwt_token');
     // Hanya kirim jika user sudah login
     if (jwt != null) {

@@ -63,11 +63,7 @@ class AppPages {
       page: () => RegisterView(),
       binding: RegisterBinding(),
     ),
-    GetPage(
-      name: Routes.HOME,
-      page: () => HomeView(),
-      binding: HomeBinding(),
-    ),
+    GetPage(name: Routes.HOME, page: () => HomeView(), binding: HomeBinding()),
     GetPage(
       name: Routes.DETAIL,
       page: () => DetailView(),

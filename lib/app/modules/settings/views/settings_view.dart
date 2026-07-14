@@ -24,103 +24,114 @@ class SettingsView extends GetView<SettingsController> {
         elevation: 0,
         iconTheme: const IconThemeData(color: Color(0xFF2170E4)),
       ),
-      body: Obx(() => controller.isLoading.value
-          ? const Center(child: CircularProgressIndicator())
-          : ListView(
-              padding: const EdgeInsets.all(20),
-              children: [
-                // ---- KEAMANAN AKUN (kondisional berdasarkan metode login) ----
-                _buildSectionTitle("Keamanan Akun"),
-                Obx(() {
-                  if (controller.isGoogleLogin) {
-                    // Pengguna login via Google: hanya tampilkan opsi ganti akun Google
-                    return _buildSettingCard(children: [
+      body: Obx(
+        () => controller.isLoading.value
+            ? const Center(child: CircularProgressIndicator())
+            : ListView(
+                padding: const EdgeInsets.all(20),
+                children: [
+                  // ---- KEAMANAN AKUN (kondisional berdasarkan metode login) ----
+                  _buildSectionTitle("Keamanan Akun"),
+                  Obx(() {
+                    if (controller.isGoogleLogin) {
+                      // Pengguna login via Google: hanya tampilkan opsi ganti akun Google
+                      return _buildSettingCard(
+                        children: [
+                          _buildSettingTile(
+                            icon: Icons.manage_accounts_outlined,
+                            iconColor: const Color(0xFF2170E4),
+                            title: "Ganti Email atau Akun Google",
+                            subtitle: "Kelola akun Google yang terhubung",
+                            onTap: () =>
+                                controller.showChangeGoogleAccountDialog(),
+                          ),
+                        ],
+                      );
+                    } else {
+                      // Pengguna login via email+password: tampilkan Ganti Email & Ganti Password
+                      return _buildSettingCard(
+                        children: [
+                          _buildSettingTile(
+                            icon: Icons.email_outlined,
+                            iconColor: const Color(0xFF2170E4),
+                            title: "Ganti Email",
+                            subtitle: "Ubah alamat email akun Anda",
+                            onTap: () => controller.showChangeEmailDialog(),
+                          ),
+                          const Divider(height: 1, indent: 56),
+                          _buildSettingTile(
+                            icon: Icons.lock_outline,
+                            iconColor: const Color(0xFF2170E4),
+                            title: "Ganti Kata Sandi",
+                            subtitle: "Ubah kata sandi login Anda",
+                            onTap: () => controller.showChangePasswordDialog(),
+                          ),
+                        ],
+                      );
+                    }
+                  }),
+
+                  const SizedBox(height: 20),
+
+                  // ---- LOG AKTIVITAS ----
+                  _buildSectionTitle("Aktivitas"),
+                  _buildSettingCard(
+                    children: [
                       _buildSettingTile(
-                        icon: Icons.manage_accounts_outlined,
+                        icon: Icons.history,
                         iconColor: const Color(0xFF2170E4),
-                        title: "Ganti Email atau Akun Google",
-                        subtitle: "Kelola akun Google yang terhubung",
-                        onTap: () => controller.showChangeGoogleAccountDialog(),
+                        title: "Riwayat Aktivitas",
+                        subtitle: "Lihat log masuk dan perubahan akun Anda",
+                        onTap: () {
+                          controller.fetchActivityLogs();
+                          _showActivityLogsBottomSheet(context);
+                        },
                       ),
-                    ]);
-                  } else {
-                    // Pengguna login via email+password: tampilkan Ganti Email & Ganti Password
-                    return _buildSettingCard(children: [
+                    ],
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  // ---- KELUAR ----
+                  _buildSectionTitle("Sesi"),
+                  _buildSettingCard(
+                    children: [
                       _buildSettingTile(
-                        icon: Icons.email_outlined,
-                        iconColor: const Color(0xFF2170E4),
-                        title: "Ganti Email",
-                        subtitle: "Ubah alamat email akun Anda",
-                        onTap: () => controller.showChangeEmailDialog(),
+                        icon: Icons.logout,
+                        iconColor: Colors.orange,
+                        title: "Keluar",
+                        subtitle: "Keluar dari akun Anda",
+                        onTap: () => controller.showLogoutDialog(),
+                        trailing: const SizedBox.shrink(),
                       ),
-                      const Divider(height: 1, indent: 56),
-                      _buildSettingTile(
-                        icon: Icons.lock_outline,
-                        iconColor: const Color(0xFF2170E4),
-                        title: "Ganti Kata Sandi",
-                        subtitle: "Ubah kata sandi login Anda",
-                        onTap: () => controller.showChangePasswordDialog(),
-                      ),
-                    ]);
-                  }
-                }),
-
-                const SizedBox(height: 20),
-
-                // ---- LOG AKTIVITAS ----
-                _buildSectionTitle("Aktivitas"),
-                _buildSettingCard(children: [
-                  _buildSettingTile(
-                    icon: Icons.history,
-                    iconColor: const Color(0xFF2170E4),
-                    title: "Riwayat Aktivitas",
-                    subtitle: "Lihat log masuk dan perubahan akun Anda",
-                    onTap: () {
-                      controller.fetchActivityLogs();
-                      _showActivityLogsBottomSheet(context);
-                    },
+                    ],
                   ),
-                ]),
 
-                const SizedBox(height: 20),
+                  const SizedBox(height: 20),
 
-                // ---- KELUAR ----
-                _buildSectionTitle("Sesi"),
-                _buildSettingCard(children: [
-                  _buildSettingTile(
-                    icon: Icons.logout,
-                    iconColor: Colors.orange,
-                    title: "Keluar",
-                    subtitle: "Keluar dari akun Anda",
-                    onTap: () => controller.showLogoutDialog(),
-                    trailing: const SizedBox.shrink(),
+                  // ---- HAPUS AKUN ----
+                  _buildSectionTitle("Zona Bahaya"),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: Colors.red.shade100),
+                    ),
+                    child: _buildSettingTile(
+                      icon: Icons.delete_forever_outlined,
+                      iconColor: Colors.red,
+                      title: "Hapus Akun",
+                      subtitle: "Hapus akun dan semua data secara permanen",
+                      titleColor: Colors.red,
+                      onTap: () => controller.showDeleteAccountDialog(),
+                      trailing: const SizedBox.shrink(),
+                    ),
                   ),
-                ]),
 
-                const SizedBox(height: 20),
-
-                // ---- HAPUS AKUN ----
-                _buildSectionTitle("Zona Bahaya"),
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: Colors.red.shade100),
-                  ),
-                  child: _buildSettingTile(
-                    icon: Icons.delete_forever_outlined,
-                    iconColor: Colors.red,
-                    title: "Hapus Akun",
-                    subtitle: "Hapus akun dan semua data secara permanen",
-                    titleColor: Colors.red,
-                    onTap: () => controller.showDeleteAccountDialog(),
-                    trailing: const SizedBox.shrink(),
-                  ),
-                ),
-
-                const SizedBox(height: 40),
-              ],
-            )),
+                  const SizedBox(height: 40),
+                ],
+              ),
+      ),
     );
   }
 
@@ -145,7 +156,11 @@ class SettingsView extends GetView<SettingsController> {
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 8, offset: const Offset(0, 2)),
+          BoxShadow(
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
         ],
       ),
       child: Column(children: children),
@@ -213,7 +228,7 @@ class SettingsView extends GetView<SettingsController> {
               ),
             ),
             const SizedBox(height: 20),
-            
+
             // Header
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -234,7 +249,7 @@ class SettingsView extends GetView<SettingsController> {
             ),
             const Divider(),
             const SizedBox(height: 10),
-            
+
             // Log List
             Flexible(
               child: Obx(() {
@@ -258,12 +273,12 @@ class SettingsView extends GetView<SettingsController> {
                     final timestamp = log['timestamp'] != null
                         ? DateTime.tryParse(log['timestamp'].toString())
                         : null;
-                        
+
                     // Menentukan icon berdasarkan aksi
                     IconData iconData = Icons.info_outline;
                     Color iconColor = const Color(0xFF2170E4);
                     String action = log['action']?.toString() ?? "-";
-                    
+
                     if (action.toLowerCase().contains("login")) {
                       iconData = Icons.login_outlined;
                       iconColor = Colors.green;
@@ -273,17 +288,19 @@ class SettingsView extends GetView<SettingsController> {
                     } else if (action.toLowerCase().contains("email")) {
                       iconData = Icons.email_outlined;
                       iconColor = Colors.blue;
-                    } else if (action.toLowerCase().contains("password") || action.toLowerCase().contains("sandi")) {
+                    } else if (action.toLowerCase().contains("password") ||
+                        action.toLowerCase().contains("sandi")) {
                       iconData = Icons.lock_outline;
                       iconColor = Colors.purple;
-                    } else if (action.toLowerCase().contains("update") || action.toLowerCase().contains("profil")) {
+                    } else if (action.toLowerCase().contains("update") ||
+                        action.toLowerCase().contains("profil")) {
                       iconData = Icons.person_outline;
                       iconColor = Colors.teal;
                     } else if (action.toLowerCase().contains("melamar")) {
                       iconData = Icons.work_outline;
                       iconColor = const Color(0xFF2170E4);
                     }
-                    
+
                     return Padding(
                       padding: const EdgeInsets.symmetric(vertical: 8),
                       child: Row(
@@ -313,7 +330,10 @@ class SettingsView extends GetView<SettingsController> {
                                 const SizedBox(height: 4),
                                 Text(
                                   timestamp != null
-                                      ? DateFormat('dd MMMM yyyy, HH:mm', 'id_ID').format(timestamp)
+                                      ? DateFormat(
+                                          'dd MMMM yyyy, HH:mm',
+                                          'id_ID',
+                                        ).format(timestamp)
                                       : "-",
                                   style: TextStyle(
                                     fontSize: 11,

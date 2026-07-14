@@ -4,7 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../core/values/app_colors.dart';
 import '../controllers/login_controller.dart';
 
-class LoginView extends GetView<LoginController> { 
+class LoginView extends GetView<LoginController> {
   const LoginView({super.key});
 
   @override
@@ -31,29 +31,37 @@ class LoginView extends GetView<LoginController> {
                     ),
                   ),
                   const SizedBox(width: 8),
-                  Text("SmartRecruit",
-                      style: GoogleFonts.plusJakartaSans(
-                          color: AppColors.primary,
-                          fontWeight: FontWeight.w800,
-                          fontSize: 20)),
+                  Text(
+                    "SmartRecruit",
+                    style: GoogleFonts.plusJakartaSans(
+                      color: AppColors.primary,
+                      fontWeight: FontWeight.w800,
+                      fontSize: 20,
+                    ),
+                  ),
                 ],
               ),
               const SizedBox(height: 24),
-              Text("Selamat Datang",
-                  style: GoogleFonts.plusJakartaSans(
-                      fontSize: 32,
-                      fontWeight: FontWeight.w800,
-                      color: AppColors.textDark,
-                      height: 1.2)),
+              Text(
+                "Selamat Datang",
+                style: GoogleFonts.plusJakartaSans(
+                  fontSize: 32,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.textDark,
+                  height: 1.2,
+                ),
+              ),
               const SizedBox(height: 12),
-              Text("Masuk untuk mengelola lamaran dan temukan peluang karir...",
-                  style: TextStyle(color: AppColors.textGray, fontSize: 14)),
+              Text(
+                "Masuk untuk mengelola lamaran dan temukan peluang karir...",
+                style: TextStyle(color: AppColors.textGray, fontSize: 14),
+              ),
               const SizedBox(height: 24),
 
               // EMAIL FORM
               _buildLabel("Alamat Email"),
               _buildTextField(
-                hint: "nama@email.com", 
+                hint: "nama@email.com",
                 icon: Icons.email_outlined,
                 controller: controller.emailC,
               ),
@@ -65,31 +73,45 @@ class LoginView extends GetView<LoginController> {
                   _buildLabel("Kata Sandi"),
                   GestureDetector(
                     onTap: () => controller.goToForgotPassword(),
-                    child: const Text("Lupa kata sandi?",
-                        style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold, fontSize: 13)),
+                    child: const Text(
+                      "Lupa kata sandi?",
+                      style: TextStyle(
+                        color: AppColors.primary,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 13,
+                      ),
+                    ),
                   ),
                 ],
               ),
 
-              Obx(() => _buildTextField(
-                    hint: "........",
-                    icon: Icons.lock_outline,
-                    controller: controller.passC,
-                    isPassword: controller.isPasswordHidden.value,
-                    suffixIcon: controller.isPasswordHidden.value
-                        ? Icons.visibility_outlined
-                        : Icons.visibility_off_outlined,
-                    onSuffixIconPressed: () => controller.togglePasswordVisibility(),
-                  )),
+              Obx(
+                () => _buildTextField(
+                  hint: "........",
+                  icon: Icons.lock_outline,
+                  controller: controller.passC,
+                  isPassword: controller.isPasswordHidden.value,
+                  suffixIcon: controller.isPasswordHidden.value
+                      ? Icons.visibility_outlined
+                      : Icons.visibility_off_outlined,
+                  onSuffixIconPressed: () =>
+                      controller.togglePasswordVisibility(),
+                ),
+              ),
 
               const SizedBox(height: 24),
 
               // MAIN BUTTON
-              Obx(() => controller.isLoading.value 
-                ? const Center(child: CircularProgressIndicator()) 
-                : _buildMainButton("Masuk Sekarang", Icons.arrow_forward, () {
-                    controller.login();
-                  })
+              Obx(
+                () => controller.isLoading.value
+                    ? const Center(child: CircularProgressIndicator())
+                    : _buildMainButton(
+                        "Masuk Sekarang",
+                        Icons.arrow_forward,
+                        () {
+                          controller.login();
+                        },
+                      ),
               ),
 
               const SizedBox(height: 20),
@@ -112,14 +134,19 @@ class LoginView extends GetView<LoginController> {
                   onTap: () => controller.goToRegister(),
                   child: RichText(
                     text: TextSpan(
-                      style: const TextStyle(color: AppColors.textGray, fontSize: 14),
+                      style: const TextStyle(
+                        color: AppColors.textGray,
+                        fontSize: 14,
+                      ),
                       children: [
                         const TextSpan(text: "Belum punya akun? "),
                         TextSpan(
-                            text: "Daftar di sini",
-                            style: TextStyle(
-                                color: AppColors.primary,
-                                fontWeight: FontWeight.bold)),
+                          text: "Daftar di sini",
+                          style: TextStyle(
+                            color: AppColors.primary,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -159,9 +186,13 @@ class LoginView extends GetView<LoginController> {
                     const Icon(Icons.g_mobiledata, size: 30),
               ),
               const SizedBox(width: 12),
-              Text(text,
-                  style: const TextStyle(
-                      fontWeight: FontWeight.bold, color: AppColors.textDark)),
+              Text(
+                text,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textDark,
+                ),
+              ),
             ],
           ),
         ),
@@ -192,33 +223,44 @@ class LoginView extends GetView<LoginController> {
             : null,
         contentPadding: const EdgeInsets.symmetric(vertical: 18),
         enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(16),
-            borderSide: BorderSide(color: AppColors.outline.withOpacity(0.5))),
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide(color: AppColors.outline.withOpacity(0.5)),
+        ),
         focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(16),
-            borderSide: const BorderSide(color: AppColors.primary, width: 2)),
+          borderRadius: BorderRadius.circular(16),
+          borderSide: const BorderSide(color: AppColors.primary, width: 2),
+        ),
       ),
     );
   }
 
   Widget _buildLabel(String label) => Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: Text(label,
-          style: const TextStyle(
-              fontWeight: FontWeight.bold, color: AppColors.textDark)));
+    padding: const EdgeInsets.only(bottom: 8),
+    child: Text(
+      label,
+      style: const TextStyle(
+        fontWeight: FontWeight.bold,
+        color: AppColors.textDark,
+      ),
+    ),
+  );
 
   Widget _buildDivider() {
     return Row(
       children: [
         Expanded(child: Divider(color: AppColors.outline.withOpacity(0.5))),
         const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16),
-            child: Text("ATAU",
-                style: TextStyle(
-                    color: AppColors.textGray,
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 1.5))),
+          padding: EdgeInsets.symmetric(horizontal: 16),
+          child: Text(
+            "ATAU",
+            style: TextStyle(
+              color: AppColors.textGray,
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 1.5,
+            ),
+          ),
+        ),
         Expanded(child: Divider(color: AppColors.outline.withOpacity(0.5))),
       ],
     );
@@ -231,9 +273,10 @@ class LoginView extends GetView<LoginController> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-              color: const Color(0xFF3B82F6).withOpacity(0.3),
-              blurRadius: 12,
-              offset: const Offset(0, 6))
+            color: const Color(0xFF3B82F6).withOpacity(0.3),
+            blurRadius: 12,
+            offset: const Offset(0, 6),
+          ),
         ],
       ),
       child: Material(
@@ -249,11 +292,14 @@ class LoginView extends GetView<LoginController> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(text,
-                    style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16)),
+                Text(
+                  text,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
                 const SizedBox(width: 8),
                 Icon(icon, color: Colors.white, size: 20),
               ],

@@ -15,17 +15,25 @@ class UploadCvView extends GetView<UploadCvController> {
       appBar: AppBar(
         leading: IconButton(
           onPressed: () => Get.back(),
-          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black, size: 20),
+          icon: const Icon(
+            Icons.arrow_back_ios_new,
+            color: Colors.black,
+            size: 20,
+          ),
         ),
         // Judul AppBar berubah dinamis sesuai mode
-        title: Obx(() => Text(
-          controller.isFromApplication.value ? "Konfirmasi Lamaran" : "Update CV Profil",
-          style: GoogleFonts.plusJakartaSans(
-            color: const Color(0xFF2563EB),
-            fontWeight: FontWeight.bold,
-            fontSize: 18,
+        title: Obx(
+          () => Text(
+            controller.isFromApplication.value
+                ? "Konfirmasi Lamaran"
+                : "Update CV Profil",
+            style: GoogleFonts.plusJakartaSans(
+              color: const Color(0xFF2563EB),
+              fontWeight: FontWeight.bold,
+              fontSize: 18,
+            ),
           ),
-        )),
+        ),
         backgroundColor: Colors.white,
         elevation: 0,
       ),
@@ -48,25 +56,42 @@ class UploadCvView extends GetView<UploadCvController> {
                   const SizedBox(height: 8),
                   const Text(
                     "Gunakan AI kami untuk memproses profil Anda secara otomatis. Hemat waktu tanpa isi formulir panjang!",
-                    style: TextStyle(color: Colors.grey, fontSize: 13, height: 1.5),
+                    style: TextStyle(
+                      color: Colors.grey,
+                      fontSize: 13,
+                      height: 1.5,
+                    ),
                   ),
                   const SizedBox(height: 32),
 
                   // Status Header
-                   Row(
+                  Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       const Text(
                         "DOKUMEN DARI PROFIL",
-                        style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.grey, letterSpacing: 1),
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.grey,
+                          letterSpacing: 1,
+                        ),
                       ),
                       Row(
                         children: [
-                          Icon(Icons.auto_awesome, size: 12, color: Colors.blue[600]),
+                          Icon(
+                            Icons.auto_awesome,
+                            size: 12,
+                            color: Colors.blue[600],
+                          ),
                           const SizedBox(width: 4),
                           const Text(
                             "AI VERIFIED",
-                            style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Color(0xFF0B1C30)),
+                            style: TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFF0B1C30),
+                            ),
                           ),
                         ],
                       ),
@@ -79,8 +104,11 @@ class UploadCvView extends GetView<UploadCvController> {
                   Align(
                     alignment: Alignment.centerRight,
                     child: TextButton(
-                      onPressed: () => controller.pickAndScanCv(), 
-                      child: const Text("Gunakan CV Lain / Scan CV", style: TextStyle(fontSize: 12, color: Colors.blue))
+                      onPressed: () => controller.pickAndScanCv(),
+                      child: const Text(
+                        "Gunakan CV Lain / Scan CV",
+                        style: TextStyle(fontSize: 12, color: Colors.blue),
+                      ),
                     ),
                   ),
 
@@ -88,51 +116,95 @@ class UploadCvView extends GetView<UploadCvController> {
 
                   Row(
                     children: [
-                      Icon(Icons.auto_awesome, size: 18, color: Colors.blue[600]),
+                      Icon(
+                        Icons.auto_awesome,
+                        size: 18,
+                        color: Colors.blue[600],
+                      ),
                       const SizedBox(width: 8),
                       const Text(
                         "HASIL EKSTRAKSI AI",
-                        style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Color(0xFF2563EB), letterSpacing: 1),
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF2563EB),
+                          letterSpacing: 1,
+                        ),
                       ),
                     ],
                   ),
                   const SizedBox(height: 8),
                   Text(
                     "Tinjau Data Anda",
-                    style: GoogleFonts.plusJakartaSans(fontSize: 20, fontWeight: FontWeight.w800),
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w800,
+                    ),
                   ),
                   const SizedBox(height: 24),
 
-                  Obx(() => controller.isLoading.value 
-                    ? const Center(child: CircularProgressIndicator()) 
-                    : Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _buildReviewField("Nama Lengkap", controller.fullNameC, Icons.person_outline),
-                        _buildReviewField("Email", controller.emailC, Icons.mail_outline),
-                        _buildReviewField("Nomor Telepon", controller.phoneC, Icons.phone_outlined),
-                        _buildReviewField("Pengalaman Terakhir", controller.experienceC, Icons.work_outline),
+                  Obx(
+                    () => controller.isLoading.value
+                        ? const Center(child: CircularProgressIndicator())
+                        : Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              _buildReviewField(
+                                "Nama Lengkap",
+                                controller.fullNameC,
+                                Icons.person_outline,
+                              ),
+                              _buildReviewField(
+                                "Email",
+                                controller.emailC,
+                                Icons.mail_outline,
+                              ),
+                              _buildReviewField(
+                                "Nomor Telepon",
+                                controller.phoneC,
+                                Icons.phone_outlined,
+                              ),
+                              _buildReviewField(
+                                "Pengalaman Terakhir",
+                                controller.experienceC,
+                                Icons.work_outline,
+                              ),
 
-                        const SizedBox(height: 24),
-                        const Text("Keahlian Terdeteksi", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-                        const SizedBox(height: 12),
-                        Obx(() => Wrap(
-                          spacing: 8,
-                          runSpacing: 8,
-                          children: [
-                            ...controller.skills.map((skill) => _buildSkillTag(skill)),
-                            _buildSkillTag("+ Tambah"),
-                          ],
-                        )),
-                      ],
-                    )),
-                  
+                              const SizedBox(height: 24),
+                              const Text(
+                                "Keahlian Terdeteksi",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14,
+                                ),
+                              ),
+                              const SizedBox(height: 12),
+                              Obx(
+                                () => Wrap(
+                                  spacing: 8,
+                                  runSpacing: 8,
+                                  children: [
+                                    ...controller.skills.map(
+                                      (skill) => _buildSkillTag(skill),
+                                    ),
+                                    _buildSkillTag("+ Tambah"),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                  ),
+
                   const SizedBox(height: 40),
                 ],
               ),
             ),
           ),
-          Obx(() => controller.isLoading.value ? const SizedBox() : _buildBottomAction()),
+          Obx(
+            () => controller.isLoading.value
+                ? const SizedBox()
+                : _buildBottomAction(),
+          ),
         ],
       ),
     );
@@ -159,7 +231,10 @@ class UploadCvView extends GetView<UploadCvController> {
           children: [
             Container(
               padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(color: Colors.blue[100], borderRadius: BorderRadius.circular(12)),
+              decoration: BoxDecoration(
+                color: Colors.blue[100],
+                borderRadius: BorderRadius.circular(12),
+              ),
               child: const Icon(Icons.description, color: Color(0xFF2563EB)),
             ),
             const SizedBox(width: 16),
@@ -167,8 +242,17 @@ class UploadCvView extends GetView<UploadCvController> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(fileName, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-                  const Text("JPG/PNG", style: TextStyle(color: Colors.grey, fontSize: 11)),
+                  Text(
+                    fileName,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                    ),
+                  ),
+                  const Text(
+                    "JPG/PNG",
+                    style: TextStyle(color: Colors.grey, fontSize: 11),
+                  ),
                 ],
               ),
             ),
@@ -178,7 +262,11 @@ class UploadCvView extends GetView<UploadCvController> {
     });
   }
 
-  Widget _buildReviewField(String label, TextEditingController textController, IconData icon) {
+  Widget _buildReviewField(
+    String label,
+    TextEditingController textController,
+    IconData icon,
+  ) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 20),
       child: Column(
@@ -188,7 +276,14 @@ class UploadCvView extends GetView<UploadCvController> {
             children: [
               Icon(icon, size: 14, color: Colors.grey),
               const SizedBox(width: 6),
-              Text(label, style: const TextStyle(fontSize: 12, color: Colors.grey, fontWeight: FontWeight.bold)),
+              Text(
+                label,
+                style: const TextStyle(
+                  fontSize: 12,
+                  color: Colors.grey,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ],
           ),
           const SizedBox(height: 8),
@@ -198,8 +293,14 @@ class UploadCvView extends GetView<UploadCvController> {
             decoration: InputDecoration(
               filled: true,
               fillColor: const Color(0xFFF8F9FF),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 16,
+              ),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide.none,
+              ),
             ),
           ),
         ],
@@ -216,7 +317,14 @@ class UploadCvView extends GetView<UploadCvController> {
         borderRadius: BorderRadius.circular(20),
         border: isAdd ? Border.all(color: Colors.grey[300]!) : null,
       ),
-      child: Text(label, style: TextStyle(fontSize: 12, color: isAdd ? Colors.grey : const Color(0xFF2563EB), fontWeight: FontWeight.bold)),
+      child: Text(
+        label,
+        style: TextStyle(
+          fontSize: 12,
+          color: isAdd ? Colors.grey : const Color(0xFF2563EB),
+          fontWeight: FontWeight.bold,
+        ),
+      ),
     );
   }
 
@@ -225,14 +333,23 @@ class UploadCvView extends GetView<UploadCvController> {
       padding: const EdgeInsets.fromLTRB(24, 20, 24, 32),
       decoration: BoxDecoration(
         color: Colors.white,
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 20, offset: const Offset(0, -5))],
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 20,
+            offset: const Offset(0, -5),
+          ),
+        ],
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           Container(
             padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(color: const Color(0xFFEFF6FF), borderRadius: BorderRadius.circular(12)),
+            decoration: BoxDecoration(
+              color: const Color(0xFFEFF6FF),
+              borderRadius: BorderRadius.circular(12),
+            ),
             child: const Row(
               children: [
                 Icon(Icons.lightbulb, size: 20, color: Color(0xFF2563EB)),
@@ -241,32 +358,53 @@ class UploadCvView extends GetView<UploadCvController> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text("TIPS AI", style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: Color(0xFF2563EB))),
-                      Text("Periksa kembali data di atas sebelum menekan tombol konfirmasi.", style: TextStyle(fontSize: 11, color: Color(0xFF2563EB))),
+                      Text(
+                        "TIPS AI",
+                        style: TextStyle(
+                          fontSize: 9,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF2563EB),
+                        ),
+                      ),
+                      Text(
+                        "Periksa kembali data di atas sebelum menekan tombol konfirmasi.",
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: Color(0xFF2563EB),
+                        ),
+                      ),
                     ],
                   ),
-                )
+                ),
               ],
             ),
           ),
           const SizedBox(height: 20),
           // Tombol Utama (Teks berubah sesuai Mode)
-          Obx(() => ElevatedButton(
-            onPressed: () => controller.handleFinalAction(),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF2563EB),
-              minimumSize: const Size(double.infinity, 60),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-              elevation: 8,
-              shadowColor: Colors.blue.withOpacity(0.4)
+          Obx(
+            () => ElevatedButton(
+              onPressed: () => controller.handleFinalAction(),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF2563EB),
+                minimumSize: const Size(double.infinity, 60),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                elevation: 8,
+                shadowColor: Colors.blue.withOpacity(0.4),
+              ),
+              child: Text(
+                controller.isFromApplication.value
+                    ? "Kirim Lamaran Sekarang"
+                    : "Simpan Perubahan Profil",
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+              ),
             ),
-            child: Text(
-              controller.isFromApplication.value 
-                  ? "Kirim Lamaran Sekarang" 
-                  : "Simpan Perubahan Profil",
-              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
-            ),
-          ))
+          ),
         ],
       ),
     );

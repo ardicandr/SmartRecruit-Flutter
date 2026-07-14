@@ -2,11 +2,13 @@ import 'package:get/get.dart';
 import '../../../data/providers/api_provider.dart';
 
 class NotificationController extends GetxController {
-  final isLoading = true.obs; 
+  final isLoading = true.obs;
   final notifications = <Map<String, dynamic>>[].obs;
   final _api = ApiProvider();
 
-  bool get hasUnread => notifications.any((notif) => notif['is_read'] == false || notif['is_read'] == 0);
+  bool get hasUnread => notifications.any(
+    (notif) => notif['is_read'] == false || notif['is_read'] == 0,
+  );
 
   @override
   void onInit() {
@@ -20,7 +22,9 @@ class NotificationController extends GetxController {
       final res = await _api.getNotifications();
       if (res.isOk) {
         final List<dynamic> data = res.body;
-        notifications.assignAll(data.map((e) => e as Map<String, dynamic>).toList());
+        notifications.assignAll(
+          data.map((e) => e as Map<String, dynamic>).toList(),
+        );
       }
     } catch (e) {
       print("Error fetch notifications: $e");
@@ -32,12 +36,12 @@ class NotificationController extends GetxController {
   Future<void> markAsRead(int index) async {
     final notif = notifications[index];
     if (notif['is_read'] == true) return;
-    
+
     // Optimistic UI update
     final updatedNotif = Map<String, dynamic>.from(notif);
     updatedNotif['is_read'] = true;
     notifications[index] = updatedNotif;
-    
+
     try {
       await _api.markNotificationRead(notif['id']);
     } catch (e) {

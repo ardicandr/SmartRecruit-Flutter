@@ -14,7 +14,7 @@ import '../../saved_jobs/controllers/saved_jobs_controller.dart';
 class HomeController extends GetxController with WidgetsBindingObserver {
   final ApiProvider apiProvider = Get.find<ApiProvider>();
   final storage = const FlutterSecureStorage();
-  
+
   var tabIndex = 0.obs;
   var userName = "User".obs;
   var profileImageUrl = "".obs;
@@ -22,7 +22,8 @@ class HomeController extends GetxController with WidgetsBindingObserver {
   var showGreeting = true.obs; // Greeting tampil 5 detik
   Timer? _greetingTimer;
 
-  File? get localImageFile => localImagePath.value.isNotEmpty ? File(localImagePath.value) : null;
+  File? get localImageFile =>
+      localImagePath.value.isNotEmpty ? File(localImagePath.value) : null;
 
   // State untuk Data Job
   var isLoading = true.obs;
@@ -81,17 +82,22 @@ class HomeController extends GetxController with WidgetsBindingObserver {
     try {
       isLoading(true);
       Response response = await apiProvider.getJobs();
-      
+
       if (response.statusCode == 200 && response.body != null) {
         List data = response.body;
-        List<JobModel> loadedJobs = data.map((e) => JobModel.fromJson(e)).toList();
-        
+        List<JobModel> loadedJobs = data
+            .map((e) => JobModel.fromJson(e))
+            .toList();
+
         latestJobs.assignAll(loadedJobs);
         specialJobs.assignAll(loadedJobs.take(3).toList());
       } else {
         latestJobs.clear();
         specialJobs.clear();
-        Get.snackbar("Gagal Memuat", "Status: \${response.statusCode}. Pesan: \${response.bodyString}");
+        Get.snackbar(
+          "Gagal Memuat",
+          "Status: \${response.statusCode}. Pesan: \${response.bodyString}",
+        );
       }
     } catch (e) {
       Get.snackbar("Error Koneksi", "Gagal fetchJobs: \$e");
@@ -116,19 +122,28 @@ class HomeController extends GetxController with WidgetsBindingObserver {
       if (response.statusCode == 200) {
         final userData = response.body['user'];
         if (userData != null) {
-          userName.value = userData['username'] ?? userData['full_name'] ?? userName.value;
+          userName.value =
+              userData['username'] ?? userData['full_name'] ?? userName.value;
           await storage.write(key: 'user_name', value: userName.value);
 
-          if (userData['image'] != null && userData['image'].toString().isNotEmpty) {
-            profileImageUrl.value = "${ApiProvider.hostUrl}${userData['image']}";
+          if (userData['image'] != null &&
+              userData['image'].toString().isNotEmpty) {
+            profileImageUrl.value =
+                "${ApiProvider.hostUrl}${userData['image']}";
             localImagePath.value = ""; // reset local jika ada URL baru
-            await storage.write(key: 'user_image_url', value: profileImageUrl.value);
+            await storage.write(
+              key: 'user_image_url',
+              value: profileImageUrl.value,
+            );
             await storage.delete(key: 'user_local_image');
           }
 
           // Cek apakah user punya CV atau Skill
-          bool hasCv = userData['cv_url'] != null || userData['parsed_cv'] != null;
-          bool hasSkill = userData['skills_tags'] != null && userData['skills_tags'].toString().trim().isNotEmpty;
+          bool hasCv =
+              userData['cv_url'] != null || userData['parsed_cv'] != null;
+          bool hasSkill =
+              userData['skills_tags'] != null &&
+              userData['skills_tags'].toString().trim().isNotEmpty;
           hasCvOrSkills.value = hasCv || hasSkill;
         }
       }
@@ -146,8 +161,9 @@ class HomeController extends GetxController with WidgetsBindingObserver {
       }
     }
   }
+
   void goToSearch() => Get.toNamed(Routes.SEARCH);
-  
+
   void goToDetail(JobModel job) {
     Get.toNamed(Routes.DETAIL, arguments: job);
   }
@@ -180,14 +196,26 @@ class HomeController extends GetxController with WidgetsBindingObserver {
         }
       } else {
         // Rollback jika gagal
-        if (idxLatest != -1) { latestJobs[idxLatest].isBookmarked = current; latestJobs.refresh(); }
-        if (idxSpecial != -1) { specialJobs[idxSpecial].isBookmarked = current; specialJobs.refresh(); }
+        if (idxLatest != -1) {
+          latestJobs[idxLatest].isBookmarked = current;
+          latestJobs.refresh();
+        }
+        if (idxSpecial != -1) {
+          specialJobs[idxSpecial].isBookmarked = current;
+          specialJobs.refresh();
+        }
         Get.snackbar("Gagal", "Tidak bisa mengubah status bookmark");
       }
     } catch (e) {
       // Rollback
-      if (idxLatest != -1) { latestJobs[idxLatest].isBookmarked = current; latestJobs.refresh(); }
-      if (idxSpecial != -1) { specialJobs[idxSpecial].isBookmarked = current; specialJobs.refresh(); }
+      if (idxLatest != -1) {
+        latestJobs[idxLatest].isBookmarked = current;
+        latestJobs.refresh();
+      }
+      if (idxSpecial != -1) {
+        specialJobs[idxSpecial].isBookmarked = current;
+        specialJobs.refresh();
+      }
     }
   }
 }

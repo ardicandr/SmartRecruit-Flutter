@@ -33,7 +33,7 @@ class RegisterController extends GetxController {
     try {
       isLoading.value = true;
       final response = await apiProvider.requestOTP(emailC.text);
-      
+
       if (response.statusCode == 200) {
         isOtpSent.value = true;
         Get.snackbar("Berhasil", "OTP telah dikirim ke email Anda");
@@ -50,11 +50,14 @@ class RegisterController extends GetxController {
 
   // Modifikasi fungsi register()
   Future<void> register() async {
-    if (nameC.text.isEmpty || emailC.text.isEmpty || passC.text.isEmpty || otpC.text.isEmpty) {
+    if (nameC.text.isEmpty ||
+        emailC.text.isEmpty ||
+        passC.text.isEmpty ||
+        otpC.text.isEmpty) {
       Get.snackbar("Error", "Semua field dan OTP wajib diisi");
       return;
     }
-    
+
     if (passC.text != confirmPassC.text) {
       Get.snackbar("Error", "Konfirmasi kata sandi tidak cocok");
       return;
@@ -68,9 +71,9 @@ class RegisterController extends GetxController {
         "email": emailC.text,
         "password": passC.text,
         "role": "Pelamar",
-        "otp": otpC.text, 
+        "otp": otpC.text,
       });
-      
+
       final response = await apiProvider.post("/auth/register", formData);
 
       if (response.statusCode == 201) {
@@ -107,9 +110,11 @@ class RegisterController extends GetxController {
       }
 
       logger.i("Mencoba registrasi/login via Google OAuth ke Flask...");
-      final response = await apiProvider.postGoogleAuth(idToken, action: "register");
+      final response = await apiProvider.postGoogleAuth(
+        idToken,
+        action: "register",
+      );
       _handleAuthResponse(response);
-
     } catch (error) {
       logger.e("Error Google Sign In: $error");
       Get.snackbar("Error", "Terjadi kesalahan saat daftar dengan Google");
@@ -122,13 +127,16 @@ class RegisterController extends GetxController {
     if (response.statusCode == 200) {
       String token = response.body['token'];
       var userData = response.body['user'];
-      
+
       String username = userData['username'] ?? "User";
       String email = userData['email'] ?? "";
       String role = userData['role'] ?? "Pelamar";
 
       if (role != "Pelamar") {
-        Get.snackbar("Akses Ditolak", "Akun HRD silakan login melalui Web Platform.");
+        Get.snackbar(
+          "Akses Ditolak",
+          "Akun HRD silakan login melalui Web Platform.",
+        );
         return;
       }
 
@@ -137,18 +145,31 @@ class RegisterController extends GetxController {
       await storage.write(key: 'user_email', value: email);
 
       logger.i("Registrasi/Login Berhasil sebagai $role");
-      
+
       Get.offAllNamed(Routes.HOME);
     } else if (response.statusCode == 201) {
-      String msg = response.body?['message'] ?? "Registrasi berhasil, verifikasi dikirim ke email";
-      Get.snackbar("Verifikasi Diperlukan", msg, duration: const Duration(seconds: 5));
+      String msg =
+          response.body?['message'] ??
+          "Registrasi berhasil, verifikasi dikirim ke email";
+      Get.snackbar(
+        "Verifikasi Diperlukan",
+        msg,
+        duration: const Duration(seconds: 5),
+      );
       Get.offNamed(Routes.LOGIN);
     } else if (response.statusCode == 403) {
-      String errorMsg = response.body?['message'] ?? "Verifikasi akun dulu, jika sudah klik button verifikasi yang dikirim di mail baru bisa login";
-      Get.snackbar("Verifikasi Diperlukan", errorMsg, duration: const Duration(seconds: 5));
+      String errorMsg =
+          response.body?['message'] ??
+          "Verifikasi akun dulu, jika sudah klik button verifikasi yang dikirim di mail baru bisa login";
+      Get.snackbar(
+        "Verifikasi Diperlukan",
+        errorMsg,
+        duration: const Duration(seconds: 5),
+      );
       Get.offNamed(Routes.LOGIN);
     } else {
-      String errorMsg = response.body?['message'] ?? "Gagal terhubung ke Google";
+      String errorMsg =
+          response.body?['message'] ?? "Gagal terhubung ke Google";
       Get.snackbar("Gagal", errorMsg);
     }
   }
