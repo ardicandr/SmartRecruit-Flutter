@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart';
+
 class JobModel {
   int? id;
   String? title;
@@ -15,6 +17,7 @@ class JobModel {
   String? status;
   bool? isApplied;
   int? matchScore;
+  bool? isBookmarked;
 
   JobModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -23,7 +26,15 @@ class JobModel {
     companyLogo = json['company_logo'];
     location = json['location'];
     salary = json['salary_range'] ?? json['salary'];
-    postedAt = json['created_at'] ?? json['posted'];
+    String? rawPostedAt = json['created_at'] ?? json['posted'];
+    if (rawPostedAt != null) {
+      try {
+        DateTime dt = DateTime.parse(rawPostedAt);
+        postedAt = DateFormat('dd MMMM yyyy', 'id_ID').format(dt);
+      } catch (e) {
+        postedAt = rawPostedAt;
+      }
+    }
     
     category = json['category'];
     department = json['department'];
@@ -36,5 +47,6 @@ class JobModel {
     if (json['match_score'] != null) {
       matchScore = (json['match_score'] as num).toInt();
     }
+    isBookmarked = json['is_bookmarked'] ?? false;
   }
 }

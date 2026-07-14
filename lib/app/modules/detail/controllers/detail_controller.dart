@@ -3,6 +3,7 @@ import '../../../routes/app_routes.dart';
 import '../../../data/providers/api_provider.dart';
 import '../../../data/models/job_model.dart';
 import '../../saved_jobs/controllers/saved_jobs_controller.dart';
+import '../../home/controllers/home_controller.dart';
 
 class DetailController extends GetxController {
   final ApiProvider apiProvider = Get.find<ApiProvider>();
@@ -17,7 +18,7 @@ class DetailController extends GetxController {
     if (args != null) {
       if (args is JobModel) {
         jobId = args.id ?? 0;
-        // isBookmarked.value = false;
+        isBookmarked.value = args.isBookmarked ?? false;
       } else if (args is Map) {
         jobId = args['id'] ?? args['job_id'] ?? 0;
         isBookmarked.value = args['is_bookmarked'] ?? false;
@@ -42,7 +43,6 @@ class DetailController extends GetxController {
       
       if (response.statusCode == 200) {
         final data = response.body;
-        // Parse from double/int
         if (data['overall_score'] != null) {
           aiMatchScore.value = (data['overall_score'] as num).toDouble();
         }
@@ -74,10 +74,24 @@ class DetailController extends GetxController {
           snackPosition: SnackPosition.BOTTOM,
         );
         
-        // --- REALTIME UPDATE FIX ---
-        // Refresh SavedJobsController if it's already initialized in memory
+        // Refresh SavedJobsController jika sudah aktif
         if (Get.isRegistered<SavedJobsController>()) {
           Get.find<SavedJobsController>().fetchBookmarks();
+        }
+        
+        // Sinkronkan state ke HomeController agar ikon di home ikut berubah
+        if (Get.isRegistered<HomeController>()) {
+          final homeCtrl = Get.find<HomeController>();
+          final int idxLatest = homeCtrl.latestJobs.indexWhere((j) => j.id == jobId);
+          if (idxLatest != -1) {
+            homeCtrl.latestJobs[idxLatest].isBookmarked = newStatus;
+            homeCtrl.latestJobs.refresh();
+          }
+          final int idxSpecial = homeCtrl.specialJobs.indexWhere((j) => j.id == jobId);
+          if (idxSpecial != -1) {
+            homeCtrl.specialJobs[idxSpecial].isBookmarked = newStatus;
+            homeCtrl.specialJobs.refresh();
+          }
         }
       } else {
         // Revert on failure

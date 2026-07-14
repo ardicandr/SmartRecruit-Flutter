@@ -132,7 +132,7 @@ class DetailView extends GetView<DetailController> {
                     Text("Diposting pada:", style: TextStyle(color: AppColors.textGray, fontSize: 13)),
                   ],
                 ),
-                Text(jobData['postedAt'] != null ? jobData['postedAt'].toString().split('T')[0] : "Baru saja", style: TextStyle(color: Colors.blue[600], fontWeight: FontWeight.bold, fontSize: 13)),
+                Text(jobData['postedAt'] != null ? jobData['postedAt'].toString() : "Baru saja", style: TextStyle(color: Colors.blue[600], fontWeight: FontWeight.bold, fontSize: 13)),
               ],
             ),
             const SizedBox(height: 100),

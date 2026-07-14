@@ -3,6 +3,8 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/values/app_colors.dart';
 import '../controllers/interview_controller.dart';
+import 'package:intl/intl.dart';
+import '../../../data/providers/api_provider.dart';
 
 class InterviewListView extends GetView<InterviewController> {
   const InterviewListView({super.key});
@@ -56,10 +58,35 @@ class InterviewListView extends GetView<InterviewController> {
           children: [
             Row(
               children: [
-                Container(
-                  width: 45, height: 45,
-                  decoration: BoxDecoration(color: Colors.black, borderRadius: BorderRadius.circular(10)),
-                  child: const Icon(Icons.business, color: Colors.white, size: 20),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: data['company_logo'] != null && data['company_logo'].toString().isNotEmpty
+                    ? Image.network(
+                        data['company_logo'].toString().startsWith('http') 
+                            ? data['company_logo'] 
+                            : '${ApiProvider.hostUrl}${data['company_logo']}',
+                        width: 45,
+                        height: 45,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) => Container(
+                          width: 45,
+                          height: 45,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF2170E4).withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: const Icon(Icons.business, color: Color(0xFF2170E4), size: 22),
+                        ),
+                      )
+                    : Container(
+                        width: 45,
+                        height: 45,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF2170E4).withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: const Icon(Icons.business, color: Color(0xFF2170E4), size: 22),
+                      ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -85,7 +112,7 @@ class InterviewListView extends GetView<InterviewController> {
                     const SizedBox(width: 6),
                     Text(
                       data['dateRaw'] != null 
-                          ? "${DateTime.parse(data['dateRaw']).day}/${DateTime.parse(data['dateRaw']).month}/${DateTime.parse(data['dateRaw']).year} ${DateTime.parse(data['dateRaw']).hour}:${DateTime.parse(data['dateRaw']).minute.toString().padLeft(2, '0')}" 
+                          ? DateFormat('dd MMMM yyyy, HH:mm', 'id_ID').format(DateTime.parse(data['dateRaw']))
                           : "-", 
                       style: const TextStyle(fontSize: 12, color: Colors.grey)
                     ),

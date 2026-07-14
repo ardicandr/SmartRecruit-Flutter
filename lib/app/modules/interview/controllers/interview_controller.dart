@@ -27,6 +27,7 @@ class InterviewController extends GetxController {
           formattedList.add({
             "id": f['id'],
             "company": f['company_name'] ?? f['company'],
+            "company_logo": f['company_logo'],
             "role": f['job_title'] ?? f['title'],
             "isOnline": f['interview_type'] == 'Online',
             "dateRaw": f['interview_date'],

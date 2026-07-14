@@ -1,1 +1,47 @@
-{"installed":{"client_id":"812605113651-1h2v1t67ku0okk7o9bc54qq24u6gmj8r.apps.googleusercontent.com","project_id":"smartrecruit-500423","auth_uri":"https://accounts.google.com/o/oauth2/auth","token_uri":"https://oauth2.googleapis.com/token","auth_provider_x509_cert_url":"https://www.googleapis.com/oauth2/v1/certs"}}
+{
+  "project_info": {
+    "project_number": "812605113651",
+    "project_id": "smartrecruit-500423",
+    "storage_bucket": "smartrecruit-500423.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:812605113651:android:0aef80378760777f6a2a46",
+        "android_client_info": {
+          "package_name": "com.hn.smartrecruit"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "812605113651-1h2v1t67ku0okk7o9bc54qq24u6gmj8r.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.hn.smartrecruit",
+            "certificate_hash": "41022e00b085b5eeaafad486a55d33ce7809d745"
+          }
+        },
+        {
+          "client_id": "812605113651-i3v7rkfe0i55oqq49miae1h3gk905m99.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAad_4aHy4jckk0jmAJ54sL9cCWCAqLOHk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "812605113651-i3v7rkfe0i55oqq49miae1h3gk905m99.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

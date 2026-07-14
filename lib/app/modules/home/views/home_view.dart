@@ -8,6 +8,7 @@ import '../../status/views/status_view.dart';
 import '../../profile/views/profile_view.dart';
 import '../../saved_jobs/views/saved_jobs_view.dart';
 import '../../../data/providers/api_provider.dart';
+import '../../notification/controllers/notification_controller.dart';
 
 class HomeView extends GetView<HomeController> {
   const HomeView({super.key});
@@ -109,7 +110,31 @@ class HomeView extends GetView<HomeController> {
           
           IconButton(
             onPressed: () => controller.goToNotifications(), 
-            icon: const Icon(Icons.notifications_none, color: Colors.black),
+            icon: Stack(
+              children: [
+                const Icon(Icons.notifications_none, color: Colors.black),
+                Obx(() {
+                  if (Get.isRegistered<NotificationController>()) {
+                    final notifC = Get.find<NotificationController>();
+                    if (notifC.hasUnread) {
+                      return Positioned(
+                        right: 2,
+                        top: 2,
+                        child: Container(
+                          width: 8,
+                          height: 8,
+                          decoration: const BoxDecoration(
+                            color: Colors.red,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                      );
+                    }
+                  }
+                  return const SizedBox.shrink();
+                }),
+              ],
+            ),
           ),
           
           const SizedBox(width: 16),
@@ -315,7 +340,7 @@ class HomeView extends GetView<HomeController> {
   Widget _buildVerticalList() {
     if (controller.latestJobs.isEmpty) return const Center(child: Text("Belum ada lowongan terbaru"));
 
-    return ListView.builder(
+    return Obx(() => ListView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -358,7 +383,17 @@ class HomeView extends GetView<HomeController> {
                         ],
                       ),
                     ),
-                    if (job.matchScore != null)
+                    // Ikon Bookmark — biru jika sudah di-bookmark
+                    GestureDetector(
+                      onTap: () => controller.toggleBookmarkFromHome(job),
+                      child: Icon(
+                        (job.isBookmarked ?? false) ? Icons.bookmark : Icons.bookmark_border_rounded,
+                        color: (job.isBookmarked ?? false) ? const Color(0xFF2170E4) : Colors.grey[400],
+                        size: 22,
+                      ),
+                    ),
+                    if (job.matchScore != null) ...[
+                      const SizedBox(width: 8),
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                         decoration: BoxDecoration(color: Colors.purple.withOpacity(0.1), borderRadius: BorderRadius.circular(12)),
@@ -369,6 +404,7 @@ class HomeView extends GetView<HomeController> {
                           ],
                         ),
                       ),
+                  ],
                   ],
                 ),
                 const SizedBox(height: 16),
@@ -392,7 +428,7 @@ class HomeView extends GetView<HomeController> {
           )
         );
       },
-    );
+    ));
   }
 
   // --- HELPERS ---
@@ -420,10 +456,6 @@ class HomeView extends GetView<HomeController> {
           Container(
             padding: const EdgeInsets.all(4),
             decoration: BoxDecoration(color: Colors.grey[100], borderRadius: BorderRadius.circular(12)),
-            child: Row(children: [
-              Container(padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6), decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(8), boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4)]), child: const Text("Terbaru", style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.blue))),
-              const Padding(padding: EdgeInsets.symmetric(horizontal: 12), child: Text("Populer", style: TextStyle(fontSize: 10, color: Colors.grey))),
-            ]),
           )
         ],
       ),

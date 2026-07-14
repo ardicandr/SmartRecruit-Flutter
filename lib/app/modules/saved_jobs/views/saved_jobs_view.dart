@@ -6,6 +6,7 @@ import '../../../core/values/app_colors.dart';
 import '../controllers/saved_jobs_controller.dart';
 import '../../home/controllers/home_controller.dart';
 import '../../../data/providers/api_provider.dart';
+import '../../notification/controllers/notification_controller.dart';
 
 class SavedJobsView extends GetView<SavedJobsController> {
   const SavedJobsView({super.key});
@@ -28,9 +29,32 @@ class SavedJobsView extends GetView<SavedJobsController> {
         elevation: 0,
         actions: [
           IconButton(
-            // UBAH BAGIAN INI:
             onPressed: () => controller.goToNotifications(), 
-            icon: const Icon(Icons.notifications_none, color: Colors.black)
+            icon: Stack(
+              children: [
+                const Icon(Icons.notifications_none, color: Colors.black),
+                Obx(() {
+                  if (Get.isRegistered<NotificationController>()) {
+                    final notifC = Get.find<NotificationController>();
+                    if (notifC.hasUnread) {
+                      return Positioned(
+                        right: 2,
+                        top: 2,
+                        child: Container(
+                          width: 8,
+                          height: 8,
+                          decoration: const BoxDecoration(
+                            color: Colors.red,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                      );
+                    }
+                  }
+                  return const SizedBox.shrink();
+                }),
+              ],
+            ),
           ),
           Padding(
             padding: const EdgeInsets.only(right: 16),
@@ -63,13 +87,16 @@ class SavedJobsView extends GetView<SavedJobsController> {
         if (controller.savedJobs.isEmpty) {
           return _buildEmptyState();
         }
-        return ListView.builder(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-          itemCount: controller.savedJobs.length,
-          itemBuilder: (context, index) {
-            final job = controller.savedJobs[index];
-            return _buildSavedJobCard(job, index);
-          },
+        return RefreshIndicator(
+          onRefresh: () => controller.fetchBookmarks(),
+          child: ListView.builder(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+            itemCount: controller.savedJobs.length,
+            itemBuilder: (context, index) {
+              final job = controller.savedJobs[index];
+              return _buildSavedJobCard(job, index);
+            },
+          ),
         );
       }),
     );

@@ -4,6 +4,8 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/values/app_colors.dart';
 import '../controllers/interview_controller.dart';
+import 'package:intl/intl.dart';
+import '../../../data/providers/api_provider.dart';
 
 class InterviewDetailView extends GetView<InterviewController> {
   const InterviewDetailView({super.key});
@@ -43,36 +45,30 @@ class InterviewDetailView extends GetView<InterviewController> {
             _buildPrepItem("2", "Gunakan pakaian formal profesional."),
             _buildPrepItem("3", "Siapkan portofolio terbaru."),
             
-            const SizedBox(height: 40),
-            ElevatedButton(
-              onPressed: () {
-                if (isOnline) {
+            if (isOnline) ...[
+              const SizedBox(height: 40),
+              ElevatedButton(
+                onPressed: () {
                   Clipboard.setData(ClipboardData(text: data['location'] ?? ''));
                   Get.snackbar(
                     "Berhasil", 
-                    "Link Zoom disalin ke clipboard!",
+                    "Link Meeting disalin ke clipboard!",
                     snackPosition: SnackPosition.BOTTOM,
                     backgroundColor: Colors.green,
                     colorText: Colors.white,
                   );
-                } else {
-                  Get.snackbar(
-                    "Info", 
-                    "Membuka Maps untuk: ${data['location']}",
-                    snackPosition: SnackPosition.BOTTOM,
-                  );
-                }
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF2170E4),
-                minimumSize: const Size(double.infinity, 60),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF2170E4),
+                  minimumSize: const Size(double.infinity, 60),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                ),
+                child: const Text(
+                  "Salin Link Meeting",
+                  style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+                ),
               ),
-              child: Text(
-                isOnline ? "Salin Link Meeting" : "Petunjuk Arah (Maps)",
-                style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
-              ),
-            ),
+            ],
           ],
         ),
       ),
@@ -85,8 +81,8 @@ class InterviewDetailView extends GetView<InterviewController> {
     String timeFormatted = "-";
     try {
       DateTime dt = DateTime.parse(dateRaw);
-      dateFormatted = "${dt.day}/${dt.month}/${dt.year}";
-      timeFormatted = "${dt.hour}:${dt.minute.toString().padLeft(2, '0')} WIB";
+      dateFormatted = DateFormat('dd MMMM yyyy', 'id_ID').format(dt);
+      timeFormatted = "${DateFormat('HH:mm', 'id_ID').format(dt)} WIB";
     } catch(e) {}
 
     return Container(
@@ -96,7 +92,36 @@ class InterviewDetailView extends GetView<InterviewController> {
         children: [
           Row(
             children: [
-              Container(width: 50, height: 50, decoration: BoxDecoration(color: Colors.black, borderRadius: BorderRadius.circular(12))),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: data['company_logo'] != null && data['company_logo'].toString().isNotEmpty
+                  ? Image.network(
+                      data['company_logo'].toString().startsWith('http') 
+                          ? data['company_logo'] 
+                          : '${ApiProvider.hostUrl}${data['company_logo']}',
+                      width: 50,
+                      height: 50,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) => Container(
+                        width: 50,
+                        height: 50,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF2170E4).withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: const Icon(Icons.business, color: Color(0xFF2170E4), size: 28),
+                      ),
+                    )
+                  : Container(
+                      width: 50,
+                      height: 50,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF2170E4).withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Icon(Icons.business, color: Color(0xFF2170E4), size: 28),
+                    ),
+              ),
               const SizedBox(width: 16),
               Expanded(
                 child: Column(

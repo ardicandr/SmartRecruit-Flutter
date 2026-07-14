@@ -6,6 +6,8 @@ class NotificationController extends GetxController {
   final notifications = <Map<String, dynamic>>[].obs;
   final _api = ApiProvider();
 
+  bool get hasUnread => notifications.any((notif) => notif['is_read'] == false || notif['is_read'] == 0);
+
   @override
   void onInit() {
     super.onInit();

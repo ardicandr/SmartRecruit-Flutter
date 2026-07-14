@@ -1,12 +1,17 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import '../../../routes/app_routes.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../../../data/providers/api_provider.dart';
 import '../../../data/models/job_model.dart';
+import '../../notification/controllers/notification_controller.dart';
+import '../../status/controllers/status_controller.dart';
+import '../../profile/controllers/profile_controller.dart';
+import '../../saved_jobs/controllers/saved_jobs_controller.dart';
 
-class HomeController extends GetxController {
+class HomeController extends GetxController with WidgetsBindingObserver {
   final ApiProvider apiProvider = Get.find<ApiProvider>();
   final storage = const FlutterSecureStorage();
   
@@ -28,6 +33,8 @@ class HomeController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    WidgetsBinding.instance.addObserver(this);
+    Get.put(NotificationController(), permanent: true);
     loadUserData();
     fetchJobs();
     // Sembunyikan greeting setelah 5 detik
@@ -36,8 +43,36 @@ class HomeController extends GetxController {
     });
   }
 
+  /// Dipanggil otomatis saat app kembali ke foreground
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      refreshAllData();
+    }
+  }
+
+  /// Refresh semua data yang aktif di aplikasi
+  void refreshAllData() {
+    loadUserData();
+    fetchJobs();
+
+    // Refresh notifikasi
+    if (Get.isRegistered<NotificationController>()) {
+      Get.find<NotificationController>().fetchNotifications();
+    }
+    // Refresh status lamaran jika sedang aktif
+    if (Get.isRegistered<StatusController>()) {
+      Get.find<StatusController>().fetchMyApps();
+    }
+    // Refresh profil jika sedang aktif
+    if (Get.isRegistered<ProfileController>()) {
+      Get.find<ProfileController>().loadUserData();
+    }
+  }
+
   @override
   void onClose() {
+    WidgetsBinding.instance.removeObserver(this);
     _greetingTimer?.cancel();
     super.onClose();
   }
@@ -103,10 +138,56 @@ class HomeController extends GetxController {
   }
 
   void goToNotifications() => Get.toNamed(Routes.NOTIFICATION);
-  void changeTabIndex(int index) => tabIndex.value = index;
+  void changeTabIndex(int index) {
+    tabIndex.value = index;
+    if (index == 2) {
+      if (Get.isRegistered<SavedJobsController>()) {
+        Get.find<SavedJobsController>().fetchBookmarks();
+      }
+    }
+  }
   void goToSearch() => Get.toNamed(Routes.SEARCH);
   
   void goToDetail(JobModel job) {
     Get.toNamed(Routes.DETAIL, arguments: job);
+  }
+
+  /// Toggle bookmark dari halaman Home secara reaktif
+  void toggleBookmarkFromHome(JobModel job) async {
+    if (job.id == null) return;
+    final bool current = job.isBookmarked ?? false;
+    final bool newStatus = !current;
+
+    // Update state lokal dulu agar UI langsung berubah
+    final int idxLatest = latestJobs.indexWhere((j) => j.id == job.id);
+    if (idxLatest != -1) {
+      latestJobs[idxLatest].isBookmarked = newStatus;
+      latestJobs.refresh();
+    }
+    final int idxSpecial = specialJobs.indexWhere((j) => j.id == job.id);
+    if (idxSpecial != -1) {
+      specialJobs[idxSpecial].isBookmarked = newStatus;
+      specialJobs.refresh();
+    }
+
+    // Kirim ke backend
+    try {
+      final response = await apiProvider.toggleBookmark(job.id!, newStatus);
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        // Refresh bookmark page jika aktif
+        if (Get.isRegistered<SavedJobsController>()) {
+          Get.find<SavedJobsController>().fetchBookmarks();
+        }
+      } else {
+        // Rollback jika gagal
+        if (idxLatest != -1) { latestJobs[idxLatest].isBookmarked = current; latestJobs.refresh(); }
+        if (idxSpecial != -1) { specialJobs[idxSpecial].isBookmarked = current; specialJobs.refresh(); }
+        Get.snackbar("Gagal", "Tidak bisa mengubah status bookmark");
+      }
+    } catch (e) {
+      // Rollback
+      if (idxLatest != -1) { latestJobs[idxLatest].isBookmarked = current; latestJobs.refresh(); }
+      if (idxSpecial != -1) { specialJobs[idxSpecial].isBookmarked = current; specialJobs.refresh(); }
+    }
   }
 }

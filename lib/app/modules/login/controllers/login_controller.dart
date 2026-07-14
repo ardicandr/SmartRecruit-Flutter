@@ -5,6 +5,7 @@ import 'package:logger/logger.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import '../../../routes/app_routes.dart';
 import '../../../data/providers/api_provider.dart';
+import '../../../data/services/notification_service.dart';
 
 class LoginController extends GetxController {
   // Gunakan Get.find jika ApiProvider sudah di-inject di Binding
@@ -107,6 +108,11 @@ class LoginController extends GetxController {
 
       logger.i("Login Berhasil sebagai $role (metode: ${_isGoogleLogin ? 'google' : 'email'})");
       
+      // Kirim ulang FCM Token setelah login sukses karena sebelumnya mungkin jwt_token belum ada
+      if (Get.isRegistered<NotificationService>()) {
+        Get.find<NotificationService>().sendTokenToBackendNow();
+      }
+
       Get.offAllNamed(Routes.HOME);
     } else if (response.statusCode == 403) {
       String errorMsg = response.body?['message'] ?? "Verifikasi akun dulu, klik button verifikasi yang dikirim di mail baru bisa login";

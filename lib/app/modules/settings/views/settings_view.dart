@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../controllers/settings_controller.dart';
+import 'package:intl/intl.dart';
 
 class SettingsView extends GetView<SettingsController> {
   const SettingsView({super.key});
@@ -278,6 +279,9 @@ class SettingsView extends GetView<SettingsController> {
                     } else if (action.toLowerCase().contains("update") || action.toLowerCase().contains("profil")) {
                       iconData = Icons.person_outline;
                       iconColor = Colors.teal;
+                    } else if (action.toLowerCase().contains("melamar")) {
+                      iconData = Icons.work_outline;
+                      iconColor = const Color(0xFF2170E4);
                     }
                     
                     return Padding(
@@ -307,26 +311,14 @@ class SettingsView extends GetView<SettingsController> {
                                   ),
                                 ),
                                 const SizedBox(height: 4),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      timestamp != null
-                                          ? "${timestamp.day}/${timestamp.month}/${timestamp.year} ${timestamp.hour.toString().padLeft(2,'0')}:${timestamp.minute.toString().padLeft(2,'0')}"
-                                          : "-",
-                                      style: TextStyle(
-                                        fontSize: 11,
-                                        color: Colors.grey.shade500,
-                                      ),
-                                    ),
-                                    Text(
-                                      log['device']?.toString() ?? "",
-                                      style: TextStyle(
-                                        fontSize: 11,
-                                        color: Colors.grey.shade400,
-                                      ),
-                                    ),
-                                  ],
+                                Text(
+                                  timestamp != null
+                                      ? DateFormat('dd MMMM yyyy, HH:mm', 'id_ID').format(timestamp)
+                                      : "-",
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    color: Colors.grey.shade500,
+                                  ),
                                 ),
                               ],
                             ),

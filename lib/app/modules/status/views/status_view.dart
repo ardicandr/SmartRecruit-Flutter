@@ -6,6 +6,8 @@ import '../../../core/values/app_colors.dart';
 import '../controllers/status_controller.dart';
 import '../../home/controllers/home_controller.dart';
 import '../../../data/providers/api_provider.dart';
+import 'package:intl/intl.dart';
+import '../../notification/controllers/notification_controller.dart';
 
 class StatusView extends GetView<StatusController> {
   const StatusView({super.key});
@@ -19,8 +21,33 @@ class StatusView extends GetView<StatusController> {
         elevation: 0,
         actions: [
           IconButton(
-          onPressed: () => controller.goToNotifications(), 
-          icon: const Icon(Icons.notifications_none, color: Colors.black),),
+            onPressed: () => controller.goToNotifications(), 
+            icon: Stack(
+              children: [
+                const Icon(Icons.notifications_none, color: Colors.black),
+                Obx(() {
+                  if (Get.isRegistered<NotificationController>()) {
+                    final notifC = Get.find<NotificationController>();
+                    if (notifC.hasUnread) {
+                      return Positioned(
+                        right: 2,
+                        top: 2,
+                        child: Container(
+                          width: 8,
+                          height: 8,
+                          decoration: const BoxDecoration(
+                            color: Colors.red,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                      );
+                    }
+                  }
+                  return const SizedBox.shrink();
+                }),
+              ],
+            ),
+          ),
           Padding(
             padding: const EdgeInsets.only(right: 16),
             child: Obx(() {
@@ -88,7 +115,7 @@ class StatusView extends GetView<StatusController> {
                      activities.add({"title": "Review oleh HRD", "time": "-", "isDone": false});
                   } else if (currentStatus == 'Interview') {
                      activities.add({"title": "Review oleh HRD", "time": "-", "isDone": true});
-                     activities.add({"title": "Jadwal Interview", "time": "-", "isDone": false, "note": "HRD telah mengundang Anda untuk interview. Silakan periksa email Anda."});
+                     activities.add({"title": "Jadwal Interview", "time": "-", "isDone": false, "note": "HRD telah mengundang Anda untuk interview."});
                   } else {
                      activities.add({"title": "Review oleh HRD", "time": "-", "isDone": true});
                   }
@@ -145,10 +172,10 @@ class StatusView extends GetView<StatusController> {
     String dateFormatted = dateRaw;
     try {
       DateTime dt = DateTime.parse(dateRaw);
-      dateFormatted = "${dt.day}/${dt.month}/${dt.year} ${dt.hour}:${dt.minute.toString().padLeft(2, '0')}";
+      dateFormatted = DateFormat('dd MMMM yyyy, HH:mm', 'id_ID').format(dt);
     } catch(e) {}
 
-    String type = latestInterview['interview_type'] ?? 'Offline';
+    String type = latestInterview['interview_type'];
 
     return Material(
       color: Colors.transparent,
@@ -180,7 +207,7 @@ class StatusView extends GetView<StatusController> {
                   crossAxisAlignment: CrossAxisAlignment.start, 
                   children: [
                     Text(
-                      "Panggilan Interview ($type)", 
+                      "Panggilan Interview", 
                       style: const TextStyle(fontSize: 10, color: Colors.blueGrey, fontWeight: FontWeight.bold),
                     ),
                     Text(

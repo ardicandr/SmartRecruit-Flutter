@@ -76,10 +76,16 @@ class NotificationView extends GetView<NotificationController> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-                    if (isNew) const CircleAvatar(radius: 4, backgroundColor: Colors.red),
+                    Expanded(child: Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14))),
+                    if (isNew) ...[
+                      const SizedBox(width: 8),
+                      const Padding(
+                        padding: EdgeInsets.only(top: 4.0),
+                        child: CircleAvatar(radius: 4, backgroundColor: Colors.red),
+                      ),
+                    ],
                   ],
                 ),
                 const SizedBox(height: 4),

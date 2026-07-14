@@ -6,6 +6,7 @@ import '../../../core/values/app_colors.dart';
 import '../../../routes/app_routes.dart';
 import '../controllers/profile_controller.dart';
 import '../../../data/providers/api_provider.dart';
+import '../../notification/controllers/notification_controller.dart';
 
 class ProfileView extends GetView<ProfileController> {
   const ProfileView({super.key});
@@ -28,7 +29,31 @@ class ProfileView extends GetView<ProfileController> {
         actions: [
           IconButton(
             onPressed: () => controller.goToNotifications(), 
-            icon: const Icon(Icons.notifications_none, color: Colors.black),
+            icon: Stack(
+              children: [
+                const Icon(Icons.notifications_none, color: Colors.black),
+                Obx(() {
+                  if (Get.isRegistered<NotificationController>()) {
+                    final notifC = Get.find<NotificationController>();
+                    if (notifC.hasUnread) {
+                      return Positioned(
+                        right: 2,
+                        top: 2,
+                        child: Container(
+                          width: 8,
+                          height: 8,
+                          decoration: const BoxDecoration(
+                            color: Colors.red,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                      );
+                    }
+                  }
+                  return const SizedBox.shrink();
+                }),
+              ],
+            ),
           ),
 
           IconButton(

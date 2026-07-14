@@ -370,7 +370,7 @@ class TrendView extends GetView<TrendController> {
                           String dateStr = controller.categoryTrendData[value.toInt()]['date'].toString();
                           try {
                             DateTime date = DateTime.parse(dateStr);
-                            dateStr = DateFormat('dd MMM').format(date);
+                            dateStr = DateFormat('dd MMM', 'id_ID').format(date);
                           } catch (e) {
                             // ignore
                           }
