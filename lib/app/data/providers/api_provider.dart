@@ -5,8 +5,7 @@ import '../../routes/app_routes.dart';
 
 class ApiProvider extends GetConnect {
   final storage = const FlutterSecureStorage();
-  // static const String hostUrl = kIsWeb ? "http://127.0.0.1:5000" : "http://10.49.209.225:5000";
-  static const String hostUrl = "http://10.49.209.225:5000";
+  static const String hostUrl = "https://smartrecruit.my.id";
   final String baseUrlStr = "$hostUrl/api";
 
   ApiProvider() {

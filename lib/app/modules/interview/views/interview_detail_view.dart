@@ -50,17 +50,16 @@ class InterviewDetailView extends GetView<InterviewController> {
                 ? _buildOnlineDetails(data['location'])
                 : _buildOnsiteDetails(data['location']),
 
-            const SizedBox(height: 32),
-            const Text(
-              "Persiapan Wawancara",
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-            ),
-            const SizedBox(height: 16),
-            _buildPrepItem("1", "Pastikan koneksi internet stabil."),
-            _buildPrepItem("2", "Gunakan pakaian formal profesional."),
-            _buildPrepItem("3", "Siapkan portofolio terbaru."),
-
             if (isOnline) ...[
+              const SizedBox(height: 32),
+              const Text(
+                "Persiapan Wawancara",
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              ),
+              const SizedBox(height: 16),
+              _buildPrepItem("1", "Pastikan koneksi internet stabil."),
+              _buildPrepItem("2", "Gunakan pakaian formal profesional."),
+              _buildPrepItem("3", "Siapkan portofolio terbaru."),
               const SizedBox(height: 40),
               ElevatedButton(
                 onPressed: () {

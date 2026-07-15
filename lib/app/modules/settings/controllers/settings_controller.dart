@@ -580,9 +580,16 @@ class SettingsController extends GetxController {
               ElevatedButton(
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
                 onPressed: () {
-                  if (confirmCtrl.text.isNotEmpty) {
-                    if (isGoogleLogin && confirmCtrl.text != "HAPUS") {
+                  if (isGoogleLogin) {
+                    if (confirmCtrl.text != "HAPUS") {
                         Get.snackbar("Error", "Ketik HAPUS untuk melanjutkan.");
+                        return;
+                    }
+                    Get.back();
+                    requestDeleteOAuth();
+                  } else {
+                    if (confirmCtrl.text.isEmpty) {
+                        Get.snackbar("Error", "Masukkan password untuk melanjutkan.");
                         return;
                     }
                     Get.back();
@@ -599,6 +606,49 @@ class SettingsController extends GetxController {
         },
       ),
     );
+  }
+
+  Future<void> requestDeleteOAuth() async {
+    isLoading.value = true;
+    try {
+      final response = await apiProvider.post("/auth/request-delete-oauth", {});
+      isLoading.value = false;
+      if (response.statusCode == 200) {
+        Get.dialog(
+          AlertDialog(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            title: const Row(
+              children: [
+                Icon(Icons.mark_email_read_outlined, color: Color(0xFF2170E4), size: 26),
+                SizedBox(width: 10),
+                Text("Verifikasi Dikirim!"),
+              ],
+            ),
+            content: const Text(
+              "Link konfirmasi hapus akun telah dikirim ke email Anda. Silakan cek inbox Anda untuk mengonfirmasi penghapusan akun.",
+              style: TextStyle(fontSize: 13, color: Colors.grey, height: 1.5),
+            ),
+            actions: [
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF2170E4)),
+                onPressed: () => Get.back(),
+                child: const Text("Mengerti", style: TextStyle(color: Colors.white)),
+              ),
+            ],
+          ),
+        );
+      } else {
+        Get.snackbar(
+          "Error",
+          response.body['message'] ?? "Gagal meminta penghapusan akun",
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
+      }
+    } catch (e) {
+      isLoading.value = false;
+      Get.snackbar("Error", "Terjadi kesalahan sistem");
+    }
   }
 
   Future<void> deleteAccount(String password) async {
