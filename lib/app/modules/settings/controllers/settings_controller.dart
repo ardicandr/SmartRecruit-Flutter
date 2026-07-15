@@ -534,7 +534,7 @@ class SettingsController extends GetxController {
   // =========================================================
   void showDeleteAccountDialog() {
     final confirmCtrl = TextEditingController();
-    bool isObscure = true;
+    bool isObscure = !isGoogleLogin;
 
     Get.dialog(
       StatefulBuilder(
@@ -556,9 +556,9 @@ class SettingsController extends GetxController {
                   controller: confirmCtrl,
                   obscureText: isObscure,
                   decoration: InputDecoration(
-                    labelText: "Masukkan Password untuk Konfirmasi",
+                    labelText: isGoogleLogin ? "Ketik 'HAPUS' untuk Konfirmasi" : "Masukkan Password untuk Konfirmasi",
                     border: const OutlineInputBorder(),
-                    suffixIcon: IconButton(
+                    suffixIcon: isGoogleLogin ? null : IconButton(
                       icon: Icon(
                         isObscure ? Icons.visibility_off : Icons.visibility,
                       ),
@@ -581,6 +581,10 @@ class SettingsController extends GetxController {
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
                 onPressed: () {
                   if (confirmCtrl.text.isNotEmpty) {
+                    if (isGoogleLogin && confirmCtrl.text != "HAPUS") {
+                        Get.snackbar("Error", "Ketik HAPUS untuk melanjutkan.");
+                        return;
+                    }
                     Get.back();
                     deleteAccount(confirmCtrl.text);
                   }
